@@ -1,0 +1,80 @@
+# ========== MAVEN ==========
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ========== JAVA ==========
+*.class
+*.jar
+*.war
+*.ear
+*.log
+hs_err_pid*
+
+# ========== INTELLIJ IDEA ==========
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
+
+# ========== ECLIPSE ==========
+.classpath
+.project
+.settings/
+bin/
+.metadata/
+.recommenders/
+*.launch
+
+# ========== NETBEANS ==========
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# ========== VS CODE ==========
+.vscode/
+*.code-workspace
+
+# ========== MACOS ==========
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ========== WINDOWS ==========
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ========== LINUX ==========
+*~
+.directory
+.Trash-*
+
+# ========== LOGS Y TEMPORALES ==========
+*.log
+*.tmp
+*.bak
+*.swp
+*~.nib
+*.class
+
+# ========== OTROS ==========
+*.zip
+*.tar.gz
+*.rar
+node_modules/

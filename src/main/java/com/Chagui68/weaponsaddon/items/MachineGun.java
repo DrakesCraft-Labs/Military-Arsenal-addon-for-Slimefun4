@@ -1,0 +1,48 @@
+package com.Chagui68.weaponsaddon.items;
+
+import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
+import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
+import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class MachineGun {
+
+    public static final SlimefunItemStack MACHINE_GUN = new SlimefunItemStack(
+            "MACHINE_GUN",
+            Material.DIAMOND_HOE,
+            "&4⚔ &cMachine Gun",
+            "",
+            "&7Automatic rapid-fire weapon",
+            "&7Fires 5-shot bursts",
+            "",
+            "&6Damage: &c5 HP per shot",
+            "&6Fire Rate: &e0.1s between shots",
+            "&6Cooldown: &e0.5s",
+            "",
+            "&eRight-Click to fire burst",
+            "&cRequires Machine Gun Bullets",
+            "",
+            "&a✓ Unbreakable"
+    );
+
+    static {
+        ItemMeta meta = MACHINE_GUN.getItemMeta();
+        if (meta != null) {
+            meta.setUnbreakable(true);
+            MACHINE_GUN.setItemMeta(meta);
+        }
+    }
+
+    public static void register(SlimefunAddon addon, ItemGroup category) {
+        new SlimefunItem(category, MACHINE_GUN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                SlimefunItems.REINFORCED_ALLOY_INGOT, MilitaryComponents.TARGETING_SYSTEM, SlimefunItems.REINFORCED_ALLOY_INGOT,
+                MilitaryComponents.MILITARY_CIRCUIT, SlimefunItems.ELECTRIC_MOTOR, MilitaryComponents.MILITARY_CIRCUIT,
+                SlimefunItems.STEEL_PLATE, MilitaryComponents.GUIDANCE_CHIP, SlimefunItems.HARDENED_GLASS
+        }).register(addon);
+    }
+}
