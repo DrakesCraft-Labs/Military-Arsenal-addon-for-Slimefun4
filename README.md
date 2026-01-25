@@ -21,12 +21,12 @@ A military weapons addon for Slimefun4 featuring advanced weaponry, ammunition s
 
 ### 💣 Bombardment Terminal
 - GPS coordinate-based airstrike system
-- Requires 1,000,000 J energy per attack
+- Requires 2,000,000 J energy per attack
 - Consumes 10 TNT + 5 Nether Stars per strike
 - 2 waves × 4 TNT bombs per attack
 - 10-block radius area of effect
 - Interactive GUI with energy display
-- 2,000,000 J energy capacity
+- 4,000,000 J energy capacity
 
 ### ⚙️ Military Components
 Progressive crafting system with 6 unique components:
