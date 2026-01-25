@@ -232,7 +232,7 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
     # categoría llamada "arsenal", no habrá conflictos porque los namespaces son diferentes 
     # (otroplugin:arsenal | weaponsaddon:military_arsenal).
 
-/
+/*
 
             CustomItemStack mainItem = new CustomItemStack(
                     Material.NETHERITE_SWORD,
@@ -260,12 +260,22 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
     &e produce amarillo para instrucciones importantes,
     &8 produce gris oscuro para metadata.
 
-    Este item no tiene funcionalidad de juego real, es puramente cosmético para la interfaz de Slimefun Guide.
+    # Este item no tiene funcionalidad de juego real, es puramente cosmético para la interfaz de Slimefun Guide.
            
-/
+/*
 
-     NestedItemGroup mainGroup = new NestedItemGroup(mainKey, mainItem, 2);
+        NestedItemGroup mainGroup = new NestedItemGroup(mainKey, mainItem, 2);
 
+    # Esta línea instancia la categoría principal usando NestedItemGroup, que es un tipo especial de categoría 
+    # de Slimefun diseñada para contener subcategorías dentro de ella. El primer parámetro "mainKey" es el identificador
+    # único creado anteriormente, el segundo "mainItem" es el ícono visual que acabamos de definir, y el tercer parámetro "2"
+    # es el tier o nivel de la categoría que controla en qué "página" del Slimefun Guide aparece (tier 1 para categorías
+    # básicas de inicio, tier 2 para contenido intermedio, tier 3 para avanzado/endgame). Al usar "NestedItemGroup" en 
+    # lugar de "ItemGroup" normal, esta categoría puede actuar como un "folder" que cuando un jugador hace clic en ella,
+    # muestra las tres subcategorías (Components, Weapons, Machines) en lugar de mostrar items directamente, creando una
+    # navegación organizada y jerárquica.
+
+/*
 
             NamespacedKey componentsKey = new NamespacedKey(this, "military_components");
             CustomItemStack componentsItem = new CustomItemStack(
@@ -280,6 +290,14 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
             SubItemGroup componentsGroup = new SubItemGroup(componentsKey, mainGroup, componentsItem);
 
 
+    Este bloque crea la primera subcategoría para componentes militares. El "NamespacedKey" con ID "military_components"
+    la identifica de forma única. El "CustomItemStack" define el ícono que aparecerá en el menú. La diferencia crucial
+    es usar "SubItemGroup" en lugar de "NestedItemGroup", indicando que esta categoría contiene items directamente, 
+    no más subcategorías. El segundo parámetro "mainGroup" establece que esta subcategoría pertenece a "MILITARY ARSENAL".
+
+
+/*
+
             NamespacedKey weaponsKey = new NamespacedKey(this, "military_weapons");
             CustomItemStack weaponsItem = new CustomItemStack(
                     Material.DIAMOND_SWORD,
@@ -292,6 +310,11 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
             );
             SubItemGroup weaponsGroup = new SubItemGroup(weaponsKey, mainGroup, weaponsItem);
 
+    Segunda subcategoría que agrupa el equipamiento de combate. Sigue el mismo patrón: crea un identificador único,
+    define el ícono con nombre y descripción, y la vincula a mainGroup. Aquí se registrarán posteriormente 
+    la ametralladora y su munición.
+
+/*
 
             NamespacedKey machinesKey = new NamespacedKey(this, "military_machines");
             CustomItemStack machinesItem = new CustomItemStack(
@@ -305,51 +328,116 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
             );
             SubItemGroup machinesGroup = new SubItemGroup(machinesKey, mainGroup, machinesItem);
 
+    Tercera subcategoría para máquinas automatizadas. Mismo patrón de creación que las anteriores.
+    Aquí se registrará el Terminal de Bombardeo.
+    
+/*
+
 
             mainGroup.register(this);
+
+    Registra la categoría principal en Slimefun, haciéndola visible en /sf guide. 
+    Al registrar un "NestedItemGroup", automáticamente incluye todas sus subcategorías vinculadas, 
+    por lo que no necesitas registrar cada SubItemGroup por separado.
+
+/*
 
 
             getLogger().info("Registering Military Components...");
             MilitaryComponents.register(this, componentsGroup);
+
+    El mensaje de logging rastrea el progreso de carga en consola. La segunda línea llama al método
+    estático register() de MilitaryComponents, pasándole el plugin y la subcategoría. Esto delega la
+    creación de los 6 componentes a esa clase especializada.
+
+/*
 
 
             getLogger().info("Registering Military Weapons...");
             MachineGunAmmo.register(this, weaponsGroup);
             MachineGun.register(this, weaponsGroup);
 
+    Registra primero la munición y después el arma. 
+    El orden permite que dependencias se registren antes que los items que las usan.
+    Ambos se asignan a weaponsGroup.
+
+/*
 
             getLogger().info("Registering Military Machines...");
             BombardmentTerminal.register(this, machinesGroup);
 
+    Registra el Terminal de Bombardeo delegando toda la lógica compleja a 
+    BombardmentTerminal.java. Esta separación mantiene el archivo principal limpio.
+
+/*
 
             getServer().getPluginManager().registerEvents(new MachineGunHandler(), this);
 
+    Registra el "listener" de eventos que maneja la funcionalidad de la ametralladora. 
+    "MachineGunHandler" contiene métodos "@EventHandler" que detectan cuando los jugadores 
+    usan el arma. Sin este registro, el item existiría pero no tendría funcionalidad.
+
+/*
+
+
             TerminalClickHandler.setPlugin(this);
             getServer().getPluginManager().registerEvents(new TerminalClickHandler(), this);
+
+    "setPlugin()" pasa la instancia del plugin al handler porque necesita ejecutar tareas 
+    asíncronas para los delays de bombardeo. La segunda línea registra el "listener" que detecta 
+    clics en la GUI del terminal.
+
+/
+
 
             getLogger().info("========================================");
             getLogger().info("WeaponsAddon enabled successfully!");
             getLogger().info("Main Category: 1 | Subcategories: 3");
             getLogger().info("Total Items: 9");
             getLogger().info("========================================");
-        }
+
+    Banner de confirmación en consola indicando carga exitosa con estadísticas: 1 categoría principal, 
+    3 subcategorías, 9 items totales. Facilita verificar que todo se cargó correctamente.
+
+/
 
         @Override
         public void onDisable() {
             getLogger().info("WeaponsAddon disabled!");
         }
 
+    Se ejecuta cuando el servidor se detiene o el plugin se desinstala. 
+    Solo imprime confirmación porque Bukkit y Slimefun manejan automáticamente 
+    la limpieza de items y "listeners".
+
+/
+
         public static WeaponsAddon getInstance() {
             return instance;
         }
+
+    Proporciona acceso global al plugin. Es "static" para llamarlo directamente sin crear objetos.
+    Otras clases lo usan para crear "NamespacedKey", registrar items, o acceder al logger.
+
+/
 
         @Override
         public JavaPlugin getJavaPlugin() {
             return this;
         }
 
+    Método obligatorio de SlimefunAddon. Slimefun lo usa internamente para acceder a funcionalidades
+    de Bukkit. Devuelve "this" porque esta clase ya extiende "JavaPlugin".
+
+/
+
         @Override
         public String getBugTrackerURL() {
             return "https://github.com/Chagui68/WeaponsAddon/issues";
         }
-    }
+
+    También obligatorio de SlimefunAddon. Devuelve la URL donde reportar bugs. 
+    Slimefun la muestra en /sf versions y en mensajes de error.    
+
+**
+
