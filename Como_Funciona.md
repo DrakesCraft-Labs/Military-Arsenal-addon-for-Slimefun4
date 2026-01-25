@@ -18,7 +18,9 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
 
 **
 
-## La base de lo importante
+## La base de lo importante:
+
+### WeaponsAddon
 
     Empecemos con algo simple de momento con la primera clase 
     de todo el archivo: WeaponsAddon
