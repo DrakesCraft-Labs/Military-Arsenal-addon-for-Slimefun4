@@ -123,6 +123,6 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
 
     @Override
     public String getBugTrackerURL() {
-        return "https://github.com/Chagui68/WeaponsAddon/issues";
+        return "https://github.com/Chagui68/Military-Arsenal-addon-for-Slimefun4/issues";
     }
 }

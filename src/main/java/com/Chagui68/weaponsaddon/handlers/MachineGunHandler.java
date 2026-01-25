@@ -99,7 +99,7 @@ public class MachineGunHandler implements Listener {
                             LivingEntity target = (LivingEntity) entity;
                             target.damage(DAMAGE, player);
 
-                            // CORRECCIÓN: CRIT_MAGIC → ENCHANTED_HIT
+
                             target.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation().add(0, 1, 0), 20, 0.3, 0.5, 0.3);
                             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ARROW_HIT, 1.0f, 1.0f);
 
