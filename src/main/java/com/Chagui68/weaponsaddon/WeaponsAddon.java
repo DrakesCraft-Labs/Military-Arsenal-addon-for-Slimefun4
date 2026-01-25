@@ -2,17 +2,28 @@ package com.Chagui68.weaponsaddon;
 
 import com.Chagui68.weaponsaddon.handlers.MachineGunHandler;
 import com.Chagui68.weaponsaddon.items.machines.BombardmentTerminal;
+import com.Chagui68.weaponsaddon.items.machines.BombardmentTerminalRecipeDisplay;
 import com.Chagui68.weaponsaddon.items.MachineGun;
 import com.Chagui68.weaponsaddon.items.MachineGunAmmo;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
+import com.Chagui68.weaponsaddon.items.machines.AmmunitionWorkshop;
+import com.Chagui68.weaponsaddon.items.machines.AmmunitionWorkshopHandler;
+import com.Chagui68.weaponsaddon.items.machines.MilitaryCraftingTable;
+import com.Chagui68.weaponsaddon.items.machines.MilitaryCraftingHandler;
+import com.Chagui68.weaponsaddon.items.machines.MilitaryMachineFabricator;
+import com.Chagui68.weaponsaddon.items.machines.MachineFabricatorHandler;
 import com.Chagui68.weaponsaddon.items.machines.TerminalClickHandler;
+import com.Chagui68.weaponsaddon.items.gui.RecipeViewerGUI;
+import com.Chagui68.weaponsaddon.listeners.SlimefunGuideListener;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.api.items.groups.NestedItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.groups.SubItemGroup;
+import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
@@ -24,7 +35,6 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
         instance = this;
 
         Config config = new Config(this);
-
 
         NamespacedKey mainKey = new NamespacedKey(this, "military_arsenal");
         CustomItemStack mainItem = new CustomItemStack(
@@ -39,7 +49,6 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
         );
         NestedItemGroup mainGroup = new NestedItemGroup(mainKey, mainItem, 2);
 
-
         NamespacedKey componentsKey = new NamespacedKey(this, "military_components");
         CustomItemStack componentsItem = new CustomItemStack(
                 Material.REDSTONE_BLOCK,
@@ -51,7 +60,6 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
                 "&8⇨ Level 1 Components"
         );
         SubItemGroup componentsGroup = new SubItemGroup(componentsKey, mainGroup, componentsItem);
-
 
         NamespacedKey weaponsKey = new NamespacedKey(this, "military_weapons");
         CustomItemStack weaponsItem = new CustomItemStack(
@@ -65,7 +73,6 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
         );
         SubItemGroup weaponsGroup = new SubItemGroup(weaponsKey, mainGroup, weaponsItem);
 
-
         NamespacedKey machinesKey = new NamespacedKey(this, "military_machines");
         CustomItemStack machinesItem = new CustomItemStack(
                 Material.OBSERVER,
@@ -78,32 +85,71 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
         );
         SubItemGroup machinesGroup = new SubItemGroup(machinesKey, mainGroup, machinesItem);
 
-
         mainGroup.register(this);
 
+        getLogger().info("Registering Event Handlers...");
+        getServer().getPluginManager().registerEvents(new AmmunitionWorkshopHandler(), this);
+        getServer().getPluginManager().registerEvents(new MilitaryCraftingHandler(), this);
+        getServer().getPluginManager().registerEvents(new MachineFabricatorHandler(), this);
+        getServer().getPluginManager().registerEvents(new MachineGunHandler(), this);
+        getServer().getPluginManager().registerEvents(new RecipeViewerGUI(), this);
+        getServer().getPluginManager().registerEvents(new SlimefunGuideListener(), this);
+        TerminalClickHandler.setPlugin(this);
+        getServer().getPluginManager().registerEvents(new TerminalClickHandler(), this);
+
+        getLogger().info("Registering Ammunition Workshop...");
+        new AmmunitionWorkshop(
+                weaponsGroup,
+                AmmunitionWorkshop.AMMUNITION_WORKSHOP,
+                RecipeType.ENHANCED_CRAFTING_TABLE,
+                new ItemStack[]{
+                        new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.CARTOGRAPHY_TABLE), new ItemStack(Material.IRON_BLOCK),
+                        new ItemStack(Material.GUNPOWDER), new ItemStack(Material.ANVIL), new ItemStack(Material.GUNPOWDER),
+                        new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.COPPER_BLOCK), new ItemStack(Material.IRON_BLOCK)
+                }
+        ).register(this);
+
+        getLogger().info("Registering Military Crafting Table...");
+        new MilitaryCraftingTable(
+                machinesGroup,
+                MilitaryCraftingTable.MILITARY_CRAFTING_TABLE,
+                RecipeType.ENHANCED_CRAFTING_TABLE,
+                new ItemStack[]{
+                        new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.CRAFTING_TABLE), new ItemStack(Material.IRON_BLOCK),
+                        new ItemStack(Material.REDSTONE), new ItemStack(Material.ANVIL), new ItemStack(Material.REDSTONE),
+                        new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.REDSTONE_BLOCK), new ItemStack(Material.IRON_BLOCK)
+                }
+        ).register(this);
+
+        getLogger().info("Registering Military Machine Fabricator...");
+        new MilitaryMachineFabricator(
+                machinesGroup,
+                MilitaryMachineFabricator.MILITARY_MACHINE_FABRICATOR,
+                RecipeType.ENHANCED_CRAFTING_TABLE,
+                new ItemStack[]{
+                        new ItemStack(Material.NETHERITE_BLOCK), new ItemStack(Material.RESPAWN_ANCHOR), new ItemStack(Material.NETHERITE_BLOCK),
+                        new ItemStack(Material.REDSTONE_BLOCK), new ItemStack(Material.BEACON), new ItemStack(Material.REDSTONE_BLOCK),
+                        new ItemStack(Material.NETHERITE_BLOCK), new ItemStack(Material.NETHER_STAR), new ItemStack(Material.NETHERITE_BLOCK)
+                }
+        ).register(this);
 
         getLogger().info("Registering Military Components...");
         MilitaryComponents.register(this, componentsGroup);
-
 
         getLogger().info("Registering Military Weapons...");
         MachineGunAmmo.register(this, weaponsGroup);
         MachineGun.register(this, weaponsGroup);
 
-
         getLogger().info("Registering Military Machines...");
         BombardmentTerminal.register(this, machinesGroup);
-
-
-        getServer().getPluginManager().registerEvents(new MachineGunHandler(), this);
-
-        TerminalClickHandler.setPlugin(this);
-        getServer().getPluginManager().registerEvents(new TerminalClickHandler(), this);
+        BombardmentTerminalRecipeDisplay.register(this, machinesGroup);
 
         getLogger().info("========================================");
         getLogger().info("WeaponsAddon enabled successfully!");
         getLogger().info("Main Category: 1 | Subcategories: 3");
-        getLogger().info("Total Items: 9");
+        getLogger().info("Crafting Stations: 3 (3x3 + 4x4 + 6x6)");
+        getLogger().info("Recipe Viewer: ENABLED");
+        getLogger().info("Inventory Persistence: ENABLED");
         getLogger().info("========================================");
     }
 

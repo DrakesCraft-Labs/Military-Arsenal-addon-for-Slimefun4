@@ -2,10 +2,8 @@ package com.Chagui68.weaponsaddon.items;
 
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
-import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -25,6 +23,11 @@ public class MachineGun {
             "&6Fire Rate: &e0.1s between shots",
             "&6Cooldown: &e0.5s",
             "",
+            "&c⚠ Requires 4×4 Military Crafting Table",
+            "",
+            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
+            "&e  to view FULL 4×4 recipe",
+            "",
             "&eRight-Click to fire burst",
             "&cRequires Machine Gun Bullets",
             "",
@@ -40,10 +43,19 @@ public class MachineGun {
     }
 
     public static void register(SlimefunAddon addon, ItemGroup category) {
-        new SlimefunItem(category, MACHINE_GUN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
-                SlimefunItems.REINFORCED_ALLOY_INGOT, MilitaryComponents.TARGETING_SYSTEM, SlimefunItems.REINFORCED_ALLOY_INGOT,
-                MilitaryComponents.MILITARY_CIRCUIT, SlimefunItems.ELECTRIC_MOTOR, MilitaryComponents.MILITARY_CIRCUIT,
-                SlimefunItems.STEEL_PLATE, MilitaryComponents.GUIDANCE_CHIP, SlimefunItems.HARDENED_GLASS
-        }).register(addon);
+        ItemStack[] machineGunRecipe = new ItemStack[]{
+                MilitaryComponents.WEAPON_BARREL, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.RADAR_MODULE, MilitaryComponents.WEAPON_BARREL,
+                MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TRIGGER_MECHANISM, MilitaryComponents.STABILIZER_UNIT, MilitaryComponents.TARGETING_SYSTEM,
+                MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.POWER_CORE, MilitaryComponents.POWER_CORE, MilitaryComponents.REINFORCED_FRAME,
+                MilitaryComponents.REINFORCED_FRAME, SlimefunItems.ELECTRIC_MOTOR, SlimefunItems.ELECTRIC_MOTOR, MilitaryComponents.REINFORCED_FRAME
+        };
+
+        new CustomRecipeItem(
+                category,
+                MACHINE_GUN,
+                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
+                machineGunRecipe,
+                CustomRecipeItem.RecipeGridSize.GRID_4x4
+        ).register(addon);
     }
 }

@@ -1,5 +1,6 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
+import com.Chagui68.weaponsaddon.items.MilitaryRecipeTypes;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import com.Chagui68.weaponsaddon.items.machines.energy.EnergyManager;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -10,7 +11,6 @@ import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
-import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,8 +42,14 @@ public class BombardmentTerminal extends SlimefunItem implements EnergyNetCompon
             "&eRight-Click to open"
     );
 
+    private static ItemStack[] fullRecipe;
+
     public BombardmentTerminal(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
+    }
+
+    public static ItemStack[] getStoredRecipe() {
+        return fullRecipe;
     }
 
     @Override
@@ -119,10 +125,17 @@ public class BombardmentTerminal extends SlimefunItem implements EnergyNetCompon
     }
 
     public static void register(SlimefunAddon addon, ItemGroup category) {
-        new BombardmentTerminal(category, BOMBARDMENT_TERMINAL, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
-                MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME,
-                MilitaryComponents.TARGETING_SYSTEM, SlimefunItems.ENERGIZED_CAPACITOR, MilitaryComponents.TARGETING_SYSTEM,
-                MilitaryComponents.EXPLOSIVE_CORE, SlimefunItems.ANDROID_MEMORY_CORE, MilitaryComponents.EXPLOSIVE_CORE
-        }).register(addon);
+        fullRecipe = new ItemStack[]{
+                MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME,
+                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
+                MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
+                MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
+                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
+                MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.HYDRAULIC_SYSTEM, MilitaryComponents.COOLANT_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME
+        };
+
+        BombardmentTerminal terminal = new BombardmentTerminal(category, BOMBARDMENT_TERMINAL, MilitaryRecipeTypes.MILITARY_MACHINE_FABRICATOR, fullRecipe);
+        terminal.register(addon);
+        MachineFabricatorHandler.registerRecipe(terminal);
     }
 }
