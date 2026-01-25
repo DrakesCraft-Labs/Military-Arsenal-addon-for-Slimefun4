@@ -1,7 +1,7 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
 import com.Chagui68.weaponsaddon.WeaponsAddon;
-import com.Chagui68.weaponsaddon.items.BombardmentTerminal;
+import com.Chagui68.weaponsaddon.items.machines.BombardmentTerminal;
 import com.Chagui68.weaponsaddon.items.machines.energy.EnergyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

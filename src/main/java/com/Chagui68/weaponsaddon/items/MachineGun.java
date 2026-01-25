@@ -1,5 +1,6 @@
 package com.Chagui68.weaponsaddon.items;
 
+import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;

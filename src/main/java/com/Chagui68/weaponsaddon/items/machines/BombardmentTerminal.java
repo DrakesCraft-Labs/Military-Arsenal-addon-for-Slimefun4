@@ -1,6 +1,6 @@
-package com.Chagui68.weaponsaddon.items;
+package com.Chagui68.weaponsaddon.items.machines;
 
-import com.Chagui68.weaponsaddon.items.machines.TerminalClickHandler;
+import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import com.Chagui68.weaponsaddon.items.machines.energy.EnergyManager;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;

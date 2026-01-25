@@ -1,10 +1,10 @@
 package com.Chagui68.weaponsaddon;
 
 import com.Chagui68.weaponsaddon.handlers.MachineGunHandler;
-import com.Chagui68.weaponsaddon.items.BombardmentTerminal;
+import com.Chagui68.weaponsaddon.items.machines.BombardmentTerminal;
 import com.Chagui68.weaponsaddon.items.MachineGun;
 import com.Chagui68.weaponsaddon.items.MachineGunAmmo;
-import com.Chagui68.weaponsaddon.items.MilitaryComponents;
+import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import com.Chagui68.weaponsaddon.items.machines.TerminalClickHandler;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.api.items.groups.NestedItemGroup;
