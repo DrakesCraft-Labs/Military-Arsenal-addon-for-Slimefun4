@@ -95,7 +95,7 @@ public class TerminalClickHandler implements Listener {
                 p.sendMessage(ChatColor.GREEN + "✓ [Terminal] Resources consumed:");
                 p.sendMessage(ChatColor.GRAY + "  • 10 TNT");
                 p.sendMessage(ChatColor.GRAY + "  • 5 Nether Stars");
-                p.sendMessage(ChatColor.AQUA + "  • 1,000,000 J energy");
+                p.sendMessage(ChatColor.AQUA + "  • 2,000,000 J energy");
                 p.sendMessage(ChatColor.YELLOW + "→ [Terminal] Enter coordinates: X Y Z");
                 p.sendMessage(ChatColor.GRAY + "Example: 100 64 -200");
 
