@@ -1,6 +1,7 @@
 package com.Chagui68.weaponsaddon.items;
 
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
+import com.Chagui68.weaponsaddon.items.machines.MilitaryCraftingHandler;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
@@ -50,12 +51,19 @@ public class MachineGun {
                 MilitaryComponents.REINFORCED_FRAME, SlimefunItems.ELECTRIC_MOTOR, SlimefunItems.ELECTRIC_MOTOR, MilitaryComponents.REINFORCED_FRAME
         };
 
-        new CustomRecipeItem(
+        // Crear el item con su recipe
+        CustomRecipeItem machineGunItem = new CustomRecipeItem(
                 category,
                 MACHINE_GUN,
                 MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
                 machineGunRecipe,
                 CustomRecipeItem.RecipeGridSize.GRID_4x4
-        ).register(addon);
+        );
+
+        // Registrar en Slimefun
+        machineGunItem.register(addon);
+
+        // ¡LÍNEA CRÍTICA! Registrar en MilitaryCraftingHandler
+        MilitaryCraftingHandler.registerRecipe(machineGunItem);
     }
 }

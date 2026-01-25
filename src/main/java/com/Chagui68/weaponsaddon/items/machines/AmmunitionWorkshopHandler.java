@@ -2,7 +2,6 @@ package com.Chagui68.weaponsaddon.items.machines;
 
 import com.Chagui68.weaponsaddon.items.MachineGunAmmo;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,216 +28,173 @@ import java.util.UUID;
 public class AmmunitionWorkshopHandler implements Listener {
 
     private static final Map<UUID, Location> openWorkshops = new HashMap<>();
+    private final int[] gridSlots = {10, 11, 12, 19, 20, 21, 28, 29, 30};
+    private final int resultSlot = 23;
+    private final int craftButtonSlot = 25;
 
     @EventHandler
     public void onWorkshopClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
-        Block block = e.getClickedBlock();
-        if (block == null) return;
-
-        SlimefunItem sfItem = BlockStorage.check(block);
-        if (sfItem == null || !sfItem.getId().equals("AMMUNITION_WORKSHOP")) return;
-
-        e.setCancelled(true);
-        Player p = e.getPlayer();
-        Location blockLoc = block.getLocation();
-
-        openWorkshopGUI(p, blockLoc);
+        Block b = e.getClickedBlock();
+        if (b != null && "AMMUNITION_WORKSHOP".equals(BlockStorage.getLocationInfo(b.getLocation(), "id"))) {
+            e.setCancelled(true);
+            openGui(e.getPlayer(), b.getLocation());
+        }
     }
 
-    private void openWorkshopGUI(Player p, Location blockLoc) {
-        Inventory inv = Bukkit.createInventory(null, 27, ChatColor.GOLD + "Ammunition Workshop");
+    private void openGui(Player p, Location loc) {
+        Inventory inv = Bukkit.createInventory(null, 45, ChatColor.DARK_GRAY + "Ammunition Workshop");
 
-        // Background
-        for (int i = 9; i < 27; i++) {
-            inv.setItem(i, new CustomItemStack(Material.GRAY_STAINED_GLASS_PANE, " "));
+        ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta glassMeta = glass.getItemMeta();
+        glassMeta.setDisplayName(" ");
+        glass.setItemMeta(glassMeta);
+        for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, glass);
+
+        for (int i = 0; i < gridSlots.length; i++) {
+            inv.setItem(gridSlots[i], null);
+            String data = BlockStorage.getLocationInfo(loc, "slot_" + i);
+            if (data != null && !data.isEmpty()) inv.setItem(gridSlots[i], deserializeItemStack(data));
         }
 
-        // Load saved items (3x3 grid = slots 0-8)
-        for (int i = 0; i < 9; i++) {
-            String itemData = BlockStorage.getLocationInfo(blockLoc, "slot_" + i);
-            if (itemData != null && !itemData.isEmpty()) {
-                ItemStack item = deserializeItemStack(itemData);
-                if (item != null) {
-                    inv.setItem(i, item);
-                }
-            }
-        }
+        String resData = BlockStorage.getLocationInfo(loc, "result_slot");
+        inv.setItem(resultSlot, (resData != null && !resData.isEmpty()) ? deserializeItemStack(resData) : null);
 
-        // Output arrow
-        inv.setItem(13, new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,
-                ChatColor.GREEN + "⬇ OUTPUT ⬇"));
-
-        // Output slot
-        inv.setItem(22, null);
-
-        // Craft button
-        inv.setItem(25, new CustomItemStack(Material.CRAFTING_TABLE,
-                ChatColor.GOLD + "▶ CRAFT ◀",
-                "",
-                ChatColor.GRAY + "Click to craft item",
-                ChatColor.YELLOW + "3×3 Recipe Grid"));
+        ItemStack anvil = new ItemStack(Material.ANVIL);
+        ItemMeta anvilMeta = anvil.getItemMeta();
+        anvilMeta.setDisplayName(ChatColor.GOLD + "Click to Craft");
+        anvil.setItemMeta(anvilMeta);
+        inv.setItem(craftButtonSlot, anvil);
 
         p.openInventory(inv);
-        openWorkshops.put(p.getUniqueId(), blockLoc);
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent e) {
-        if (!(e.getPlayer() instanceof Player)) return;
-        Player p = (Player) e.getPlayer();
-
-        if (!e.getView().getTitle().equals(ChatColor.GOLD + "Ammunition Workshop")) return;
-
-        Location blockLoc = openWorkshops.remove(p.getUniqueId());
-        if (blockLoc == null) return;
-
-        // Save all items to BlockStorage
-        Inventory inv = e.getInventory();
-        for (int i = 0; i < 9; i++) {
-            ItemStack item = inv.getItem(i);
-            if (item != null && item.getType() != Material.AIR) {
-                BlockStorage.addBlockInfo(blockLoc, "slot_" + i, serializeItemStack(item));
-            } else {
-                BlockStorage.addBlockInfo(blockLoc, "slot_" + i, "");
-            }
-        }
-
-        p.sendMessage(ChatColor.GREEN + "✓ Workshop inventory saved!");
+        openWorkshops.put(p.getUniqueId(), loc);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) return;
-
-        if (!e.getView().getTitle().equals(ChatColor.GOLD + "Ammunition Workshop")) return;
-
-        Player p = (Player) e.getWhoClicked();
+        if (!openWorkshops.containsKey(e.getWhoClicked().getUniqueId())) return;
         int slot = e.getRawSlot();
+        if (slot < 0 || slot >= e.getInventory().getSize()) return;
 
-        // Block clicking UI slots
-        if (slot >= 9 && slot < 27 && slot != 22) {
+        boolean isGrid = false;
+        for (int s : gridSlots) if (s == slot) isGrid = true;
+
+        if (slot == craftButtonSlot) {
             e.setCancelled(true);
-        }
-
-        // Craft button clicked
-        if (slot == 25 && e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.CRAFTING_TABLE) {
+            attemptCraft(e.getInventory());
+        } else if (slot != resultSlot && !isGrid) {
             e.setCancelled(true);
-
-            Location blockLoc = openWorkshops.get(p.getUniqueId());
-            if (blockLoc != null) {
-                attemptCraft(p, e.getInventory());
-            }
         }
     }
 
-    private void attemptCraft(Player p, Inventory inv) {
-        // Get 3x3 grid items
-        ItemStack[] grid = new ItemStack[9];
-        for (int i = 0; i < 9; i++) {
-            grid[i] = inv.getItem(i);
-        }
+    private void attemptCraft(Inventory inv) {
+        ItemStack[] currentGrid = new ItemStack[9];
+        for (int i = 0; i < gridSlots.length; i++) currentGrid[i] = inv.getItem(gridSlots[i]);
 
-        // Check for Machine Gun Ammo recipe
-        if (matchesAmmoRecipe(grid)) {
-            // Clear grid
-            for (int i = 0; i < 9; i++) {
-                ItemStack item = grid[i];
-                if (item != null && item.getType() != Material.AIR) {
-                    item.setAmount(item.getAmount() - 1);
-                    if (item.getAmount() <= 0) {
-                        inv.setItem(i, null);
-                    }
+        if (matchesAmmoRecipe(currentGrid)) {
+            ItemStack output = inv.getItem(resultSlot);
+            SlimefunItem sfAmmo = SlimefunItem.getById("MACHINE_GUN_AMMO");
+            if (sfAmmo == null) return;
+
+            ItemStack resultItem = sfAmmo.getItem().clone();
+            int amountPerCraft = 8;
+
+            if (output == null || output.getType() == Material.AIR) {
+                resultItem.setAmount(amountPerCraft);
+                inv.setItem(resultSlot, resultItem);
+            } else if (SlimefunItem.getByItem(output) != null && SlimefunItem.getByItem(output).getId().equals("MACHINE_GUN_AMMO")) {
+                if (output.getAmount() + amountPerCraft <= 64) {
+                    output.setAmount(output.getAmount() + amountPerCraft);
+                } else {
+                    return;
                 }
+            } else {
+                return;
             }
 
-            // Give output
-            ItemStack output = MachineGunAmmo.MACHINE_GUN_AMMO.clone();
-            output.setAmount(8);
-            inv.setItem(22, output);
-
-            p.sendMessage(ChatColor.GREEN + "✓ Crafted 8x Machine Gun Bullets!");
-        } else {
-            p.sendMessage(ChatColor.RED + "✗ Invalid recipe!");
+            for (int slot : gridSlots) {
+                ItemStack item = inv.getItem(slot);
+                if (item != null) {
+                    if (item.getAmount() > 1) item.setAmount(item.getAmount() - 1);
+                    else inv.setItem(slot, null);
+                }
+            }
         }
     }
 
     private boolean matchesAmmoRecipe(ItemStack[] grid) {
-        // Recipe pattern:
-        // [empty] [copper] [empty]
-        // [iron]  [gunpow] [iron]
-        // [empty] [nugget] [empty]
-
-        return isEmpty(grid[0]) &&
-                isType(grid[1], Material.COPPER_INGOT) &&
-                isEmpty(grid[2]) &&
-                isType(grid[3], Material.IRON_INGOT) &&
-                isType(grid[4], Material.GUNPOWDER) &&
-                isType(grid[5], Material.IRON_INGOT) &&
-                isEmpty(grid[6]) &&
-                isType(grid[7], Material.IRON_NUGGET) &&
-                isEmpty(grid[8]);
+        return isMaterial(grid[1], Material.COPPER_INGOT) &&
+                isMaterial(grid[3], Material.IRON_INGOT) &&
+                isMaterial(grid[4], Material.GUNPOWDER) &&
+                isMaterial(grid[5], Material.IRON_INGOT) &&
+                isMaterial(grid[7], Material.IRON_NUGGET);
     }
 
-    private boolean isEmpty(ItemStack item) {
-        return item == null || item.getType() == Material.AIR;
-    }
-
-    private boolean isType(ItemStack item, Material type) {
+    private boolean isMaterial(ItemStack item, Material type) {
         return item != null && item.getType() == type;
     }
 
     @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        UUID uuid = e.getPlayer().getUniqueId();
+        if (openWorkshops.containsKey(uuid)) {
+            Location loc = openWorkshops.get(uuid);
+            saveInventory(e.getInventory(), loc);
+            openWorkshops.remove(uuid);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
-        Block block = e.getBlock();
-        SlimefunItem sfItem = BlockStorage.check(block);
+        Block b = e.getBlock();
+        Location loc = b.getLocation();
+        if (BlockStorage.check(loc, "AMMUNITION_WORKSHOP")) {
+            e.setDropItems(false);
 
-        if (sfItem != null && sfItem.getId().equals("AMMUNITION_WORKSHOP")) {
-            Location blockLoc = block.getLocation();
-
-            // Drop all saved items
-            for (int i = 0; i < 9; i++) {
-                String itemData = BlockStorage.getLocationInfo(blockLoc, "slot_" + i);
-                if (itemData != null && !itemData.isEmpty()) {
-                    ItemStack item = deserializeItemStack(itemData);
-                    if (item != null) {
-                        block.getWorld().dropItemNaturally(blockLoc, item);
-                    }
+            for (int i = 0; i < gridSlots.length; i++) {
+                String data = BlockStorage.getLocationInfo(loc, "slot_" + i);
+                if (data != null && !data.isEmpty()) {
+                    ItemStack item = deserializeItemStack(data);
+                    if (item != null) loc.getWorld().dropItemNaturally(loc, item);
                 }
             }
+
+            String resData = BlockStorage.getLocationInfo(loc, "result_slot");
+            if (resData != null && !resData.isEmpty()) {
+                ItemStack item = deserializeItemStack(resData);
+                if (item != null) loc.getWorld().dropItemNaturally(loc, item);
+            }
+
+            BlockStorage.clearBlockInfo(loc);
         }
+    }
+
+    private void saveInventory(Inventory inv, Location loc) {
+        for (int i = 0; i < gridSlots.length; i++) {
+            BlockStorage.addBlockInfo(loc, "slot_" + i, serializeItemStack(inv.getItem(gridSlots[i])));
+        }
+        BlockStorage.addBlockInfo(loc, "result_slot", serializeItemStack(inv.getItem(resultSlot)));
     }
 
     private String serializeItemStack(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return "";
         SlimefunItem sfItem = SlimefunItem.getByItem(item);
-        if (sfItem != null) {
-            return "SF:" + sfItem.getId() + ":" + item.getAmount();
-        }
-        return "VANILLA:" + item.getType() + ":" + item.getAmount();
+        if (sfItem != null) return "SF:" + sfItem.getId() + ":" + item.getAmount();
+        return "V:" + item.getType().name() + ":" + item.getAmount();
     }
 
     private ItemStack deserializeItemStack(String data) {
+        if (data == null || data.isEmpty()) return null;
         try {
             String[] parts = data.split(":");
-
             if (parts[0].equals("SF")) {
-                // Slimefun item
-                SlimefunItem sfItem = SlimefunItem.getById(parts[1]);
-                if (sfItem != null) {
-                    ItemStack item = sfItem.getItem().clone();
-                    item.setAmount(Integer.parseInt(parts[2]));
-                    return item;
-                }
-            } else if (parts[0].equals("VANILLA")) {
-                // Vanilla item
-                Material material = Material.valueOf(parts[1]);
-                int amount = Integer.parseInt(parts[2]);
-                return new ItemStack(material, amount);
+                SlimefunItem sf = SlimefunItem.getById(parts[1]);
+                if (sf == null) return null;
+                ItemStack is = sf.getItem().clone();
+                is.setAmount(Integer.parseInt(parts[2]));
+                return is;
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return null;
+            return new ItemStack(Material.valueOf(parts[1]), Integer.parseInt(parts[2]));
+        } catch (Exception e) { return null; }
     }
 }

@@ -32,11 +32,6 @@ public class MachineGunAmmo {
                         null, new ItemStack(Material.IRON_NUGGET), null
                 }
         );
-
-        ItemStack output = MACHINE_GUN_AMMO.clone();
-        output.setAmount(8);
-        ammo.setRecipeOutput(output);
-
         ammo.register(addon);
     }
 }

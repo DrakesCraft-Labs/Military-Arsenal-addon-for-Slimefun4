@@ -36,6 +36,9 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
 
         Config config = new Config(this);
 
+        // ═══════════════════════════════════════════════════════
+        // CREAR CATEGORÍAS
+        // ═══════════════════════════════════════════════════════
         NamespacedKey mainKey = new NamespacedKey(this, "military_arsenal");
         CustomItemStack mainItem = new CustomItemStack(
                 Material.NETHERITE_SWORD,
@@ -87,6 +90,10 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
 
         mainGroup.register(this);
 
+        // ═══════════════════════════════════════════════════════
+        // REGISTRAR EVENT HANDLERS
+        // ═══════════════════════════════════════════════════════
+        getLogger().info("========================================");
         getLogger().info("Registering Event Handlers...");
         getServer().getPluginManager().registerEvents(new AmmunitionWorkshopHandler(), this);
         getServer().getPluginManager().registerEvents(new MilitaryCraftingHandler(), this);
@@ -96,8 +103,15 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(new SlimefunGuideListener(), this);
         TerminalClickHandler.setPlugin(this);
         getServer().getPluginManager().registerEvents(new TerminalClickHandler(), this);
+        getLogger().info("✓ All event handlers registered");
 
-        getLogger().info("Registering Ammunition Workshop...");
+        // ═══════════════════════════════════════════════════════
+        // REGISTRAR MÁQUINAS (PRIMERO)
+        // ═══════════════════════════════════════════════════════
+        getLogger().info("========================================");
+        getLogger().info("Registering Crafting Stations...");
+
+        getLogger().info("→ Ammunition Workshop (3×3)");
         new AmmunitionWorkshop(
                 weaponsGroup,
                 AmmunitionWorkshop.AMMUNITION_WORKSHOP,
@@ -109,7 +123,7 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
                 }
         ).register(this);
 
-        getLogger().info("Registering Military Crafting Table...");
+        getLogger().info("→ Military Crafting Table (4×4)");
         new MilitaryCraftingTable(
                 machinesGroup,
                 MilitaryCraftingTable.MILITARY_CRAFTING_TABLE,
@@ -121,7 +135,7 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
                 }
         ).register(this);
 
-        getLogger().info("Registering Military Machine Fabricator...");
+        getLogger().info("→ Military Machine Fabricator (6×6)");
         new MilitaryMachineFabricator(
                 machinesGroup,
                 MilitaryMachineFabricator.MILITARY_MACHINE_FABRICATOR,
@@ -133,21 +147,49 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
                 }
         ).register(this);
 
+        getLogger().info("✓ All crafting stations registered");
+
+        // ═══════════════════════════════════════════════════════
+        // REGISTRAR COMPONENTES (SEGUNDO)
+        // ═══════════════════════════════════════════════════════
+        getLogger().info("========================================");
         getLogger().info("Registering Military Components...");
         MilitaryComponents.register(this, componentsGroup);
+        getLogger().info("✓ All components registered");
 
-        getLogger().info("Registering Military Weapons...");
+        // ═══════════════════════════════════════════════════════
+        // REGISTRAR MUNICIONES (TERCERO)
+        // ═══════════════════════════════════════════════════════
+        getLogger().info("========================================");
+        getLogger().info("Registering Ammunition...");
         MachineGunAmmo.register(this, weaponsGroup);
-        MachineGun.register(this, weaponsGroup);
+        getLogger().info("✓ All ammunition registered");
 
+        // ═══════════════════════════════════════════════════════
+        // REGISTRAR ARMAS (CUARTO)
+        // ═══════════════════════════════════════════════════════
+        getLogger().info("========================================");
+        getLogger().info("Registering Weapons...");
+        MachineGun.register(this, weaponsGroup);
+        getLogger().info("✓ All weapons registered");
+
+        // ═══════════════════════════════════════════════════════
+        // REGISTRAR MÁQUINAS ADICIONALES (ÚLTIMO)
+        // ═══════════════════════════════════════════════════════
+        getLogger().info("========================================");
         getLogger().info("Registering Military Machines...");
         BombardmentTerminal.register(this, machinesGroup);
         BombardmentTerminalRecipeDisplay.register(this, machinesGroup);
+        getLogger().info("✓ All machines registered");
 
+        // ═══════════════════════════════════════════════════════
+        // RESUMEN FINAL
+        // ═══════════════════════════════════════════════════════
         getLogger().info("========================================");
-        getLogger().info("WeaponsAddon enabled successfully!");
+        getLogger().info("✓ WeaponsAddon enabled successfully!");
+        getLogger().info("========================================");
         getLogger().info("Main Category: 1 | Subcategories: 3");
-        getLogger().info("Crafting Stations: 3 (3x3 + 4x4 + 6x6)");
+        getLogger().info("Crafting Stations: 3 (3×3 + 4×4 + 6×6)");
         getLogger().info("Recipe Viewer: ENABLED");
         getLogger().info("Inventory Persistence: ENABLED");
         getLogger().info("========================================");
