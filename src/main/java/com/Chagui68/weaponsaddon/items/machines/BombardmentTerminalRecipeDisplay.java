@@ -22,7 +22,7 @@ public class BombardmentTerminalRecipeDisplay {
             "&c⚠ Requires 6×6 Machine Fabricator",
             "",
             "&e⇨ SHIFT + RIGHT-CLICK",
-            "&e  to view FULL 6×6 recipe",
+            "&e to view FULL 6×6 recipe",
             "",
             "&8This is a recipe display item"
     );
@@ -31,19 +31,14 @@ public class BombardmentTerminalRecipeDisplay {
         ItemStack[] fullRecipe = new ItemStack[]{
                 MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.ENERGY_MATRIX,
                 MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME,
-
                 MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM,
                 MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
-
                 MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.EXPLOSIVE_CORE,
                 MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
-
                 MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.EXPLOSIVE_CORE,
                 MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
-
                 MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM,
                 MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
-
                 MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.HYDRAULIC_SYSTEM,
                 MilitaryComponents.COOLANT_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME
         };

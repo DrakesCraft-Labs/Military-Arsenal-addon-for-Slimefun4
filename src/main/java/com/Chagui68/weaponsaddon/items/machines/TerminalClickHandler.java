@@ -1,7 +1,6 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
 import com.Chagui68.weaponsaddon.WeaponsAddon;
-import com.Chagui68.weaponsaddon.items.machines.BombardmentTerminal;
 import com.Chagui68.weaponsaddon.items.machines.energy.EnergyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,7 +60,6 @@ public class TerminalClickHandler implements Listener {
             }
 
             int currentEnergy = EnergyManager.getCharge(terminalLoc);
-
             Inventory inv = e.getInventory();
             ItemStack tntSlot = inv.getItem(11);
             ItemStack starSlot = inv.getItem(16);
@@ -90,22 +88,21 @@ public class TerminalClickHandler implements Listener {
                 }
 
                 EnergyManager.removeCharge(terminalLoc, BombardmentTerminal.getEnergyRequired());
-
                 p.closeInventory();
                 p.sendMessage(ChatColor.GREEN + "✓ [Terminal] Resources consumed:");
-                p.sendMessage(ChatColor.GRAY + "  • 10 TNT");
-                p.sendMessage(ChatColor.GRAY + "  • 5 Nether Stars");
-                p.sendMessage(ChatColor.AQUA + "  • 2,000,000 J energy");
+                p.sendMessage(ChatColor.GRAY + " • 10 TNT");
+                p.sendMessage(ChatColor.GRAY + " • 5 Nether Stars");
+                p.sendMessage(ChatColor.AQUA + " • 2,000,000 J energy");
                 p.sendMessage(ChatColor.YELLOW + "→ [Terminal] Enter coordinates: X Y Z");
                 p.sendMessage(ChatColor.GRAY + "Example: 100 64 -200");
-
                 awaitingCoordinates.put(p.getUniqueId(), terminalLoc);
             } else {
                 p.sendMessage(ChatColor.RED + "✗ [Terminal] Insufficient resources!");
                 p.sendMessage(ChatColor.GRAY + "You need:");
-                if (tntCount < 10) p.sendMessage(ChatColor.YELLOW + "  • " + (10 - tntCount) + " more TNT");
-                if (starCount < 5) p.sendMessage(ChatColor.YELLOW + "  • " + (5 - starCount) + " more Nether Stars");
+                if (tntCount < 10) p.sendMessage(ChatColor.YELLOW + " • " + (10 - tntCount) + " more TNT");
+                if (starCount < 5) p.sendMessage(ChatColor.YELLOW + " • " + (5 - starCount) + " more Nether Stars");
             }
+
             return;
         }
 
@@ -142,7 +139,6 @@ public class TerminalClickHandler implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-
         if (!awaitingCoordinates.containsKey(p.getUniqueId())) return;
 
         e.setCancelled(true);

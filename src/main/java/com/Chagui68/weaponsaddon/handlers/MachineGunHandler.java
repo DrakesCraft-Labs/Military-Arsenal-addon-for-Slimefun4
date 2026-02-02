@@ -56,9 +56,7 @@ public class MachineGunHandler implements Listener {
 
         consumeAmmo(player);
         cooldowns.put(playerId, currentTime);
-
         player.sendMessage(ChatColor.GREEN + "✓ Magazine loaded (" + BURST_SIZE + " rounds)");
-
         fireBurst(player);
     }
 
@@ -81,8 +79,6 @@ public class MachineGunHandler implements Listener {
                 Vector direction = eyeLoc.getDirection();
 
                 player.getWorld().playSound(eyeLoc, Sound.ENTITY_BLAZE_SHOOT, 2.0f, 1.5f);
-
-
                 eyeLoc.getWorld().spawnParticle(Particle.FLAME, eyeLoc, 5, 0.1, 0.1, 0.1, 0.02);
                 eyeLoc.getWorld().spawnParticle(Particle.SMOKE, eyeLoc, 10, 0.1, 0.1, 0.1, 0.05);
 
@@ -98,11 +94,8 @@ public class MachineGunHandler implements Listener {
                         if (entity instanceof LivingEntity && entity != player) {
                             LivingEntity target = (LivingEntity) entity;
                             target.damage(DAMAGE, player);
-
-
                             target.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation().add(0, 1, 0), 20, 0.3, 0.5, 0.3);
                             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ARROW_HIT, 1.0f, 1.0f);
-
                             player.sendMessage(ChatColor.RED + "✕ HIT! -" + DAMAGE + " HP");
                             return;
                         }

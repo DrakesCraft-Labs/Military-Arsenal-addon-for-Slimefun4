@@ -1,82 +1,51 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
-import com.Chagui68.weaponsaddon.WeaponsAddon;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import java.util.Random;
 
 public class AirstrikeExecutor {
 
-    public static void executeBombardment(Location target, Player initiator) {
-        World world = target.getWorld();
-        Random random = new Random();
+    public static void executeBombardment(Location target, Player p) {
+        JavaPlugin plugin = JavaPlugin.getProvidingPlugin(AirstrikeExecutor.class);
 
-        int waves = 2;
-        int bombsPerWave = 4;
-        int delayBetweenWaves = 100;
+        new BukkitRunnable() {
+            int wave = 0;
 
-        for (int wave = 0; wave < waves; wave++) {
-            int waveDelay = wave * delayBetweenWaves;
+            @Override
+            public void run() {
+                if (wave >= 2) {
+                    p.sendMessage(ChatColor.GREEN + "✓ [Terminal] Bombardment complete");
+                    cancel();
+                    return;
+                }
 
-            Bukkit.getScheduler().runTaskLater(WeaponsAddon.getInstance(), () -> {
-                world.playSound(target, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2.0f, 0.8f);
+                wave++;
+                p.sendMessage(ChatColor.DARK_RED + "💣 [Terminal] Wave " + wave + "/2 - Bombs away!");
 
-                for (int bomb = 0; bomb < bombsPerWave; bomb++) {
-                    Bukkit.getScheduler().runTaskLater(WeaponsAddon.getInstance(), () -> {
-                        double offsetX = (random.nextDouble() - 0.5) * 10;
-                        double offsetZ = (random.nextDouble() - 0.5) * 10;
+                for (int i = 0; i < 4; i++) {
+                    double offsetX = (Math.random() - 0.5) * 10;
+                    double offsetZ = (Math.random() - 0.5) * 10;
+                    Location bombLoc = target.clone().add(offsetX, 50, offsetZ);
 
-                        Location spawnLoc = target.clone().add(offsetX, 80, offsetZ);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        target.getWorld().playSound(bombLoc, Sound.ENTITY_WITHER_SHOOT, 3.0f, 0.5f);
+                        target.getWorld().spawnParticle(Particle.EXPLOSION, bombLoc, 10, 2, 2, 2, 0.1);
 
-                        TNTPrimed tnt = world.spawn(spawnLoc, TNTPrimed.class);
+                        TNTPrimed tnt = target.getWorld().spawn(bombLoc, TNTPrimed.class);
                         tnt.setFuseTicks(60);
-                        tnt.setYield(4.0f);
                         tnt.setVelocity(new Vector(0, -1, 0));
 
-
-                        world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, spawnLoc, 20, 0.5, 0.5, 0.5, 0.01);
-                        world.playSound(spawnLoc, Sound.ENTITY_TNT_PRIMED, 1.0f, 0.6f);
-
-                        trackExplosion(tnt, world);
-
-                    }, bomb * 3L);
+                    }, i * 10L);
                 }
-            }, waveDelay);
-        }
-
-        initiator.sendMessage("§c§l[BOMBARDMENT] §7Impact in " + (waves * delayBetweenWaves / 20) + " seconds...");
-    }
-    private static void trackExplosion(TNTPrimed tnt, World world) {
-        Bukkit.getScheduler().runTaskTimer(WeaponsAddon.getInstance(), task -> {
-
-            if (tnt.isDead() || !tnt.isValid()) {
-                Location explosionLoc = tnt.getLocation();
-                generateExplosionSmoke(explosionLoc, world);
-                task.cancel();
             }
-
-        }, 0L, 1L);
+        }.runTaskTimer(plugin, 60L, 80L);
     }
-
-    private static void generateExplosionSmoke(Location loc, World world) {
-
-        world.spawnParticle(
-                Particle.CAMPFIRE_COSY_SMOKE,
-                loc.clone().add(0, 0.5, 0),
-                40,
-                2.5, 1.5, 2.5,
-                0.03
-        );
-
-        world.spawnParticle(Particle.EXPLOSION_EMITTER, loc, 1);
-        world.playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2.5f, 0.6f);
-    }
-
 }

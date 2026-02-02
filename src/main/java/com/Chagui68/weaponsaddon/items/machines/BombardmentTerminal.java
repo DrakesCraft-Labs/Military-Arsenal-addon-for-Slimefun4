@@ -69,7 +69,6 @@ public class BombardmentTerminal extends SlimefunItem implements EnergyNetCompon
             Player p = e.getPlayer();
             Block block = e.getClickedBlock().get();
             Location blockLoc = block.getLocation();
-
             int charge = EnergyManager.getCharge(blockLoc);
             openTerminalGUI(p, blockLoc, charge);
         });
@@ -97,9 +96,9 @@ public class BombardmentTerminal extends SlimefunItem implements EnergyNetCompon
         inv.setItem(22, new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,
                 ChatColor.GREEN + "▶ ACTIVATE ◀",
                 ChatColor.GRAY + "Requires:",
-                ChatColor.YELLOW + "  • 10 TNT",
-                ChatColor.YELLOW + "  • 5 Nether Stars",
-                ChatColor.AQUA + "  • 2M J energy",
+                ChatColor.YELLOW + " • 10 TNT",
+                ChatColor.YELLOW + " • 5 Nether Stars",
+                ChatColor.AQUA + " • 2M J energy",
                 "",
                 energyStatus));
 

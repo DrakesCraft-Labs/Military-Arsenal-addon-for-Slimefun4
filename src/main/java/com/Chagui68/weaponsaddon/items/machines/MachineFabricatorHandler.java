@@ -52,7 +52,6 @@ public class MachineFabricatorHandler implements Listener {
         e.setCancelled(true);
         Player p = e.getPlayer();
         Location blockLoc = block.getLocation();
-
         openFabricatorGUI(p, blockLoc);
     }
 
@@ -107,7 +106,6 @@ public class MachineFabricatorHandler implements Listener {
                 "",
                 ChatColor.AQUA + "Grid: 36 slots (6×6)"));
 
-
         inv.setItem(53, new CustomItemStack(Material.CRAFTING_TABLE,
                 ChatColor.GREEN + "▶ CRAFT ◀",
                 "",
@@ -121,8 +119,8 @@ public class MachineFabricatorHandler implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         if (!(e.getPlayer() instanceof Player)) return;
-        Player p = (Player) e.getPlayer();
 
+        Player p = (Player) e.getPlayer();
         if (!e.getView().getTitle().equals(ChatColor.DARK_RED + "Machine Fabricator")) return;
 
         Location blockLoc = openFabricators.remove(p.getUniqueId());
@@ -132,6 +130,7 @@ public class MachineFabricatorHandler implements Listener {
                 28, 29, 30, 31, 32, 33, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51};
 
         Inventory inv = e.getInventory();
+
         for (int i = 0; i < 36; i++) {
             ItemStack item = inv.getItem(gridSlots[i]);
             if (item != null && item.getType() != Material.AIR) {
@@ -145,7 +144,6 @@ public class MachineFabricatorHandler implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) return;
-
         if (!e.getView().getTitle().equals(ChatColor.DARK_RED + "Machine Fabricator")) return;
 
         Player p = (Player) e.getWhoClicked();
@@ -153,6 +151,7 @@ public class MachineFabricatorHandler implements Listener {
 
         int[] allowedSlots = {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24,
                 28, 29, 30, 31, 32, 33, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 17};
+
         boolean allowed = false;
         for (int s : allowedSlots) {
             if (slot == s) {
@@ -174,8 +173,8 @@ public class MachineFabricatorHandler implements Listener {
     private void attemptCraft(Player p, Inventory inv) {
         int[] gridSlots = {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24,
                 28, 29, 30, 31, 32, 33, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51};
-        ItemStack[] grid = new ItemStack[36];
 
+        ItemStack[] grid = new ItemStack[36];
         for (int i = 0; i < 36; i++) {
             grid[i] = inv.getItem(gridSlots[i]);
         }
@@ -211,7 +210,6 @@ public class MachineFabricatorHandler implements Listener {
 
                 ItemStack output = sfItem.getItem().clone();
                 inv.setItem(17, output);
-
                 p.sendMessage(ChatColor.GREEN + "✓ Crafted: " + ChatColor.WHITE +
                         ChatColor.stripColor(output.getItemMeta().getDisplayName()));
                 return;
@@ -276,17 +274,21 @@ public class MachineFabricatorHandler implements Listener {
     }
 
     private String serializeItemStack(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return "";
+
         SlimefunItem sfItem = SlimefunItem.getByItem(item);
         if (sfItem != null) {
             return "SF:" + sfItem.getId() + ":" + item.getAmount();
         }
+
         return "VANILLA:" + item.getType() + ":" + item.getAmount();
     }
 
     private ItemStack deserializeItemStack(String data) {
+        if (data == null || data.isEmpty()) return null;
+
         try {
             String[] parts = data.split(":");
-
             if (parts[0].equals("SF")) {
                 SlimefunItem sfItem = SlimefunItem.getById(parts[1]);
                 if (sfItem != null) {
@@ -302,6 +304,7 @@ public class MachineFabricatorHandler implements Listener {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         return null;
     }
 }

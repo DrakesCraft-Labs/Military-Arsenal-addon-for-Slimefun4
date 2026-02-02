@@ -33,7 +33,6 @@ public class AmmunitionWorkshop extends SlimefunItem {
                 new ItemStack(Material.IRON_INGOT), SlimefunItems.STEEL_PLATE, new ItemStack(Material.IRON_INGOT),
                 new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.ANVIL), new ItemStack(Material.IRON_BLOCK)
         };
-
         new AmmunitionWorkshop(category, AMMUNITION_WORKSHOP, RecipeType.ENHANCED_CRAFTING_TABLE, recipe).register(addon);
     }
 }

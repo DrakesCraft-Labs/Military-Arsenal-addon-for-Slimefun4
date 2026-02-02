@@ -34,7 +34,6 @@ public class MilitaryCraftingTable extends SlimefunItem {
                 MilitaryComponents.BASIC_CIRCUIT, new ItemStack(Material.SMITHING_TABLE), MilitaryComponents.BASIC_CIRCUIT,
                 SlimefunItems.STEEL_PLATE, SlimefunItems.HARDENED_METAL_INGOT, SlimefunItems.STEEL_PLATE
         };
-
         new MilitaryCraftingTable(category, MILITARY_CRAFTING_TABLE, MilitaryRecipeTypes.AMMUNITION_WORKSHOP, recipe).register(addon);
     }
 }

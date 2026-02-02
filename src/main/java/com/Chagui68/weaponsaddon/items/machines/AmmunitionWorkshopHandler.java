@@ -35,6 +35,7 @@ public class AmmunitionWorkshopHandler implements Listener {
     @EventHandler
     public void onWorkshopClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
         Block b = e.getClickedBlock();
         if (b != null && "AMMUNITION_WORKSHOP".equals(BlockStorage.getLocationInfo(b.getLocation(), "id"))) {
             e.setCancelled(true);
@@ -49,6 +50,7 @@ public class AmmunitionWorkshopHandler implements Listener {
         ItemMeta glassMeta = glass.getItemMeta();
         glassMeta.setDisplayName(" ");
         glass.setItemMeta(glassMeta);
+
         for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, glass);
 
         for (int i = 0; i < gridSlots.length; i++) {
@@ -73,6 +75,7 @@ public class AmmunitionWorkshopHandler implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (!openWorkshops.containsKey(e.getWhoClicked().getUniqueId())) return;
+
         int slot = e.getRawSlot();
         if (slot < 0 || slot >= e.getInventory().getSize()) return;
 
@@ -148,6 +151,7 @@ public class AmmunitionWorkshopHandler implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         Block b = e.getBlock();
         Location loc = b.getLocation();
+
         if (BlockStorage.check(loc, "AMMUNITION_WORKSHOP")) {
             e.setDropItems(false);
 
@@ -178,13 +182,16 @@ public class AmmunitionWorkshopHandler implements Listener {
 
     private String serializeItemStack(ItemStack item) {
         if (item == null || item.getType() == Material.AIR) return "";
+
         SlimefunItem sfItem = SlimefunItem.getByItem(item);
         if (sfItem != null) return "SF:" + sfItem.getId() + ":" + item.getAmount();
+
         return "V:" + item.getType().name() + ":" + item.getAmount();
     }
 
     private ItemStack deserializeItemStack(String data) {
         if (data == null || data.isEmpty()) return null;
+
         try {
             String[] parts = data.split(":");
             if (parts[0].equals("SF")) {
@@ -195,6 +202,8 @@ public class AmmunitionWorkshopHandler implements Listener {
                 return is;
             }
             return new ItemStack(Material.valueOf(parts[1]), Integer.parseInt(parts[2]));
-        } catch (Exception e) { return null; }
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

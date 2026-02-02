@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -98,7 +99,7 @@ public class RecipeViewerGUI implements Listener {
     }
 
     public static void open6x6Recipe(Player p, String itemName, ItemStack result, ItemStack[] recipe) {
-        Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + itemName);
+        Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + "⚙ Recipe: " + itemName);
 
         ItemStack background = new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ");
         ItemStack border = new CustomItemStack(Material.RED_STAINED_GLASS_PANE, ChatColor.DARK_RED + "▓");
@@ -160,16 +161,28 @@ public class RecipeViewerGUI implements Listener {
                 !title.startsWith(ChatColor.DARK_RED + "⚙ Recipe:")) return;
 
         Player p = (Player) e.getWhoClicked();
+
+        // CANCELAR TODOS LOS CLICKS
+        e.setCancelled(true);
+
         int slot = e.getRawSlot();
 
-        if (slot >= 0 && slot < 54) {
-            e.setCancelled(true);
-        }
-
+        // Solo permitir cerrar con el botón BARRIER
         if ((slot == 49 || slot == 53) && e.getCurrentItem() != null &&
                 e.getCurrentItem().getType() == Material.BARRIER) {
             p.closeInventory();
             openViewers.remove(p.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        if (!(e.getWhoClicked() instanceof Player)) return;
+
+        String title = e.getView().getTitle();
+        if (title.startsWith(ChatColor.DARK_RED + "⚒ Recipe:") ||
+                title.startsWith(ChatColor.DARK_RED + "⚙ Recipe:")) {
+            e.setCancelled(true);
         }
     }
 }

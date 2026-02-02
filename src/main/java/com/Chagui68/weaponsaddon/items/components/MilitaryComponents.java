@@ -1,11 +1,9 @@
 package com.Chagui68.weaponsaddon.items.components;
 
-import com.Chagui68.weaponsaddon.items.CustomRecipeItem;
-import com.Chagui68.weaponsaddon.items.MilitaryRecipeTypes;
-import com.Chagui68.weaponsaddon.items.machines.MilitaryCraftingHandler;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import org.bukkit.Material;
@@ -13,666 +11,373 @@ import org.bukkit.inventory.ItemStack;
 
 public class MilitaryComponents {
 
+    // ========== TIER 1: BASIC COMPONENTS ==========
     public static final SlimefunItemStack BASIC_CIRCUIT = new SlimefunItemStack(
             "BASIC_CIRCUIT",
-            Material.REDSTONE,
-            "&7Basic Circuit",
+            Material.REDSTONE_TORCH,
+            "&6⚡ &eBasic Circuit",
             "",
-            "&7Simple electronic circuit",
             "&7Foundation for all electronics",
+            "&7Used in basic machinery",
             "",
-            "&8⇨ Level 1"
+            "&8⇨ Tier 1 Component"
     );
 
-    public static final SlimefunItemStack MILITARY_CIRCUIT = new SlimefunItemStack(
-            "MILITARY_CIRCUIT",
-            Material.REDSTONE_BLOCK,
-            "&cMilitary Circuit",
+    public static final SlimefunItemStack STEEL_FRAME = new SlimefunItemStack(
+            "STEEL_FRAME",
+            Material.IRON_BARS,
+            "&7⬚ &fSteel Frame",
             "",
-            "&7Advanced military-grade circuit",
-            "&7Used in weapon systems",
+            "&7Basic structural component",
+            "&7Provides moderate strength",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
+            "&8⇨ Tier 1 Component"
+    );
+
+    public static final SlimefunItemStack COPPER_COIL = new SlimefunItemStack(
+            "COPPER_COIL",
+            Material.LIGHTNING_ROD,
+            "&6◉ &eCopper Coil",
             "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
+            "&7Electromagnetic component",
+            "&7For energy systems",
             "",
-            "&8⇨ Level 2"
+            "&8⇨ Tier 1 Component"
+    );
+
+    public static final SlimefunItemStack MECHANICAL_PARTS = new SlimefunItemStack(
+            "MECHANICAL_PARTS",
+            Material.REPEATER,
+            "&7⚙ &fMechanical Parts",
+            "",
+            "&7Basic gears and springs",
+            "&7For simple mechanisms",
+            "",
+            "&8⇨ Tier 1 Component"
+    );
+
+    // ========== TIER 2: INTERMEDIATE COMPONENTS ==========
+    public static final SlimefunItemStack ADVANCED_CIRCUIT = new SlimefunItemStack(
+            "ADVANCED_CIRCUIT",
+            Material.COMPARATOR,
+            "&6⚡ &eAdvanced Circuit",
+            "",
+            "&7Enhanced electronic board",
+            "&7Handles complex operations",
+            "",
+            "&8⇨ Tier 2 Component"
     );
 
     public static final SlimefunItemStack REINFORCED_PLATING = new SlimefunItemStack(
             "REINFORCED_PLATING",
-            Material.IRON_BLOCK,
-            "&8Reinforced Plating",
+            Material.NETHERITE_SCRAP,
+            "&8▩ &7Reinforced Plating",
             "",
-            "&7Heavy-duty armor plating",
-            "&7Provides structural integrity",
+            "&7Heavy-duty armor plates",
+            "&7Maximum protection",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 2"
+            "&8⇨ Tier 2 Component"
     );
 
-    public static final SlimefunItemStack GUIDANCE_CHIP = new SlimefunItemStack(
-            "GUIDANCE_CHIP",
-            Material.PRISMARINE_SHARD,
-            "&bGuidance Chip",
+    public static final SlimefunItemStack SERVO_MOTOR = new SlimefunItemStack(
+            "SERVO_MOTOR",
+            Material.PISTON,
+            "&b⚙ &3Servo Motor",
             "",
-            "&7GPS guidance processor",
-            "&7For precision targeting",
+            "&7Precision motor unit",
+            "&7For controlled movement",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 3"
+            "&8⇨ Tier 2 Component"
     );
 
-    public static final SlimefunItemStack ADVANCED_PROCESSOR = new SlimefunItemStack(
-            "ADVANCED_PROCESSOR",
-            Material.QUARTZ,
-            "&fAdvanced Processor",
+    public static final SlimefunItemStack POWER_CELL = new SlimefunItemStack(
+            "POWER_CELL",
+            Material.REPEATING_COMMAND_BLOCK,
+            "&e⚡ &6Power Cell",
             "",
-            "&7High-speed computing core",
-            "&7Enables complex calculations",
+            "&7Compact energy storage",
+            "&7Stores electrical power",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 3"
+            "&8⇨ Tier 2 Component"
     );
 
-    public static final SlimefunItemStack TARGETING_SYSTEM = new SlimefunItemStack(
-            "TARGETING_SYSTEM",
-            Material.COMPASS,
-            "&6Targeting System",
-            "",
-            "&7Advanced aim assistance module",
-            "&7Improves weapon accuracy",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 4"
-    );
-
-    public static final SlimefunItemStack RADAR_MODULE = new SlimefunItemStack(
-            "RADAR_MODULE",
-            Material.OBSERVER,
-            "&aRadar Module",
-            "",
-            "&7Enemy detection system",
-            "&7Scans surrounding area",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 4"
-    );
-
-    public static final SlimefunItemStack REINFORCED_FRAME = new SlimefunItemStack(
-            "REINFORCED_FRAME",
-            Material.NETHERITE_INGOT,
-            "&8Reinforced Frame",
-            "",
-            "&7Military-grade structural frame",
-            "&7Maximum durability",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 5"
-    );
-
-    public static final SlimefunItemStack POWER_CORE = new SlimefunItemStack(
-            "POWER_CORE",
-            Material.GLOWSTONE,
-            "&ePower Core",
-            "",
-            "&7High-capacity energy cell",
-            "&7Powers advanced systems",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 5"
-    );
-
+    // ========== TIER 3: SPECIALIZED WEAPON COMPONENTS ==========
     public static final SlimefunItemStack WEAPON_BARREL = new SlimefunItemStack(
             "WEAPON_BARREL",
-            Material.IRON_BARS,
-            "&7Weapon Barrel",
+            Material.END_ROD,
+            "&c▬ &4Weapon Barrel",
             "",
-            "&7Precision-machined barrel",
-            "&7Improves projectile accuracy",
+            "&7Precision rifled barrel",
+            "&7For projectile weapons",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 6"
+            "&8⇨ Tier 3 Weapon Part"
     );
 
     public static final SlimefunItemStack TRIGGER_MECHANISM = new SlimefunItemStack(
             "TRIGGER_MECHANISM",
             Material.TRIPWIRE_HOOK,
-            "&6Trigger Mechanism",
+            "&e⚲ &6Trigger Mechanism",
             "",
-            "&7Advanced firing system",
-            "&7Rapid-fire capability",
+            "&7Hair-trigger firing system",
+            "&7Ultra-responsive activation",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 6"
-    );
-
-    public static final SlimefunItemStack QUANTUM_PROCESSOR = new SlimefunItemStack(
-            "QUANTUM_PROCESSOR",
-            Material.NETHER_STAR,
-            "&dQuantum Processor",
-            "",
-            "&7Next-generation computing core",
-            "&7Enables advanced weapon systems",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 7"
+            "&8⇨ Tier 3 Weapon Part"
     );
 
     public static final SlimefunItemStack STABILIZER_UNIT = new SlimefunItemStack(
             "STABILIZER_UNIT",
-            Material.END_ROD,
-            "&5Stabilizer Unit",
+            Material.COMPASS,
+            "&b◎ &3Stabilizer Unit",
             "",
-            "&7Recoil compensation system",
-            "&7Improves weapon stability",
+            "&7Gyroscopic stabilization",
+            "&7Reduces weapon recoil",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
+            "&8⇨ Tier 3 Weapon Part"
+    );
+
+    public static final SlimefunItemStack TARGETING_SYSTEM = new SlimefunItemStack(
+            "TARGETING_SYSTEM",
+            Material.OBSERVER,
+            "&c◉ &4Targeting System",
             "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
+            "&7Advanced tracking optics",
+            "&7Auto-aim technology",
             "",
-            "&8⇨ Level 7"
+            "&8⇨ Tier 3 Weapon Part"
+    );
+
+    public static final SlimefunItemStack RADAR_MODULE = new SlimefunItemStack(
+            "RADAR_MODULE",
+            Material.SCULK_SENSOR,
+            "&a⦿ &2Radar Module",
+            "",
+            "&7Enemy detection system",
+            "&7Scans surroundings",
+            "",
+            "&8⇨ Tier 3 Weapon Part"
+    );
+
+    // ========== TIER 3: ADVANCED MACHINERY COMPONENTS ==========
+    public static final SlimefunItemStack REINFORCED_FRAME = new SlimefunItemStack(
+            "REINFORCED_FRAME",
+            Material.LODESTONE,
+            "&8▦ &7Reinforced Frame",
+            "",
+            "&7Ultra-strong chassis",
+            "&7For heavy machinery",
+            "",
+            "&8⇨ Tier 3 Machine Part"
+    );
+
+    public static final SlimefunItemStack POWER_CORE = new SlimefunItemStack(
+            "POWER_CORE",
+            Material.BEACON,
+            "&e⬢ &6Power Core",
+            "",
+            "&7High-capacity reactor",
+            "&7Infinite power output",
+            "",
+            "&8⇨ Tier 3 Machine Part"
+    );
+
+    public static final SlimefunItemStack MILITARY_CIRCUIT = new SlimefunItemStack(
+            "MILITARY_CIRCUIT",
+            Material.CALIBRATED_SCULK_SENSOR,
+            "&c⚡ &4Military Circuit",
+            "",
+            "&7Military-grade processor",
+            "&7Combat system control",
+            "",
+            "&8⇨ Tier 3 Machine Part"
+    );
+
+    public static final SlimefunItemStack HYDRAULIC_SYSTEM = new SlimefunItemStack(
+            "HYDRAULIC_SYSTEM",
+            Material.DISPENSER,
+            "&9⚒ &1Hydraulic System",
+            "",
+            "&7High-pressure actuators",
+            "&7Extreme force output",
+            "",
+            "&8⇨ Tier 3 Machine Part"
+    );
+
+    public static final SlimefunItemStack COOLANT_SYSTEM = new SlimefunItemStack(
+            "COOLANT_SYSTEM",
+            Material.CAULDRON,
+            "&b◈ &3Coolant System",
+            "",
+            "&7Liquid nitrogen cooling",
+            "&7Prevents overheating",
+            "",
+            "&8⇨ Tier 3 Machine Part"
+    );
+
+    // ========== TIER 4: ULTIMATE COMPONENTS ==========
+    public static final SlimefunItemStack QUANTUM_PROCESSOR = new SlimefunItemStack(
+            "QUANTUM_PROCESSOR",
+            Material.END_CRYSTAL,
+            "&d⬡ &5Quantum Processor",
+            "",
+            "&7Quantum computing core",
+            "&7Infinite calculations",
+            "",
+            "&8⇨ Tier 4 Ultimate"
+    );
+
+    public static final SlimefunItemStack ENERGY_MATRIX = new SlimefunItemStack(
+            "ENERGY_MATRIX",
+            Material.CONDUIT,
+            "&e⬢ &6Energy Matrix",
+            "",
+            "&7Dimensional energy storage",
+            "&7Stores unlimited power",
+            "",
+            "&8⇨ Tier 4 Ultimate"
     );
 
     public static final SlimefunItemStack EXPLOSIVE_CORE = new SlimefunItemStack(
             "EXPLOSIVE_CORE",
             Material.TNT,
-            "&4Explosive Core",
+            "&c☢ &4Explosive Core",
             "",
-            "&7Stabilized explosive payload",
-            "&7Highly volatile",
+            "&7Concentrated TNT charge",
+            "&7Maximum destruction",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 8"
+            "&8⇨ Tier 4 Ultimate"
     );
 
-    public static final SlimefunItemStack ENERGY_MATRIX = new SlimefunItemStack(
-            "ENERGY_MATRIX",
-            Material.BEACON,
-            "&bEnergy Matrix",
-            "",
-            "&7Advanced power distribution",
-            "&7For high-energy systems",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 8"
-    );
-
-    public static final SlimefunItemStack HYDRAULIC_SYSTEM = new SlimefunItemStack(
-            "HYDRAULIC_SYSTEM",
-            Material.PISTON,
-            "&9Hydraulic System",
-            "",
-            "&7Heavy-duty hydraulics",
-            "&7For moving large components",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 9"
-    );
-
-    public static final SlimefunItemStack COOLANT_SYSTEM = new SlimefunItemStack(
-            "COOLANT_SYSTEM",
-            Material.CYAN_STAINED_GLASS,
-            "&bCoolant System",
-            "",
-            "&7Temperature regulation",
-            "&7Prevents overheating",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 9"
-    );
-
-    public static final SlimefunItemStack FUSION_REACTOR_CORE = new SlimefunItemStack(
-            "FUSION_REACTOR_CORE",
-            Material.RESPAWN_ANCHOR,
-            "&4&lFusion Reactor Core",
-            "",
-            "&7Ultimate power source",
-            "&7Generates massive energy",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 10"
-    );
-
-    public static final SlimefunItemStack ANTIMATTER_CELL = new SlimefunItemStack(
-            "ANTIMATTER_CELL",
-            Material.DRAGON_BREATH,
-            "&5&lAntimatter Cell",
-            "",
-            "&7Contained antimatter",
-            "&7Devastating explosive power",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 10"
-    );
-
-    public static final SlimefunItemStack ADVANCED_CIRCUIT = new SlimefunItemStack(
-            "ADVANCED_CIRCUIT",
-            Material.COMPARATOR,
-            "&6Advanced Circuit",
-            "",
-            "&7High-performance circuit board",
-            "&7For advanced military systems",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 4"
-    );
-
-    public static final SlimefunItemStack MILITARY_GRADE_CIRCUIT = new SlimefunItemStack(
-            "MILITARY_GRADE_CIRCUIT",
-            Material.REPEATER,
-            "&c&lMilitary Grade Circuit",
-            "",
-            "&7Top-tier military electronics",
-            "&7Maximum processing power",
-            "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
-            "",
-            "&8⇨ Level 8"
-    );
-
-
+    // ========== REGISTRATION METHOD ==========
     public static void register(SlimefunAddon addon, ItemGroup category) {
-
-        new SlimefunItem(category, BASIC_CIRCUIT, MilitaryRecipeTypes.AMMUNITION_WORKSHOP, new ItemStack[]{
-                new ItemStack(Material.COPPER_INGOT), new ItemStack(Material.REDSTONE), new ItemStack(Material.COPPER_INGOT),
-                new ItemStack(Material.REDSTONE), SlimefunItems.COPPER_WIRE, new ItemStack(Material.REDSTONE),
-                new ItemStack(Material.COPPER_INGOT), new ItemStack(Material.REDSTONE), new ItemStack(Material.COPPER_INGOT)
+        // TIER 1: BASIC COMPONENTS
+        new SlimefunItem(category, BASIC_CIRCUIT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                new ItemStack(Material.REDSTONE), new ItemStack(Material.COPPER_INGOT), new ItemStack(Material.REDSTONE),
+                new ItemStack(Material.COPPER_INGOT), new ItemStack(Material.GOLD_INGOT), new ItemStack(Material.COPPER_INGOT),
+                new ItemStack(Material.REDSTONE), new ItemStack(Material.COPPER_INGOT), new ItemStack(Material.REDSTONE)
         }).register(addon);
 
-        ItemStack[] militaryCircuitRecipe = new ItemStack[]{
-                new ItemStack(Material.REDSTONE_BLOCK), new ItemStack(Material.GOLD_BLOCK), new ItemStack(Material.GOLD_BLOCK), new ItemStack(Material.REDSTONE_BLOCK),
-                new ItemStack(Material.GOLD_BLOCK), BASIC_CIRCUIT, BASIC_CIRCUIT, new ItemStack(Material.GOLD_BLOCK),
-                new ItemStack(Material.GOLD_BLOCK), SlimefunItems.COPPER_WIRE, SlimefunItems.COPPER_WIRE, new ItemStack(Material.GOLD_BLOCK),
-                new ItemStack(Material.REDSTONE_BLOCK), SlimefunItems.COPPER_INGOT, SlimefunItems.COPPER_INGOT, new ItemStack(Material.REDSTONE_BLOCK)
-        };
-        CustomRecipeItem militaryCircuit = new CustomRecipeItem(
-                category,
-                MILITARY_CIRCUIT,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                militaryCircuitRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        militaryCircuit.register(addon);
-        MilitaryCraftingHandler.registerRecipe(militaryCircuit);
+        new SlimefunItem(category, STEEL_FRAME, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                SlimefunItems.STEEL_INGOT, null, SlimefunItems.STEEL_INGOT,
+                null, SlimefunItems.STEEL_INGOT, null,
+                SlimefunItems.STEEL_INGOT, null, SlimefunItems.STEEL_INGOT
+        }).register(addon);
 
-        ItemStack[] reinforcedPlatingRecipe = new ItemStack[]{
-                SlimefunItems.STEEL_PLATE, new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.IRON_BLOCK), SlimefunItems.STEEL_PLATE,
-                new ItemStack(Material.IRON_BLOCK), SlimefunItems.STEEL_PLATE, SlimefunItems.STEEL_PLATE, new ItemStack(Material.IRON_BLOCK),
-                new ItemStack(Material.IRON_BLOCK), SlimefunItems.HARDENED_METAL_INGOT, SlimefunItems.HARDENED_METAL_INGOT, new ItemStack(Material.IRON_BLOCK),
-                SlimefunItems.STEEL_PLATE, new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.IRON_BLOCK), SlimefunItems.STEEL_PLATE
-        };
-        CustomRecipeItem reinforcedPlating = new CustomRecipeItem(
-                category,
-                REINFORCED_PLATING,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                reinforcedPlatingRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        reinforcedPlating.register(addon);
-        MilitaryCraftingHandler.registerRecipe(reinforcedPlating);
+        new SlimefunItem(category, COPPER_COIL, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                null, new ItemStack(Material.COPPER_INGOT), null,
+                new ItemStack(Material.COPPER_INGOT), new ItemStack(Material.IRON_INGOT), new ItemStack(Material.COPPER_INGOT),
+                null, new ItemStack(Material.COPPER_INGOT), null
+        }).register(addon);
 
-        ItemStack[] guidanceChipRecipe = new ItemStack[]{
-                new ItemStack(Material.QUARTZ_BLOCK), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.QUARTZ_BLOCK),
-                MILITARY_CIRCUIT, SlimefunItems.GPS_TRANSMITTER, SlimefunItems.GPS_TRANSMITTER, MILITARY_CIRCUIT,
-                MILITARY_CIRCUIT, SlimefunItems.PROGRAMMABLE_ANDROID, SlimefunItems.PROGRAMMABLE_ANDROID, MILITARY_CIRCUIT,
-                new ItemStack(Material.QUARTZ_BLOCK), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.QUARTZ_BLOCK)
-        };
-        CustomRecipeItem guidanceChip = new CustomRecipeItem(
-                category,
-                GUIDANCE_CHIP,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                guidanceChipRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        guidanceChip.register(addon);
-        MilitaryCraftingHandler.registerRecipe(guidanceChip);
+        new SlimefunItem(category, MECHANICAL_PARTS, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                new ItemStack(Material.IRON_NUGGET), new ItemStack(Material.IRON_INGOT), new ItemStack(Material.IRON_NUGGET),
+                new ItemStack(Material.IRON_INGOT), new ItemStack(Material.GOLD_INGOT), new ItemStack(Material.IRON_INGOT),
+                new ItemStack(Material.IRON_NUGGET), new ItemStack(Material.IRON_INGOT), new ItemStack(Material.IRON_NUGGET)
+        }).register(addon);
 
-        ItemStack[] advancedProcessorRecipe = new ItemStack[]{
-                new ItemStack(Material.QUARTZ), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.QUARTZ),
-                MILITARY_CIRCUIT, SlimefunItems.ADVANCED_CIRCUIT_BOARD, SlimefunItems.ADVANCED_CIRCUIT_BOARD, MILITARY_CIRCUIT,
-                MILITARY_CIRCUIT, SlimefunItems.COOLING_UNIT, SlimefunItems.COOLING_UNIT, MILITARY_CIRCUIT,
-                new ItemStack(Material.QUARTZ), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.QUARTZ)
-        };
-        CustomRecipeItem advancedProcessor = new CustomRecipeItem(
-                category,
-                ADVANCED_PROCESSOR,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                advancedProcessorRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        advancedProcessor.register(addon);
-        MilitaryCraftingHandler.registerRecipe(advancedProcessor);
+        // TIER 2: INTERMEDIATE COMPONENTS
+        new SlimefunItem(category, ADVANCED_CIRCUIT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                BASIC_CIRCUIT, SlimefunItems.ELECTRO_MAGNET, BASIC_CIRCUIT,
+                SlimefunItems.ELECTRO_MAGNET, new ItemStack(Material.REDSTONE_BLOCK), SlimefunItems.ELECTRO_MAGNET,
+                BASIC_CIRCUIT, SlimefunItems.ELECTRO_MAGNET, BASIC_CIRCUIT
+        }).register(addon);
 
-        ItemStack[] targetingSystemRecipe = new ItemStack[]{
-                new ItemStack(Material.DIAMOND_BLOCK), GUIDANCE_CHIP, GUIDANCE_CHIP, new ItemStack(Material.DIAMOND_BLOCK),
-                GUIDANCE_CHIP, SlimefunItems.GPS_CONTROL_PANEL, ADVANCED_PROCESSOR, GUIDANCE_CHIP,
-                GUIDANCE_CHIP, new ItemStack(Material.OBSERVER), new ItemStack(Material.OBSERVER), GUIDANCE_CHIP,
-                new ItemStack(Material.DIAMOND_BLOCK), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.DIAMOND_BLOCK)
-        };
-        CustomRecipeItem targetingSystem = new CustomRecipeItem(
-                category,
-                TARGETING_SYSTEM,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                targetingSystemRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        targetingSystem.register(addon);
-        MilitaryCraftingHandler.registerRecipe(targetingSystem);
+        new SlimefunItem(category, REINFORCED_PLATING, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                SlimefunItems.HARDENED_METAL_INGOT, SlimefunItems.STEEL_PLATE, SlimefunItems.HARDENED_METAL_INGOT,
+                SlimefunItems.STEEL_PLATE, new ItemStack(Material.NETHERITE_INGOT), SlimefunItems.STEEL_PLATE,
+                SlimefunItems.HARDENED_METAL_INGOT, SlimefunItems.STEEL_PLATE, SlimefunItems.HARDENED_METAL_INGOT
+        }).register(addon);
 
-        ItemStack[] radarModuleRecipe = new ItemStack[]{
-                new ItemStack(Material.OBSERVER), GUIDANCE_CHIP, GUIDANCE_CHIP, new ItemStack(Material.OBSERVER),
-                GUIDANCE_CHIP, SlimefunItems.GPS_MARKER_TOOL, ADVANCED_PROCESSOR, GUIDANCE_CHIP,
-                GUIDANCE_CHIP, ADVANCED_PROCESSOR, ADVANCED_PROCESSOR, GUIDANCE_CHIP,
-                new ItemStack(Material.OBSERVER), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.OBSERVER)
-        };
-        CustomRecipeItem radarModule = new CustomRecipeItem(
-                category,
-                RADAR_MODULE,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                radarModuleRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        radarModule.register(addon);
-        MilitaryCraftingHandler.registerRecipe(radarModule);
+        new SlimefunItem(category, SERVO_MOTOR, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                COPPER_COIL, MECHANICAL_PARTS, COPPER_COIL,
+                MECHANICAL_PARTS, SlimefunItems.ELECTRIC_MOTOR, MECHANICAL_PARTS,
+                COPPER_COIL, MECHANICAL_PARTS, COPPER_COIL
+        }).register(addon);
 
-        ItemStack[] reinforcedFrameRecipe = new ItemStack[]{
-                REINFORCED_PLATING, new ItemStack(Material.NETHERITE_INGOT), new ItemStack(Material.NETHERITE_INGOT), REINFORCED_PLATING,
-                new ItemStack(Material.NETHERITE_INGOT), SlimefunItems.REINFORCED_PLATE, SlimefunItems.REINFORCED_PLATE, new ItemStack(Material.NETHERITE_INGOT),
-                new ItemStack(Material.NETHERITE_INGOT), SlimefunItems.HARDENED_METAL_INGOT, SlimefunItems.HARDENED_METAL_INGOT, new ItemStack(Material.NETHERITE_INGOT),
-                REINFORCED_PLATING, new ItemStack(Material.NETHERITE_INGOT), new ItemStack(Material.NETHERITE_INGOT), REINFORCED_PLATING
-        };
-        CustomRecipeItem reinforcedFrame = new CustomRecipeItem(
-                category,
-                REINFORCED_FRAME,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                reinforcedFrameRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        reinforcedFrame.register(addon);
-        MilitaryCraftingHandler.registerRecipe(reinforcedFrame);
+        new SlimefunItem(category, POWER_CELL, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                SlimefunItems.BATTERY, COPPER_COIL, SlimefunItems.BATTERY,
+                COPPER_COIL, new ItemStack(Material.REDSTONE_BLOCK), COPPER_COIL,
+                SlimefunItems.BATTERY, COPPER_COIL, SlimefunItems.BATTERY
+        }).register(addon);
 
-        ItemStack[] powerCoreRecipe = new ItemStack[]{
-                new ItemStack(Material.GLOWSTONE), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.GLOWSTONE),
-                MILITARY_CIRCUIT, SlimefunItems.POWER_CRYSTAL, SlimefunItems.ENERGIZED_CAPACITOR, MILITARY_CIRCUIT,
-                MILITARY_CIRCUIT, SlimefunItems.ENERGIZED_CAPACITOR, SlimefunItems.POWER_CRYSTAL, MILITARY_CIRCUIT,
-                new ItemStack(Material.GLOWSTONE), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.GLOWSTONE)
-        };
-        CustomRecipeItem powerCore = new CustomRecipeItem(
-                category,
-                POWER_CORE,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                powerCoreRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        powerCore.register(addon);
-        MilitaryCraftingHandler.registerRecipe(powerCore);
+        // TIER 3: WEAPON COMPONENTS
+        new SlimefunItem(category, WEAPON_BARREL, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                null, SlimefunItems.HARDENED_METAL_INGOT, null,
+                null, SlimefunItems.HARDENED_METAL_INGOT, null,
+                null, SlimefunItems.HARDENED_METAL_INGOT, null
+        }).register(addon);
 
-        ItemStack[] weaponBarrelRecipe = new ItemStack[]{
-                REINFORCED_FRAME, new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.IRON_BLOCK), REINFORCED_FRAME,
-                new ItemStack(Material.IRON_BLOCK), SlimefunItems.HARDENED_METAL_INGOT, SlimefunItems.HARDENED_METAL_INGOT, new ItemStack(Material.IRON_BLOCK),
-                new ItemStack(Material.IRON_BLOCK), REINFORCED_PLATING, REINFORCED_PLATING, new ItemStack(Material.IRON_BLOCK),
-                REINFORCED_FRAME, new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.IRON_BLOCK), REINFORCED_FRAME
-        };
-        CustomRecipeItem weaponBarrel = new CustomRecipeItem(
-                category,
-                WEAPON_BARREL,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                weaponBarrelRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        weaponBarrel.register(addon);
-        MilitaryCraftingHandler.registerRecipe(weaponBarrel);
+        new SlimefunItem(category, TRIGGER_MECHANISM, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                null, MECHANICAL_PARTS, null,
+                MECHANICAL_PARTS, ADVANCED_CIRCUIT, MECHANICAL_PARTS,
+                null, new ItemStack(Material.GOLD_INGOT), null
+        }).register(addon);
 
-        ItemStack[] triggerMechanismRecipe = new ItemStack[]{
-                TARGETING_SYSTEM, MILITARY_CIRCUIT, MILITARY_CIRCUIT, TARGETING_SYSTEM,
-                MILITARY_CIRCUIT, SlimefunItems.ELECTRIC_MOTOR, SlimefunItems.HEATING_COIL, MILITARY_CIRCUIT,
-                MILITARY_CIRCUIT, ADVANCED_PROCESSOR, ADVANCED_PROCESSOR, MILITARY_CIRCUIT,
-                new ItemStack(Material.TRIPWIRE_HOOK), MILITARY_CIRCUIT, MILITARY_CIRCUIT, new ItemStack(Material.TRIPWIRE_HOOK)
-        };
-        CustomRecipeItem triggerMechanism = new CustomRecipeItem(
-                category,
-                TRIGGER_MECHANISM,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                triggerMechanismRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        triggerMechanism.register(addon);
-        MilitaryCraftingHandler.registerRecipe(triggerMechanism);
+        new SlimefunItem(category, STABILIZER_UNIT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                SERVO_MOTOR, ADVANCED_CIRCUIT, SERVO_MOTOR,
+                STEEL_FRAME, new ItemStack(Material.COMPASS), STEEL_FRAME,
+                SERVO_MOTOR, ADVANCED_CIRCUIT, SERVO_MOTOR
+        }).register(addon);
 
-        ItemStack[] quantumProcessorRecipe = new ItemStack[]{
-                new ItemStack(Material.NETHER_STAR), ADVANCED_PROCESSOR, ADVANCED_PROCESSOR, new ItemStack(Material.NETHER_STAR),
-                ADVANCED_PROCESSOR, SlimefunItems.ANDROID_MEMORY_CORE, POWER_CORE, ADVANCED_PROCESSOR,
-                ADVANCED_PROCESSOR, POWER_CORE, SlimefunItems.ANDROID_MEMORY_CORE, ADVANCED_PROCESSOR,
-                new ItemStack(Material.NETHER_STAR), GUIDANCE_CHIP, GUIDANCE_CHIP, new ItemStack(Material.NETHER_STAR)
-        };
-        CustomRecipeItem quantumProcessor = new CustomRecipeItem(
-                category,
-                QUANTUM_PROCESSOR,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                quantumProcessorRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        quantumProcessor.register(addon);
-        MilitaryCraftingHandler.registerRecipe(quantumProcessor);
+        new SlimefunItem(category, TARGETING_SYSTEM, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                ADVANCED_CIRCUIT, new ItemStack(Material.ENDER_EYE), ADVANCED_CIRCUIT,
+                new ItemStack(Material.OBSERVER), POWER_CELL, new ItemStack(Material.OBSERVER),
+                ADVANCED_CIRCUIT, new ItemStack(Material.ENDER_PEARL), ADVANCED_CIRCUIT
+        }).register(addon);
 
-        ItemStack[] stabilizerUnitRecipe = new ItemStack[]{
-                REINFORCED_FRAME, POWER_CORE, POWER_CORE, REINFORCED_FRAME,
-                POWER_CORE, SlimefunItems.ELECTRIC_MOTOR, SlimefunItems.ELECTRIC_MOTOR, POWER_CORE,
-                POWER_CORE, ADVANCED_PROCESSOR, ADVANCED_PROCESSOR, POWER_CORE,
-                REINFORCED_FRAME, MILITARY_CIRCUIT, MILITARY_CIRCUIT, REINFORCED_FRAME
-        };
-        CustomRecipeItem stabilizerUnit = new CustomRecipeItem(
-                category,
-                STABILIZER_UNIT,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                stabilizerUnitRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        stabilizerUnit.register(addon);
-        MilitaryCraftingHandler.registerRecipe(stabilizerUnit);
+        new SlimefunItem(category, RADAR_MODULE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                COPPER_COIL, ADVANCED_CIRCUIT, COPPER_COIL,
+                ADVANCED_CIRCUIT, new ItemStack(Material.SCULK_SENSOR), ADVANCED_CIRCUIT,
+                COPPER_COIL, POWER_CELL, COPPER_COIL
+        }).register(addon);
 
-        ItemStack[] explosiveCoreRecipe = new ItemStack[]{
-                new ItemStack(Material.TNT), QUANTUM_PROCESSOR, QUANTUM_PROCESSOR, new ItemStack(Material.TNT),
-                QUANTUM_PROCESSOR, SlimefunItems.EXPLOSIVE_BOW, POWER_CORE, QUANTUM_PROCESSOR,
-                QUANTUM_PROCESSOR, POWER_CORE, TARGETING_SYSTEM, QUANTUM_PROCESSOR,
-                new ItemStack(Material.TNT), REINFORCED_FRAME, REINFORCED_FRAME, new ItemStack(Material.TNT)
-        };
-        CustomRecipeItem explosiveCore = new CustomRecipeItem(
-                category,
-                EXPLOSIVE_CORE,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                explosiveCoreRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        explosiveCore.register(addon);
-        MilitaryCraftingHandler.registerRecipe(explosiveCore);
+        // TIER 3: MACHINE COMPONENTS
+        new SlimefunItem(category, REINFORCED_FRAME, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                REINFORCED_PLATING, STEEL_FRAME, REINFORCED_PLATING,
+                STEEL_FRAME, new ItemStack(Material.NETHERITE_BLOCK), STEEL_FRAME,
+                REINFORCED_PLATING, STEEL_FRAME, REINFORCED_PLATING
+        }).register(addon);
 
-        ItemStack[] energyMatrixRecipe = new ItemStack[]{
-                POWER_CORE, QUANTUM_PROCESSOR, QUANTUM_PROCESSOR, POWER_CORE,
-                QUANTUM_PROCESSOR, SlimefunItems.ENERGIZED_CAPACITOR, SlimefunItems.ENERGIZED_CAPACITOR, QUANTUM_PROCESSOR,
-                QUANTUM_PROCESSOR, SlimefunItems.POWER_CRYSTAL, SlimefunItems.POWER_CRYSTAL, QUANTUM_PROCESSOR,
-                POWER_CORE, new ItemStack(Material.BEACON), new ItemStack(Material.BEACON), POWER_CORE
-        };
-        CustomRecipeItem energyMatrix = new CustomRecipeItem(
-                category,
-                ENERGY_MATRIX,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                energyMatrixRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        energyMatrix.register(addon);
-        MilitaryCraftingHandler.registerRecipe(energyMatrix);
+        new SlimefunItem(category, POWER_CORE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                POWER_CELL, COPPER_COIL, POWER_CELL,
+                COPPER_COIL, new ItemStack(Material.NETHER_STAR), COPPER_COIL,
+                POWER_CELL, COPPER_COIL, POWER_CELL
+        }).register(addon);
 
-        ItemStack[] hydraulicSystemRecipe = new ItemStack[]{
-                REINFORCED_FRAME, POWER_CORE, POWER_CORE, REINFORCED_FRAME,
-                POWER_CORE, SlimefunItems.ELECTRIC_MOTOR, SlimefunItems.ELECTRIC_MOTOR, POWER_CORE,
-                POWER_CORE, new ItemStack(Material.PISTON), new ItemStack(Material.PISTON), POWER_CORE,
-                REINFORCED_FRAME, QUANTUM_PROCESSOR, QUANTUM_PROCESSOR, REINFORCED_FRAME
-        };
-        CustomRecipeItem hydraulicSystem = new CustomRecipeItem(
-                category,
-                HYDRAULIC_SYSTEM,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                hydraulicSystemRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        hydraulicSystem.register(addon);
-        MilitaryCraftingHandler.registerRecipe(hydraulicSystem);
+        new SlimefunItem(category, MILITARY_CIRCUIT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                ADVANCED_CIRCUIT, SlimefunItems.BLISTERING_INGOT, ADVANCED_CIRCUIT,
+                SlimefunItems.REINFORCED_ALLOY_INGOT, POWER_CORE, SlimefunItems.REINFORCED_ALLOY_INGOT,
+                ADVANCED_CIRCUIT, SlimefunItems.BLISTERING_INGOT, ADVANCED_CIRCUIT
+        }).register(addon);
 
-        ItemStack[] coolantSystemRecipe = new ItemStack[]{
-                new ItemStack(Material.PACKED_ICE), POWER_CORE, POWER_CORE, new ItemStack(Material.PACKED_ICE),
-                POWER_CORE, SlimefunItems.COOLING_UNIT, SlimefunItems.COOLING_UNIT, POWER_CORE,
-                POWER_CORE, ADVANCED_PROCESSOR, ADVANCED_PROCESSOR, POWER_CORE,
-                new ItemStack(Material.PACKED_ICE), QUANTUM_PROCESSOR, QUANTUM_PROCESSOR, new ItemStack(Material.PACKED_ICE)
-        };
-        CustomRecipeItem coolantSystem = new CustomRecipeItem(
-                category,
-                COOLANT_SYSTEM,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                coolantSystemRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        coolantSystem.register(addon);
-        MilitaryCraftingHandler.registerRecipe(coolantSystem);
+        new SlimefunItem(category, HYDRAULIC_SYSTEM, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                SERVO_MOTOR, new ItemStack(Material.PISTON), SERVO_MOTOR,
+                new ItemStack(Material.WATER_BUCKET), POWER_CELL, new ItemStack(Material.WATER_BUCKET),
+                SERVO_MOTOR, new ItemStack(Material.STICKY_PISTON), SERVO_MOTOR
+        }).register(addon);
 
-        ItemStack[] fusionReactorCoreRecipe = new ItemStack[]{
-                ENERGY_MATRIX, QUANTUM_PROCESSOR, QUANTUM_PROCESSOR, ENERGY_MATRIX,
-                QUANTUM_PROCESSOR, SlimefunItems.NUCLEAR_REACTOR, SlimefunItems.NETHER_STAR_REACTOR, QUANTUM_PROCESSOR,
-                QUANTUM_PROCESSOR, SlimefunItems.NETHER_STAR_REACTOR, SlimefunItems.NUCLEAR_REACTOR, QUANTUM_PROCESSOR,
-                ENERGY_MATRIX, new ItemStack(Material.RESPAWN_ANCHOR), new ItemStack(Material.RESPAWN_ANCHOR), ENERGY_MATRIX
-        };
-        CustomRecipeItem fusionReactorCore = new CustomRecipeItem(
-                category,
-                FUSION_REACTOR_CORE,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                fusionReactorCoreRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        fusionReactorCore.register(addon);
-        MilitaryCraftingHandler.registerRecipe(fusionReactorCore);
+        new SlimefunItem(category, COOLANT_SYSTEM, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                new ItemStack(Material.POWDER_SNOW_BUCKET), COPPER_COIL, new ItemStack(Material.POWDER_SNOW_BUCKET),
+                new ItemStack(Material.ICE), new ItemStack(Material.CAULDRON), new ItemStack(Material.ICE),
+                new ItemStack(Material.PACKED_ICE), SERVO_MOTOR, new ItemStack(Material.PACKED_ICE)
+        }).register(addon);
 
-        ItemStack[] antimatterCellRecipe = new ItemStack[]{
-                EXPLOSIVE_CORE, QUANTUM_PROCESSOR, QUANTUM_PROCESSOR, EXPLOSIVE_CORE,
-                QUANTUM_PROCESSOR, SlimefunItems.CARBONADO, SlimefunItems.CARBONADO, QUANTUM_PROCESSOR,
-                QUANTUM_PROCESSOR, new ItemStack(Material.DRAGON_BREATH), new ItemStack(Material.DRAGON_BREATH), QUANTUM_PROCESSOR,
-                EXPLOSIVE_CORE, ENERGY_MATRIX, ENERGY_MATRIX, EXPLOSIVE_CORE
-        };
-        CustomRecipeItem antimatterCell = new CustomRecipeItem(
-                category,
-                ANTIMATTER_CELL,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                antimatterCellRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        antimatterCell.register(addon);
-        MilitaryCraftingHandler.registerRecipe(antimatterCell);
+        // TIER 4: ULTIMATE COMPONENTS
+        new SlimefunItem(category, QUANTUM_PROCESSOR, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                MILITARY_CIRCUIT, new ItemStack(Material.END_CRYSTAL), MILITARY_CIRCUIT,
+                new ItemStack(Material.ENDER_EYE), POWER_CORE, new ItemStack(Material.ENDER_EYE),
+                MILITARY_CIRCUIT, new ItemStack(Material.NETHER_STAR), MILITARY_CIRCUIT
+        }).register(addon);
 
+        new SlimefunItem(category, ENERGY_MATRIX, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                POWER_CORE, new ItemStack(Material.CONDUIT), POWER_CORE,
+                new ItemStack(Material.CONDUIT), new ItemStack(Material.BEACON), new ItemStack(Material.CONDUIT),
+                POWER_CORE, new ItemStack(Material.CONDUIT), POWER_CORE
+        }).register(addon);
 
-        ItemStack[] advancedCircuitRecipe = new ItemStack[]{
-                MILITARY_CIRCUIT, ADVANCED_PROCESSOR, ADVANCED_PROCESSOR, MILITARY_CIRCUIT,
-                ADVANCED_PROCESSOR, SlimefunItems.ADVANCED_CIRCUIT_BOARD, SlimefunItems.BLISTERING_INGOT, ADVANCED_PROCESSOR,
-                ADVANCED_PROCESSOR, SlimefunItems.BLISTERING_INGOT, SlimefunItems.ADVANCED_CIRCUIT_BOARD, ADVANCED_PROCESSOR,
-                MILITARY_CIRCUIT, ADVANCED_PROCESSOR, ADVANCED_PROCESSOR, MILITARY_CIRCUIT
-        };
-        CustomRecipeItem advancedCircuit = new CustomRecipeItem(
-                category,
-                ADVANCED_CIRCUIT,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                advancedCircuitRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        advancedCircuit.register(addon);
-        MilitaryCraftingHandler.registerRecipe(advancedCircuit);
-
-        ItemStack[] militaryGradeCircuitRecipe = new ItemStack[]{
-                QUANTUM_PROCESSOR, ADVANCED_CIRCUIT, ADVANCED_CIRCUIT, QUANTUM_PROCESSOR,
-                ADVANCED_CIRCUIT, ENERGY_MATRIX, POWER_CORE, ADVANCED_CIRCUIT,
-                ADVANCED_CIRCUIT, POWER_CORE, ENERGY_MATRIX, ADVANCED_CIRCUIT,
-                QUANTUM_PROCESSOR, ADVANCED_CIRCUIT, ADVANCED_CIRCUIT, QUANTUM_PROCESSOR
-        };
-        CustomRecipeItem militaryGradeCircuit = new CustomRecipeItem(
-                category,
-                MILITARY_GRADE_CIRCUIT,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                militaryGradeCircuitRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-        militaryGradeCircuit.register(addon);
-        MilitaryCraftingHandler.registerRecipe(militaryGradeCircuit);
-
+        new SlimefunItem(category, EXPLOSIVE_CORE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[]{
+                new ItemStack(Material.TNT), new ItemStack(Material.GUNPOWDER), new ItemStack(Material.TNT),
+                new ItemStack(Material.GUNPOWDER), new ItemStack(Material.NETHER_STAR), new ItemStack(Material.GUNPOWDER),
+                new ItemStack(Material.TNT), new ItemStack(Material.GUNPOWDER), new ItemStack(Material.TNT)
+        }).register(addon);
     }
 }

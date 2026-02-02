@@ -27,12 +27,10 @@ public class MachineGun {
             "&c⚠ Requires 4×4 Military Crafting Table",
             "",
             "&e⇨ SHIFT + RIGHT-CLICK in Guide",
-            "&e  to view FULL 4×4 recipe",
+            "&e to view FULL 4×4 recipe",
             "",
             "&eRight-Click to fire burst",
-            "&cRequires Machine Gun Bullets",
-            "",
-            "&a✓ Unbreakable"
+            "&cRequires Machine Gun Bullets"
     );
 
     static {
@@ -60,7 +58,6 @@ public class MachineGun {
         );
 
         machineGunItem.register(addon);
-
         MilitaryCraftingHandler.registerRecipe(machineGunItem);
     }
 }

@@ -33,7 +33,6 @@ public class MilitaryMachineFabricator extends SlimefunItem {
 
     @Override
     public void preRegister() {
-
     }
 
     public static void register(SlimefunAddon addon, ItemGroup category) {
@@ -43,7 +42,6 @@ public class MilitaryMachineFabricator extends SlimefunItem {
                 MilitaryComponents.MILITARY_CIRCUIT, SlimefunItems.CARGO_MANAGER, SlimefunItems.CARGO_MANAGER, MilitaryComponents.MILITARY_CIRCUIT,
                 MilitaryComponents.REINFORCED_PLATING, MilitaryComponents.MILITARY_CIRCUIT, MilitaryComponents.MILITARY_CIRCUIT, MilitaryComponents.REINFORCED_PLATING
         };
-
         new MilitaryMachineFabricator(category, MILITARY_MACHINE_FABRICATOR, MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE, recipe).register(addon);
     }
 }

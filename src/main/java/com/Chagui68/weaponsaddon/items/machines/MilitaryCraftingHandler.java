@@ -49,7 +49,6 @@ public class MilitaryCraftingHandler implements Listener {
         e.setCancelled(true);
         Player p = e.getPlayer();
         Location blockLoc = block.getLocation();
-
         openTableGUI(p, blockLoc);
     }
 
@@ -116,16 +115,16 @@ public class MilitaryCraftingHandler implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         if (!(e.getPlayer() instanceof Player)) return;
-        Player p = (Player) e.getPlayer();
 
+        Player p = (Player) e.getPlayer();
         if (!e.getView().getTitle().equals(ChatColor.DARK_RED + "Military Crafting Table")) return;
 
         Location blockLoc = openTables.remove(p.getUniqueId());
         if (blockLoc == null) return;
 
         int[] gridSlots = {11, 12, 13, 14, 20, 21, 22, 23, 29, 30, 31, 32, 38, 39, 40, 41};
-
         Inventory inv = e.getInventory();
+
         for (int i = 0; i < 16; i++) {
             ItemStack item = inv.getItem(gridSlots[i]);
             if (item != null && item.getType() != Material.AIR) {
@@ -139,7 +138,6 @@ public class MilitaryCraftingHandler implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) return;
-
         if (!e.getView().getTitle().equals(ChatColor.DARK_RED + "Military Crafting Table")) return;
 
         Player p = (Player) e.getWhoClicked();
@@ -167,7 +165,6 @@ public class MilitaryCraftingHandler implements Listener {
     private void attemptCraft(Player p, Inventory inv) {
         int[] gridSlots = {11, 12, 13, 14, 20, 21, 22, 23, 29, 30, 31, 32, 38, 39, 40, 41};
         ItemStack[] grid = new ItemStack[16];
-
         for (int i = 0; i < 16; i++) {
             grid[i] = inv.getItem(gridSlots[i]);
         }
@@ -179,15 +176,15 @@ public class MilitaryCraftingHandler implements Listener {
             System.out.println("Checkeando recipe: " + customItem.getId() + " - GridSize: " + customItem.getGridSize());
 
             if (customItem.getGridSize() != CustomRecipeItem.RecipeGridSize.GRID_4x4) {
-                System.out.println("  ↳ Saltado (no es 4x4)");
+                System.out.println(" ↳ Saltado (no es 4x4)");
                 continue;
             }
 
             ItemStack[] recipe = customItem.getFullRecipe();
+            System.out.println(" ↳ Comparando con grid actual...");
 
-            System.out.println("  ↳ Comparando con grid actual...");
             boolean matches = matchesRecipe(grid, recipe);
-            System.out.println("  ↳ Match: " + matches);
+            System.out.println(" ↳ Match: " + matches);
 
             if (matches) {
                 for (int i = 0; i < 16; i++) {
@@ -202,7 +199,6 @@ public class MilitaryCraftingHandler implements Listener {
 
                 ItemStack output = customItem.getItem().clone();
                 inv.setItem(34, output);
-
                 p.sendMessage(ChatColor.GREEN + "✓ Crafted: " + ChatColor.WHITE +
                         ChatColor.stripColor(output.getItemMeta().getDisplayName()));
                 return;
@@ -215,26 +211,25 @@ public class MilitaryCraftingHandler implements Listener {
 
     private boolean matchesRecipe(ItemStack[] grid, ItemStack[] recipe) {
         if (grid.length != recipe.length) {
-            System.out.println("    ✗ Longitudes diferentes");
+            System.out.println(" ✗ Longitudes diferentes");
             return false;
         }
 
         for (int i = 0; i < grid.length; i++) {
             if (!itemsMatch(grid[i], recipe[i])) {
-                System.out.println("    ✗ No coincide en slot " + i);
-                System.out.println("      Grid[" + i + "]: " + (grid[i] != null ? grid[i].getType() : "null"));
-                System.out.println("      Recipe[" + i + "]: " + (recipe[i] != null ? recipe[i].getType() : "null"));
+                System.out.println(" ✗ No coincide en slot " + i);
+                System.out.println(" Grid[" + i + "]: " + (grid[i] != null ? grid[i].getType() : "null"));
+                System.out.println(" Recipe[" + i + "]: " + (recipe[i] != null ? recipe[i].getType() : "null"));
                 return false;
             }
         }
 
-        System.out.println("    ✓ RECIPE MATCH!");
+        System.out.println(" ✓ RECIPE MATCH!");
         return true;
     }
 
     private boolean itemsMatch(ItemStack item1, ItemStack item2) {
         if (isEmpty(item1) && isEmpty(item2)) return true;
-
         if (isEmpty(item1) || isEmpty(item2)) return false;
 
         SlimefunItem sf1 = SlimefunItem.getByItem(item1);
@@ -255,27 +250,9 @@ public class MilitaryCraftingHandler implements Listener {
         return item == null || item.getType() == Material.AIR;
     }
 
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent e) {
-        Block block = e.getBlock();
-        SlimefunItem sfItem = BlockStorage.check(block);
-
-        if (sfItem != null && sfItem.getId().equals("MILITARY_CRAFTING_TABLE")) {
-            Location blockLoc = block.getLocation();
-
-            for (int i = 0; i < 16; i++) {
-                String itemData = BlockStorage.getLocationInfo(blockLoc, "slot_" + i);
-                if (itemData != null && !itemData.isEmpty()) {
-                    ItemStack item = deserializeItemStack(itemData);
-                    if (item != null) {
-                        block.getWorld().dropItemNaturally(blockLoc, item);
-                    }
-                }
-            }
-        }
-    }
-
     private String serializeItemStack(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return "";
+
         SlimefunItem sfItem = SlimefunItem.getByItem(item);
         if (sfItem != null) {
             return "SF:" + sfItem.getId() + ":" + item.getAmount();
@@ -284,9 +261,10 @@ public class MilitaryCraftingHandler implements Listener {
     }
 
     private ItemStack deserializeItemStack(String data) {
+        if (data == null || data.isEmpty()) return null;
+
         try {
             String[] parts = data.split(":");
-
             if (parts[0].equals("SF")) {
                 SlimefunItem sfItem = SlimefunItem.getById(parts[1]);
                 if (sfItem != null) {
@@ -302,6 +280,7 @@ public class MilitaryCraftingHandler implements Listener {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         return null;
     }
 }

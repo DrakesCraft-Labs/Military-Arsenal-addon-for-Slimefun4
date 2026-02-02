@@ -43,48 +43,45 @@ public class AntimatterRitual extends MultiBlockMachine {
         ItemStack P = AntimatterPedestal.ANTIMATTER_PEDESTAL.clone();
         ItemStack O = new ItemStack(Material.CRYING_OBSIDIAN);
 
-        // Flatten 9x9 grid row-major (81 slots)
         ItemStack[] pattern = new ItemStack[81];
 
-        for (int i=0; i<9; i++) pattern[i] = I;
+        for (int i = 0; i < 9; i++) pattern[i] = I;
 
-        pattern[9]=I; pattern[10]=P; pattern[11]=O; pattern[12]=P;
-        pattern[13]=O; pattern[14]=P; pattern[15]=O; pattern[16]=P; pattern[17]=I;
+        pattern[9] = I; pattern[10] = P; pattern[11] = O; pattern[12] = P;
+        pattern[13] = O; pattern[14] = P; pattern[15] = O; pattern[16] = P; pattern[17] = I;
 
-        pattern[18]=I; for(int i=19;i<26;i++) pattern[i]=O; pattern[26]=I;
+        pattern[18] = I;
+        for (int i = 19; i < 26; i++) pattern[i] = O;
+        pattern[26] = I;
 
-        pattern[27]=I; pattern[28]=P; pattern[29]=O; pattern[30]=P;
-        pattern[31]=N; pattern[32]=P; pattern[33]=O; pattern[34]=P; pattern[35]=I;
+        pattern[27] = I; pattern[28] = P; pattern[29] = O; pattern[30] = P;
+        pattern[31] = N; pattern[32] = P; pattern[33] = O; pattern[34] = P; pattern[35] = I;
 
-        pattern[36]=I; pattern[37]=O; pattern[38]=O; pattern[39]=N;
-        pattern[40]=B; pattern[41]=N; pattern[42]=O; pattern[43]=O; pattern[44]=I;
+        pattern[36] = I; pattern[37] = O; pattern[38] = O; pattern[39] = N;
+        pattern[40] = B; pattern[41] = N; pattern[42] = O; pattern[43] = O; pattern[44] = I;
 
-        pattern[45]=I; pattern[46]=P; pattern[47]=O; pattern[48]=P;
-        pattern[49]=N; pattern[50]=P; pattern[51]=O; pattern[52]=P; pattern[53]=I;
+        pattern[45] = I; pattern[46] = P; pattern[47] = O; pattern[48] = P;
+        pattern[49] = N; pattern[50] = P; pattern[51] = O; pattern[52] = P; pattern[53] = I;
 
-        pattern[54]=I; for(int i=55;i<62;i++) pattern[i]=O; pattern[62]=I;
+        pattern[54] = I;
+        for (int i = 55; i < 62; i++) pattern[i] = O;
+        pattern[62] = I;
 
-        pattern[63]=I; pattern[64]=P; pattern[65]=O; pattern[66]=P;
-        pattern[67]=O; pattern[68]=P; pattern[69]=O; pattern[70]=P; pattern[71]=I;
+        pattern[63] = I; pattern[64] = P; pattern[65] = O; pattern[66] = P;
+        pattern[67] = O; pattern[68] = P; pattern[69] = O; pattern[70] = P; pattern[71] = I;
 
-        for (int i=72; i<81; i++) pattern[i] = I;
+        for (int i = 72; i < 81; i++) pattern[i] = I;
 
         return pattern;
     }
 
     @Override
     public void onInteract(Player p, Block b) {
-        p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                "&4☢ &fAntimatter Ritual &4ACTIVATED"));
-        p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                "&7Annihilating matter... &c⚠"));
-
+        p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4☢ &fAntimatter Ritual &4ACTIVATED"));
+        p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Annihilating matter... &c⚠"));
         p.getInventory().addItem(AntimatterRifle.ANTIMATTER_RIFLE.clone());
-
-        p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                "&a✓ &fAntimatter Rifle created successfully!"));
-        p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                "&7Right-click entities for instant annihilation"));
+        p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a✓ &fAntimatter Rifle created successfully!"));
+        p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Right-click entities for instant annihilation"));
     }
 
     public static void register(SlimefunAddon addon, ItemGroup category) {
