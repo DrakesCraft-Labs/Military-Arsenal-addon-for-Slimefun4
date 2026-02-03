@@ -10,7 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class MachineGun {
+public class MachineGun extends CustomRecipeItem {
 
     public static final SlimefunItemStack MACHINE_GUN = new SlimefunItemStack(
             "MACHINE_GUN",
@@ -24,13 +24,10 @@ public class MachineGun {
             "&6Fire Rate: &e0.1s between shots",
             "&6Cooldown: &e0.5s",
             "",
-            "&c⚠ Requires 4×4 Military Crafting Table",
-            "",
-            "&e⇨ SHIFT + RIGHT-CLICK",
-            "&e to view FULL 4×4 recipe",
-            "",
             "&eRight-Click to fire burst",
-            "&cRequires Machine Gun Bullets"
+            "&cRequires Machine Gun Bullets",
+            "",
+            "&7Click in guide to view recipe"
     );
 
     static {
@@ -41,41 +38,24 @@ public class MachineGun {
         }
     }
 
+    public MachineGun(ItemGroup itemGroup, SlimefunItemStack item, ItemStack[] recipe, RecipeGridSize gridSize) {
+        super(itemGroup, item, MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE, recipe, gridSize);
+    }
+
     public static void register(SlimefunAddon addon, ItemGroup category) {
-        // Receta completa 4x4 (16 items)
         ItemStack[] fullRecipe = new ItemStack[]{
                 MilitaryComponents.WEAPON_BARREL, MilitaryComponents.TARGETING_SYSTEM,
                 MilitaryComponents.RADAR_MODULE, MilitaryComponents.WEAPON_BARREL,
-
                 MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TRIGGER_MECHANISM,
                 MilitaryComponents.STABILIZER_UNIT, MilitaryComponents.TARGETING_SYSTEM,
-
                 MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.POWER_CORE,
                 MilitaryComponents.POWER_CORE, MilitaryComponents.REINFORCED_FRAME,
-
                 MilitaryComponents.REINFORCED_FRAME, SlimefunItems.ELECTRIC_MOTOR,
                 SlimefunItems.ELECTRIC_MOTOR, MilitaryComponents.REINFORCED_FRAME
         };
 
-
-        ItemStack[] guideRecipe = new ItemStack[]{
-                MilitaryComponents.WEAPON_BARREL, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.WEAPON_BARREL,
-                MilitaryComponents.TRIGGER_MECHANISM, MilitaryComponents.POWER_CORE, MilitaryComponents.STABILIZER_UNIT,
-                MilitaryComponents.REINFORCED_FRAME, SlimefunItems.ELECTRIC_MOTOR, MilitaryComponents.REINFORCED_FRAME
-        };
-
-
-        CustomRecipeItem machineGunItem = new CustomRecipeItem(
-                category,
-                MACHINE_GUN,
-                MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE,
-                fullRecipe,
-                CustomRecipeItem.RecipeGridSize.GRID_4x4
-        );
-
-        machineGunItem.register(addon);
-
-
-        MilitaryCraftingHandler.registerRecipe(machineGunItem);
+        MachineGun machineGun = new MachineGun(category, MACHINE_GUN, fullRecipe, RecipeGridSize.GRID_4x4);
+        machineGun.register(addon);
+        MilitaryCraftingHandler.registerRecipe(machineGun);
     }
 }

@@ -1,6 +1,5 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
-import com.Chagui68.weaponsaddon.items.MilitaryRecipeTypes;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -63,6 +62,6 @@ public class MilitaryMachineFabricator extends SlimefunItem {
                 MilitaryComponents.REINFORCED_PLATING, MilitaryComponents.MILITARY_CIRCUIT, MilitaryComponents.MILITARY_CIRCUIT, MilitaryComponents.REINFORCED_PLATING
         };
 
-        new MilitaryMachineFabricator(category, MILITARY_MACHINE_FABRICATOR, MilitaryRecipeTypes.MILITARY_CRAFTING_TABLE, recipe).register(addon);
+        new MilitaryMachineFabricator(category, MILITARY_MACHINE_FABRICATOR, RecipeType.ENHANCED_CRAFTING_TABLE, recipe).register(addon);
     }
 }

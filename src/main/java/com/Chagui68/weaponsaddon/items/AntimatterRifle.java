@@ -1,13 +1,17 @@
 package com.Chagui68.weaponsaddon.items;
 
+import com.Chagui68.weaponsaddon.WeaponsAddon;
+import com.Chagui68.weaponsaddon.items.machines.AntimatterRitual;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ToolUseHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -34,7 +38,8 @@ public class AntimatterRifle extends SlimefunItem {
             "&c⚠ EXTREME DANGER",
             "&c⚠ Use with caution",
             "",
-            "&eRight-Click to fire antimatter beam"
+            "&eRight-Click to fire antimatter beam",
+            "&7Crafted at Antimatter Ritual Altar"
     );
 
     static {
@@ -45,8 +50,8 @@ public class AntimatterRifle extends SlimefunItem {
         }
     }
 
-    public AntimatterRifle(ItemGroup itemGroup, SlimefunItemStack item) {
-        super(itemGroup, item, MilitaryRecipeTypes.MILITARY_MACHINE_FABRICATOR, new ItemStack[9]);
+    public AntimatterRifle(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType) {
+        super(itemGroup, item, recipeType, new ItemStack[9]);
     }
 
     @Override
@@ -106,6 +111,11 @@ public class AntimatterRifle extends SlimefunItem {
     }
 
     public static void register(SlimefunAddon addon, ItemGroup category) {
-        new AntimatterRifle(category, ANTIMATTER_RIFLE).register(addon);
+        RecipeType ritualRecipe = new RecipeType(
+                new NamespacedKey(WeaponsAddon.getInstance(), "antimatter_ritual"),
+                AntimatterRitual.ANTIMATTER_RITUAL_CORE
+        );
+
+        new AntimatterRifle(category, ANTIMATTER_RIFLE, ritualRecipe).register(addon);
     }
 }

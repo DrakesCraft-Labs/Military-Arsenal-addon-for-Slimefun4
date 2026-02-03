@@ -27,17 +27,13 @@ import java.util.ArrayList;
 public class MachineFabricatorHandler implements Listener {
 
     private static final Map<UUID, Location> openFabricators = new HashMap<>();
-    private static final List<Object> RECIPE_CACHE = new ArrayList<>();
+    private static final List<CustomRecipeItem> RECIPE_CACHE = new ArrayList<>();
 
     public static void registerRecipe(CustomRecipeItem item) {
         RECIPE_CACHE.add(item);
+        System.out.println("✓ Recipe 6x6 registrado: " + item.getId() + " - Total: " + RECIPE_CACHE.size());
     }
 
-    public static void registerRecipe(SlimefunItem item) {
-        RECIPE_CACHE.add(item);
-    }
-
-    // MÉTODO ESTÁTICO PÚBLICO
     public static void openFabricatorGuiStatic(Player p, Location blockLoc) {
         openFabricatorGUI(p, blockLoc);
     }
@@ -114,7 +110,6 @@ public class MachineFabricatorHandler implements Listener {
 
         int[] gridSlots = {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24,
                 28, 29, 30, 31, 32, 33, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51};
-
         Inventory inv = e.getInventory();
 
         for (int i = 0; i < 36; i++) {
@@ -137,7 +132,6 @@ public class MachineFabricatorHandler implements Listener {
 
         int[] allowedSlots = {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24,
                 28, 29, 30, 31, 32, 33, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 17};
-
         boolean allowed = false;
         for (int s : allowedSlots) {
             if (slot == s) {
@@ -159,31 +153,23 @@ public class MachineFabricatorHandler implements Listener {
     private static void attemptCraft(Player p, Inventory inv) {
         int[] gridSlots = {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24,
                 28, 29, 30, 31, 32, 33, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51};
-
         ItemStack[] grid = new ItemStack[36];
+
         for (int i = 0; i < 36; i++) {
             grid[i] = inv.getItem(gridSlots[i]);
         }
 
-        for (Object obj : RECIPE_CACHE) {
-            ItemStack[] recipe = null;
-            SlimefunItem sfItem = null;
+        System.out.println("=== CRAFTEO 6x6 ===");
+        System.out.println("Recipes: " + RECIPE_CACHE.size());
 
-            if (obj instanceof CustomRecipeItem) {
-                CustomRecipeItem customItem = (CustomRecipeItem) obj;
-                if (customItem.getGridSize() == CustomRecipeItem.RecipeGridSize.GRID_6x6) {
-                    recipe = customItem.getFullRecipe();
-                    sfItem = customItem;
-                }
-            } else if (obj instanceof SlimefunItem) {
-                sfItem = (SlimefunItem) obj;
-                recipe = sfItem.getRecipe();
-                if (recipe == null || recipe.length != 36) {
-                    continue;
-                }
-            }
+        for (CustomRecipeItem customItem : RECIPE_CACHE) {
+            if (customItem.getGridSize() != CustomRecipeItem.RecipeGridSize.GRID_6x6) continue;
 
-            if (recipe != null && sfItem != null && matchesRecipe(grid, recipe)) {
+            ItemStack[] recipe = customItem.getFullRecipe();
+            System.out.println("Checkeando: " + customItem.getId());
+
+            if (matchesRecipe(grid, recipe)) {
+                // Consumir items
                 for (int i = 0; i < 36; i++) {
                     ItemStack item = grid[i];
                     if (item != null && item.getType() != Material.AIR) {
@@ -194,14 +180,16 @@ public class MachineFabricatorHandler implements Listener {
                     }
                 }
 
-                ItemStack output = sfItem.getItem().clone();
+                ItemStack output = customItem.getItem().clone();
                 inv.setItem(17, output);
                 p.sendMessage(ChatColor.GREEN + "✓ Crafted: " + ChatColor.WHITE +
                         ChatColor.stripColor(output.getItemMeta().getDisplayName()));
+                System.out.println("✓ CRAFTEO EXITOSO!");
                 return;
             }
         }
 
+        System.out.println("❌ Receta inválida");
         p.sendMessage(ChatColor.RED + "✗ Invalid recipe!");
     }
 

@@ -1,6 +1,5 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
-import com.Chagui68.weaponsaddon.items.MilitaryRecipeTypes;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -59,6 +58,6 @@ public class MilitaryCraftingTable extends SlimefunItem {
                 SlimefunItems.STEEL_PLATE, SlimefunItems.HARDENED_METAL_INGOT, SlimefunItems.STEEL_PLATE
         };
 
-        new MilitaryCraftingTable(category, MILITARY_CRAFTING_TABLE, MilitaryRecipeTypes.AMMUNITION_WORKSHOP, recipe).register(addon);
+        new MilitaryCraftingTable(category, MILITARY_CRAFTING_TABLE, RecipeType.ENHANCED_CRAFTING_TABLE, recipe).register(addon);
     }
 }

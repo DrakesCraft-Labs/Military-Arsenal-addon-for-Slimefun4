@@ -1,12 +1,11 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
+import com.Chagui68.weaponsaddon.items.CustomRecipeItem;
 import com.Chagui68.weaponsaddon.items.MilitaryRecipeTypes;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import com.Chagui68.weaponsaddon.items.machines.energy.EnergyManager;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
-import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
@@ -21,7 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class BombardmentTerminal extends SlimefunItem implements EnergyNetComponent {
+public class BombardmentTerminal extends CustomRecipeItem implements EnergyNetComponent {
 
     private static final int ENERGY_CAPACITY = 4000000;
     private static final int ENERGY_PER_USE = 2000000;
@@ -39,17 +38,13 @@ public class BombardmentTerminal extends SlimefunItem implements EnergyNetCompon
             "&6Attack: &e2 waves × 4 bombs",
             "&6Radius: &e10 blocks",
             "",
-            "&eRight-Click to open"
+            "&eRight-Click to open",
+            "",
+            "&7Click in guide to view recipe"
     );
 
-    private static ItemStack[] fullRecipe;
-
-    public BombardmentTerminal(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
-        super(itemGroup, item, recipeType, recipe);
-    }
-
-    public static ItemStack[] getStoredRecipe() {
-        return fullRecipe;
+    public BombardmentTerminal(ItemGroup itemGroup, SlimefunItemStack item, ItemStack[] recipe, RecipeGridSize gridSize) {
+        super(itemGroup, item, MilitaryRecipeTypes.MILITARY_MACHINE_FABRICATOR, recipe, gridSize);
     }
 
     @Override
@@ -124,7 +119,7 @@ public class BombardmentTerminal extends SlimefunItem implements EnergyNetCompon
     }
 
     public static void register(SlimefunAddon addon, ItemGroup category) {
-        fullRecipe = new ItemStack[]{
+        ItemStack[] fullRecipe = new ItemStack[]{
                 MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME,
                 MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
                 MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
@@ -133,7 +128,7 @@ public class BombardmentTerminal extends SlimefunItem implements EnergyNetCompon
                 MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.HYDRAULIC_SYSTEM, MilitaryComponents.COOLANT_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME
         };
 
-        BombardmentTerminal terminal = new BombardmentTerminal(category, BOMBARDMENT_TERMINAL, MilitaryRecipeTypes.MILITARY_MACHINE_FABRICATOR, fullRecipe);
+        BombardmentTerminal terminal = new BombardmentTerminal(category, BOMBARDMENT_TERMINAL, fullRecipe, RecipeGridSize.GRID_6x6);
         terminal.register(addon);
         MachineFabricatorHandler.registerRecipe(terminal);
     }

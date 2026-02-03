@@ -1,17 +1,17 @@
 package com.Chagui68.weaponsaddon;
 
+import com.Chagui68.weaponsaddon.handlers.ComponentsHandler;
 import com.Chagui68.weaponsaddon.handlers.MachineGunHandler;
+import com.Chagui68.weaponsaddon.items.AntimatterRifle;
 import com.Chagui68.weaponsaddon.items.MachineGun;
 import com.Chagui68.weaponsaddon.items.MachineGunAmmo;
-import com.Chagui68.weaponsaddon.items.AntimatterRifle;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
-import com.Chagui68.weaponsaddon.items.machines.*;
 import com.Chagui68.weaponsaddon.items.gui.RecipeViewerGUI;
+import com.Chagui68.weaponsaddon.items.machines.*;
 import com.Chagui68.weaponsaddon.listeners.SlimefunGuideListener;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.api.items.groups.NestedItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.groups.SubItemGroup;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -24,103 +24,72 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
     @Override
     public void onEnable() {
         instance = this;
-        Config config = new Config(this);
 
-        // Crear categorías
-        NestedItemGroup mainGroup = createMainGroup();
-        SubItemGroup componentsGroup = createComponentsGroup(mainGroup);
-        SubItemGroup weaponsGroup = createWeaponsGroup(mainGroup);
-        SubItemGroup machinesGroup = createMachinesGroup(mainGroup);
+        NestedItemGroup mainGroup = new NestedItemGroup(
+                new NamespacedKey(this, "military_arsenal"),
+                new CustomItemStack(Material.NETHERITE_SWORD, "&4⚔ &cMilitary Arsenal")
+        );
+
+        SubItemGroup componentsGroup = new SubItemGroup(
+                new NamespacedKey(this, "military_components"),
+                mainGroup,
+                new CustomItemStack(Material.REDSTONE, "&6⚙ &eMilitary Components")
+        );
+
+        SubItemGroup weaponsGroup = new SubItemGroup(
+                new NamespacedKey(this, "military_weapons"),
+                mainGroup,
+                new CustomItemStack(Material.DIAMOND_SWORD, "&c⚔ &4Military Weapons")
+        );
+
+        SubItemGroup ammunitionGroup = new SubItemGroup(
+                new NamespacedKey(this, "military_ammunition"),
+                mainGroup,
+                new CustomItemStack(Material.FIREWORK_STAR, "&e🔸 &6Military Ammunition")
+        );
+
+        SubItemGroup machinesGroup = new SubItemGroup(
+                new NamespacedKey(this, "military_machines"),
+                mainGroup,
+                new CustomItemStack(Material.BLAST_FURNACE, "&4⚙ &cMilitary Machines")
+        );
 
         mainGroup.register(this);
+        componentsGroup.register(this);
+        weaponsGroup.register(this);
+        ammunitionGroup.register(this);
+        machinesGroup.register(this);
 
-        // Registrar handlers
-        registerEventHandlers();
-
-        // Registrar items
-        registerCraftingStations(weaponsGroup, machinesGroup);
         MilitaryComponents.register(this, componentsGroup);
-        MachineGunAmmo.register(this, weaponsGroup);
-        MachineGun.register(this, weaponsGroup);
-        AntimatterRifle.register(this, weaponsGroup);
+
+        AmmunitionWorkshop.register(this, machinesGroup);
+        MilitaryCraftingTable.register(this, machinesGroup);
+        MilitaryMachineFabricator.register(this, machinesGroup);
         BombardmentTerminal.register(this, machinesGroup);
-        BombardmentTerminalRecipeDisplay.register(this, machinesGroup);
         AntimatterPedestal.register(this, machinesGroup);
         AntimatterRitual.register(this, machinesGroup);
 
-        getLogger().info("✓ WeaponsAddon enabled successfully!");
-    }
+        MachineGunAmmo.register(this, ammunitionGroup);
 
-    private NestedItemGroup createMainGroup() {
-        NamespacedKey mainKey = new NamespacedKey(this, "military_arsenal");
-        CustomItemStack mainItem = new CustomItemStack(
-                Material.NETHERITE_SWORD,
-                "&4⚔ &c&lMILITARY ARSENAL",
-                "",
-                "&7Advanced military equipment",
-                "&7and tactical systems",
-                "",
-                "&e▶ Click to open categories"
-        );
-        return new NestedItemGroup(mainKey, mainItem, 2);
-    }
+        MachineGun.register(this, weaponsGroup);
+        AntimatterRifle.register(this, weaponsGroup);
 
-    private SubItemGroup createComponentsGroup(NestedItemGroup parent) {
-        NamespacedKey key = new NamespacedKey(this, "military_components");
-        CustomItemStack item = new CustomItemStack(
-                Material.REDSTONE_BLOCK,
-                "&6⚙ &eMilitary Components",
-                "",
-                "&7Basic materials for crafting",
-                "&7military equipment"
-        );
-        return new SubItemGroup(key, parent, item);
-    }
-
-    private SubItemGroup createWeaponsGroup(NestedItemGroup parent) {
-        NamespacedKey key = new NamespacedKey(this, "military_weapons");
-        CustomItemStack item = new CustomItemStack(
-                Material.DIAMOND_SWORD,
-                "&c⚔ &4Military Weapons",
-                "",
-                "&7Advanced combat equipment",
-                "&7and ammunition"
-        );
-        return new SubItemGroup(key, parent, item);
-    }
-
-    private SubItemGroup createMachinesGroup(NestedItemGroup parent) {
-        NamespacedKey key = new NamespacedKey(this, "military_machines");
-        CustomItemStack item = new CustomItemStack(
-                Material.OBSERVER,
-                "&4💣 &cMilitary Machines",
-                "",
-                "&7Automated warfare systems",
-                "&7and tactical devices"
-        );
-        return new SubItemGroup(key, parent, item);
-    }
-
-    private void registerEventHandlers() {
-        getServer().getPluginManager().registerEvents(new AmmunitionWorkshopHandler(), this);
+        // Registrar listeners
+        getServer().getPluginManager().registerEvents(new SlimefunGuideListener(), this);
+        getServer().getPluginManager().registerEvents(new RecipeViewerGUI(), this);
+        getServer().getPluginManager().registerEvents(new ComponentsHandler(), this);
+        getServer().getPluginManager().registerEvents(new MachineGunHandler(), this);
+        getServer().getPluginManager().registerEvents(new TerminalClickHandler(), this);
         getServer().getPluginManager().registerEvents(new MilitaryCraftingHandler(), this);
         getServer().getPluginManager().registerEvents(new MachineFabricatorHandler(), this);
-        getServer().getPluginManager().registerEvents(new MachineGunHandler(), this);
-        getServer().getPluginManager().registerEvents(new RecipeViewerGUI(), this);
-        getServer().getPluginManager().registerEvents(new SlimefunGuideListener(), this);
-        TerminalClickHandler.setPlugin(this);
-        getServer().getPluginManager().registerEvents(new TerminalClickHandler(), this);
-    }
+        getServer().getPluginManager().registerEvents(new AmmunitionWorkshopHandler(), this);
 
-    private void registerCraftingStations(SubItemGroup weaponsGroup, SubItemGroup machinesGroup) {
-        AmmunitionWorkshop.register(this, weaponsGroup);
-        MilitaryCraftingTable.register(this, machinesGroup);
-        MilitaryMachineFabricator.register(this, machinesGroup);
+        getLogger().info("Military Arsenal addon enabled successfully!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("WeaponsAddon disabled!");
+        getLogger().info("Military Arsenal addon disabled!");
     }
 
     public static WeaponsAddon getInstance() {
@@ -134,6 +103,6 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
 
     @Override
     public String getBugTrackerURL() {
-        return "https://github.com/Chagui68/Military-Arsenal-addon-for-Slimefun4/issues";
+        return null;
     }
 }

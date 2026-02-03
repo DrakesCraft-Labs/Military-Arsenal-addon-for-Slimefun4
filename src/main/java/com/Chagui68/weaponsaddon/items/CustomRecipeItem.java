@@ -15,14 +15,12 @@ public class CustomRecipeItem extends SlimefunItem {
 
     private final ItemStack[] fullRecipe;
     private final RecipeGridSize gridSize;
-    private ItemStack customResult;
 
     public CustomRecipeItem(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType,
-                            ItemStack[] fullRecipe, RecipeGridSize gridSize) {
-        super(itemGroup, item, recipeType, new ItemStack[9]);
-        this.fullRecipe = fullRecipe;
+                            ItemStack[] recipe, RecipeGridSize gridSize) {
+        super(itemGroup, item, recipeType, new ItemStack[9]); 
+        this.fullRecipe = recipe;
         this.gridSize = gridSize;
-        this.customResult = item;
     }
 
     public ItemStack[] getFullRecipe() {
@@ -33,11 +31,7 @@ public class CustomRecipeItem extends SlimefunItem {
         return gridSize;
     }
 
-    public ItemStack getResultItem() {
-        return customResult != null ? customResult : getItem();
-    }
-
-    public void setCustomResult(ItemStack result) {
-        this.customResult = result;
+    public SlimefunItemStack getResultItem() {
+        return (SlimefunItemStack) getItem();
     }
 }

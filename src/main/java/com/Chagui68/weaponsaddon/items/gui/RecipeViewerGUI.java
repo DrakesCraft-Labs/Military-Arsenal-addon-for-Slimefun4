@@ -1,7 +1,5 @@
 package com.Chagui68.weaponsaddon.items.gui;
 
-import com.Chagui68.weaponsaddon.items.CustomRecipeItem;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,39 +21,16 @@ public class RecipeViewerGUI implements Listener {
 
     private static final Map<UUID, String> openViewers = new HashMap<>();
 
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        ItemStack item = e.getItem();
-
-        if (item == null || !p.isSneaking()) return;
-
-        SlimefunItem sfItem = SlimefunItem.getByItem(item);
-
-        if (sfItem instanceof CustomRecipeItem) {
-            e.setCancelled(true);
-            CustomRecipeItem customItem = (CustomRecipeItem) sfItem;
-
-            if (customItem.getGridSize() == CustomRecipeItem.RecipeGridSize.GRID_4x4) {
-                open4x4Recipe(p, ChatColor.stripColor(customItem.getResultItem().getItemMeta().getDisplayName()),
-                        customItem.getResultItem(), customItem.getFullRecipe());
-            } else {
-                open6x6Recipe(p, ChatColor.stripColor(customItem.getResultItem().getItemMeta().getDisplayName()),
-                        customItem.getResultItem(), customItem.getFullRecipe());
-            }
-        }
-    }
-
     public static void open4x4Recipe(Player p, String itemName, ItemStack result, ItemStack[] recipe) {
         Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + "⚒ Recipe: " + itemName);
 
+        // Fondo negro
         ItemStack background = new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ");
-        ItemStack border = new CustomItemStack(Material.ORANGE_STAINED_GLASS_PANE, ChatColor.GOLD + "▓");
-
         for (int i = 0; i < 54; i++) {
             inv.setItem(i, background);
         }
 
+        // Grid 4x4 centrado
         int[] gridSlots = {
                 11, 12, 13, 14,
                 20, 21, 22, 23,
@@ -63,35 +38,40 @@ public class RecipeViewerGUI implements Listener {
                 38, 39, 40, 41
         };
 
-        for (int i = 0; i < Math.min(16, recipe.length); i++) {
-            if (recipe[i] != null) {
-                inv.setItem(gridSlots[i], recipe[i]);
-            }
+        for (int i = 0; i < 16 && i < recipe.length; i++) {
+            inv.setItem(gridSlots[i], recipe[i]);
         }
 
+        // Bordes naranjas
+        ItemStack border = new CustomItemStack(Material.ORANGE_STAINED_GLASS_PANE, ChatColor.GOLD + "▓");
         int[] borderSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 27, 36, 45, 46, 47, 48, 49, 50, 51, 52, 53, 17, 26, 35, 44};
         for (int slot : borderSlots) {
             inv.setItem(slot, border);
         }
 
-        inv.setItem(25, new CustomItemStack(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "⬇ RESULT ⬇"));
+        // Indicador de resultado
+        inv.setItem(25, new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,
+                ChatColor.GREEN + "⬇ RESULT ⬇",
+                "",
+                ChatColor.GRAY + "Item crafted from 4×4 grid"));
+
         inv.setItem(34, result);
 
+        // Info de la tabla
         inv.setItem(53, new CustomItemStack(
                 Material.SMITHING_TABLE,
                 ChatColor.GOLD + "ℹ Military Crafting Table",
                 "",
                 ChatColor.YELLOW + "4×4 Advanced Crafting",
-                ChatColor.GRAY + "Place items exactly as shown",
-                "",
-                ChatColor.DARK_GRAY + "Close inventory to return"
+                ChatColor.GRAY + "Place items exactly as shown"
         ));
 
+        // Botón de cierre
         inv.setItem(49, new CustomItemStack(
                 Material.BARRIER,
                 ChatColor.RED + "✖ Close",
                 "",
-                ChatColor.GRAY + "Click to close"
+                ChatColor.GRAY + "Click to return to guide"
         ));
 
         p.openInventory(inv);
@@ -101,13 +81,13 @@ public class RecipeViewerGUI implements Listener {
     public static void open6x6Recipe(Player p, String itemName, ItemStack result, ItemStack[] recipe) {
         Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + "⚙ Recipe: " + itemName);
 
+        // Fondo negro
         ItemStack background = new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ");
-        ItemStack border = new CustomItemStack(Material.RED_STAINED_GLASS_PANE, ChatColor.DARK_RED + "▓");
-
         for (int i = 0; i < 54; i++) {
             inv.setItem(i, background);
         }
 
+        // Grid 6x6 completo
         int[] gridSlots = {
                 1, 2, 3, 4, 5, 6,
                 10, 11, 12, 13, 14, 15,
@@ -117,35 +97,40 @@ public class RecipeViewerGUI implements Listener {
                 46, 47, 48, 49, 50, 51
         };
 
-        for (int i = 0; i < Math.min(36, recipe.length); i++) {
-            if (recipe[i] != null) {
-                inv.setItem(gridSlots[i], recipe[i]);
-            }
+        for (int i = 0; i < 36 && i < recipe.length; i++) {
+            inv.setItem(gridSlots[i], recipe[i]);
         }
 
+        // Bordes rojos
+        ItemStack border = new CustomItemStack(Material.RED_STAINED_GLASS_PANE, ChatColor.DARK_RED + "▓");
         int[] borderSlots = {0, 7, 8, 9, 16, 17, 18, 25, 26, 27, 34, 35, 36, 43, 44, 45, 52, 53};
         for (int slot : borderSlots) {
             inv.setItem(slot, border);
         }
 
-        inv.setItem(8, new CustomItemStack(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "⬇ RESULT ⬇"));
+        // Indicador de resultado
+        inv.setItem(8, new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,
+                ChatColor.GREEN + "⬇ RESULT ⬇",
+                "",
+                ChatColor.GRAY + "Item crafted from 6×6 grid"));
+
         inv.setItem(17, result);
 
+        // Info de la máquina
         inv.setItem(0, new CustomItemStack(
                 Material.RESPAWN_ANCHOR,
                 ChatColor.DARK_RED + "ℹ Machine Fabricator",
                 "",
                 ChatColor.RED + "6×6 Ultimate Crafting",
-                ChatColor.GRAY + "Place items exactly as shown",
-                "",
-                ChatColor.DARK_GRAY + "Close inventory to return"
+                ChatColor.GRAY + "Place items exactly as shown"
         ));
 
+        // Botón de cierre
         inv.setItem(53, new CustomItemStack(
                 Material.BARRIER,
                 ChatColor.RED + "✖ Close",
                 "",
-                ChatColor.GRAY + "Click to close"
+                ChatColor.GRAY + "Click to return to guide"
         ));
 
         p.openInventory(inv);
@@ -160,18 +145,27 @@ public class RecipeViewerGUI implements Listener {
         if (!title.startsWith(ChatColor.DARK_RED + "⚒ Recipe:") &&
                 !title.startsWith(ChatColor.DARK_RED + "⚙ Recipe:")) return;
 
-        Player p = (Player) e.getWhoClicked();
-
-        // CANCELAR TODOS LOS CLICKS
         e.setCancelled(true);
 
+        Player p = (Player) e.getWhoClicked();
         int slot = e.getRawSlot();
 
-        // Solo permitir cerrar con el botón BARRIER
+        // Cerrar con botón BARRIER
         if ((slot == 49 || slot == 53) && e.getCurrentItem() != null &&
                 e.getCurrentItem().getType() == Material.BARRIER) {
             p.closeInventory();
             openViewers.remove(p.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        if (!(e.getPlayer() instanceof Player)) return;
+
+        String title = e.getView().getTitle();
+        if (title.startsWith(ChatColor.DARK_RED + "⚒ Recipe:") ||
+                title.startsWith(ChatColor.DARK_RED + "⚙ Recipe:")) {
+            openViewers.remove(e.getPlayer().getUniqueId());
         }
     }
 

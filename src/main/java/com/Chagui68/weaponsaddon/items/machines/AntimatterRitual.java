@@ -1,6 +1,7 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
 import com.Chagui68.weaponsaddon.items.AntimatterRifle;
+import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -156,7 +157,7 @@ public class AntimatterRitual extends SlimefunItem {
     public static void register(SlimefunAddon addon, ItemGroup category) {
         ItemStack[] recipe = new ItemStack[]{
                 new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.NETHERITE_BLOCK), new ItemStack(Material.IRON_BLOCK),
-                new ItemStack(Material.NETHERITE_BLOCK), new ItemStack(Material.BEACON), new ItemStack(Material.NETHERITE_BLOCK),
+                new ItemStack(Material.NETHERITE_BLOCK), MilitaryComponents.VOID_CORE_MACHINE, new ItemStack(Material.NETHERITE_BLOCK),
                 new ItemStack(Material.IRON_BLOCK), new ItemStack(Material.NETHERITE_BLOCK), new ItemStack(Material.IRON_BLOCK)
         };
 

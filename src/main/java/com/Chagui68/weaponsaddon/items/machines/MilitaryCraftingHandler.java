@@ -29,10 +29,9 @@ public class MilitaryCraftingHandler implements Listener {
 
     public static void registerRecipe(CustomRecipeItem item) {
         RECIPE_CACHE.add(item);
-        System.out.println("✓ Recipe registrado: " + item.getId() + " - Total recipes: " + RECIPE_CACHE.size());
+        System.out.println("✓ Recipe 4x4 registrado: " + item.getId() + " - Total: " + RECIPE_CACHE.size());
     }
 
-    // MÉTODO ESTÁTICO PÚBLICO
     public static void openTableGuiStatic(Player p, Location blockLoc) {
         openTableGUI(p, blockLoc);
     }
@@ -149,28 +148,22 @@ public class MilitaryCraftingHandler implements Listener {
     private static void attemptCraft(Player p, Inventory inv) {
         int[] gridSlots = {11, 12, 13, 14, 20, 21, 22, 23, 29, 30, 31, 32, 38, 39, 40, 41};
         ItemStack[] grid = new ItemStack[16];
+
         for (int i = 0; i < 16; i++) {
             grid[i] = inv.getItem(gridSlots[i]);
         }
 
-        System.out.println("=== INTENTO DE CRAFTEO ===");
-        System.out.println("Recipes en cache: " + RECIPE_CACHE.size());
+        System.out.println("=== CRAFTEO 4x4 ===" );
+        System.out.println("Recipes: " + RECIPE_CACHE.size());
 
         for (CustomRecipeItem customItem : RECIPE_CACHE) {
-            System.out.println("Checkeando recipe: " + customItem.getId() + " - GridSize: " + customItem.getGridSize());
-
-            if (customItem.getGridSize() != CustomRecipeItem.RecipeGridSize.GRID_4x4) {
-                System.out.println(" ↳ Saltado (no es 4x4)");
-                continue;
-            }
+            if (customItem.getGridSize() != CustomRecipeItem.RecipeGridSize.GRID_4x4) continue;
 
             ItemStack[] recipe = customItem.getFullRecipe();
-            System.out.println(" ↳ Comparando con grid actual...");
+            System.out.println("Checkeando: " + customItem.getId());
 
-            boolean matches = matchesRecipe(grid, recipe);
-            System.out.println(" ↳ Match: " + matches);
-
-            if (matches) {
+            if (matchesRecipe(grid, recipe)) {
+                // Consumir items
                 for (int i = 0; i < 16; i++) {
                     ItemStack item = grid[i];
                     if (item != null && item.getType() != Material.AIR) {
@@ -185,30 +178,24 @@ public class MilitaryCraftingHandler implements Listener {
                 inv.setItem(34, output);
                 p.sendMessage(ChatColor.GREEN + "✓ Crafted: " + ChatColor.WHITE +
                         ChatColor.stripColor(output.getItemMeta().getDisplayName()));
+                System.out.println("✓ CRAFTEO EXITOSO!");
                 return;
             }
         }
 
-        System.out.println("❌ Ningún recipe coincidió");
+        System.out.println("❌ Receta inválida");
         p.sendMessage(ChatColor.RED + "✗ Invalid recipe!");
     }
 
     private static boolean matchesRecipe(ItemStack[] grid, ItemStack[] recipe) {
-        if (grid.length != recipe.length) {
-            System.out.println(" ✗ Longitudes diferentes");
-            return false;
-        }
+        if (grid.length != recipe.length) return false;
 
         for (int i = 0; i < grid.length; i++) {
             if (!itemsMatch(grid[i], recipe[i])) {
-                System.out.println(" ✗ No coincide en slot " + i);
-                System.out.println(" Grid[" + i + "]: " + (grid[i] != null ? grid[i].getType() : "null"));
-                System.out.println(" Recipe[" + i + "]: " + (recipe[i] != null ? recipe[i].getType() : "null"));
                 return false;
             }
         }
 
-        System.out.println(" ✓ RECIPE MATCH!");
         return true;
     }
 
@@ -241,6 +228,7 @@ public class MilitaryCraftingHandler implements Listener {
         if (sfItem != null) {
             return "SF:" + sfItem.getId() + ":" + item.getAmount();
         }
+
         return "VANILLA:" + item.getType() + ":" + item.getAmount();
     }
 

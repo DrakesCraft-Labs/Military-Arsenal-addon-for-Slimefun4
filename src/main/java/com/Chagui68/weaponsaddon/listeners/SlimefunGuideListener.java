@@ -3,47 +3,57 @@ package com.Chagui68.weaponsaddon.listeners;
 import com.Chagui68.weaponsaddon.items.CustomRecipeItem;
 import com.Chagui68.weaponsaddon.items.gui.RecipeViewerGUI;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SlimefunGuideListener implements Listener {
 
-    @EventHandler
-    public void onGuideClick(InventoryClickEvent e) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onSlimefunGuideClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) return;
 
         Player p = (Player) e.getWhoClicked();
-        String title = e.getView().getTitle();
+        ItemStack clicked = e.getCurrentItem();
 
+        if (clicked == null || !clicked.hasItemMeta()) return;
+
+        // Verificar si es la guía de Slimefun
+        String title = e.getView().getTitle();
         if (!title.contains("Slimefun Guide")) return;
 
-        ItemStack clicked = e.getCurrentItem();
-        if (clicked == null || clicked.getType() == Material.AIR) return;
-
+        // Obtener el SlimefunItem clickeado
         SlimefunItem sfItem = SlimefunItem.getByItem(clicked);
-        if (!(sfItem instanceof CustomRecipeItem)) return;
 
-        CustomRecipeItem customItem = (CustomRecipeItem) sfItem;
+        if (sfItem instanceof CustomRecipeItem) {
+            CustomRecipeItem customItem = (CustomRecipeItem) sfItem;
 
-        if (e.isRightClick() && e.isShiftClick()) {
             e.setCancelled(true);
+            p.closeInventory();
 
-            String itemName = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
-            ItemStack result = customItem.getItem();
-            ItemStack[] fullRecipe = customItem.getFullRecipe();
-
-            if (customItem.getGridSize() == CustomRecipeItem.RecipeGridSize.GRID_4x4) {
-                RecipeViewerGUI.open4x4Recipe(p, itemName, result, fullRecipe);
-            } else if (customItem.getGridSize() == CustomRecipeItem.RecipeGridSize.GRID_6x6) {
-                RecipeViewerGUI.open6x6Recipe(p, itemName, result, fullRecipe);
-            }
-
-            p.sendMessage(ChatColor.GREEN + "✓ Opening complete recipe viewer...");
+            // Abrir GUI de receta después de un tick
+            Bukkit.getScheduler().runTaskLater(
+                    Bukkit.getPluginManager().getPlugin("WeaponsAddon"),
+                    () -> {
+                        if (customItem.getGridSize() == CustomRecipeItem.RecipeGridSize.GRID_4x4) {
+                            RecipeViewerGUI.open4x4Recipe(p,
+                                    ChatColor.stripColor(customItem.getResultItem().getItemMeta().getDisplayName()),
+                                    customItem.getResultItem(),
+                                    customItem.getFullRecipe());
+                        } else {
+                            RecipeViewerGUI.open6x6Recipe(p,
+                                    ChatColor.stripColor(customItem.getResultItem().getItemMeta().getDisplayName()),
+                                    customItem.getResultItem(),
+                                    customItem.getFullRecipe());
+                        }
+                    },
+                    1L
+            );
         }
     }
 }

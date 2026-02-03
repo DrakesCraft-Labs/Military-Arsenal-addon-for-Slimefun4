@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class ComponentsHandler implements Listener {
 
-    // PRIORITY HIGHEST para ejecutar ANTES que Slimefun GPS
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCompassUse(PlayerInteractEvent e) {
         ItemStack item = e.getItem();
@@ -19,7 +18,6 @@ public class ComponentsHandler implements Listener {
 
         SlimefunItem sfItem = SlimefunItem.getByItem(item);
 
-        // Si es un item de nuestro addon, cancelar ANTES que Slimefun GPS lo procese
         if (sfItem != null && sfItem.getAddon() != null &&
                 sfItem.getAddon().getName().equals("WeaponsAddon")) {
             e.setCancelled(true);

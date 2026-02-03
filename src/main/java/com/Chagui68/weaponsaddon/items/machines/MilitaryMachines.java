@@ -10,7 +10,6 @@ public class MilitaryMachines {
         MilitaryCraftingTable.register(addon, category);
         MilitaryMachineFabricator.register(addon, category);
         BombardmentTerminal.register(addon, category);
-        BombardmentTerminalRecipeDisplay.register(addon, category);
         AntimatterPedestal.register(addon, category);
         AntimatterRitual.register(addon, category);
     }
