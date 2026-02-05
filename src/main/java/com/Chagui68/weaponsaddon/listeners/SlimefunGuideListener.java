@@ -61,7 +61,7 @@ public class SlimefunGuideListener implements Listener {
             e.setCancelled(true);
             p.closeInventory();
 
-            // Abrir la GUI personalizada después de un tick
+
             Bukkit.getScheduler().runTaskLater(
                     Bukkit.getPluginManager().getPlugin("WeaponsAddon"),
                     () -> {
