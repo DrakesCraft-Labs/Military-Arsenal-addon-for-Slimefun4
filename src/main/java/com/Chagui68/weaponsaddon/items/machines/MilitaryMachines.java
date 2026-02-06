@@ -1,5 +1,6 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
+import com.Chagui68.weaponsaddon.items.BossSpawnEgg;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 
@@ -12,5 +13,6 @@ public class MilitaryMachines {
         BombardmentTerminal.register(addon, category);
         AntimatterPedestal.register(addon, category);
         AntimatterRitual.register(addon, category);
+        BossSpawnEgg.register(addon, category);
     }
 }

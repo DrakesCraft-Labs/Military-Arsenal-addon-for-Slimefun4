@@ -96,13 +96,13 @@ public class AntimatterRifle extends SlimefunItem {
                 target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 2.0f, 0.5f);
                 p.getWorld().playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 1.5f);
 
-                target.damage(999999, p);
+                target.damage(999999, p); //Daño del arma xd
 
                 p.sendMessage(ChatColor.DARK_RED + "☢ " + ChatColor.RED + "ANTIMATTER ANNIHILATION!");
                 p.sendMessage(ChatColor.GRAY + "Target eliminated at " +
                         String.format("%.1f", result.getHitPosition().distance(p.getEyeLocation().toVector())) + " blocks");
 
-                p.setCooldown(Material.NETHERITE_SWORD, 40);
+                p.setCooldown(Material.NETHERITE_SWORD, 320); // Intervalo de disparo del arma en ticks
             } else {
                 p.sendMessage(ChatColor.RED + "✗ No target in range");
                 p.getWorld().playSound(p.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 1.0f, 1.0f);

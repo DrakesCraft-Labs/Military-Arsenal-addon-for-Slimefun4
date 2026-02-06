@@ -23,8 +23,8 @@ public class MachineGunHandler implements Listener {
 
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final int BURST_SIZE = 5;
-    private static final double DAMAGE = 5.0;
-    private static final long COOLDOWN_TICKS = 10;
+    private static final double DAMAGE = 12.0;
+    private static final long COOLDOWN_TICKS = 40;
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
