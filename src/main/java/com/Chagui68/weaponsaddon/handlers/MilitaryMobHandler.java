@@ -21,11 +21,10 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.Random;
 
 public class MilitaryMobHandler implements Listener {
-    // [NOMBRE DE LA CLASE]: Debe coincidir con el nombre del archivo
 
     private final Random random = new Random();
 
-    // PROBABILIDADES: Aquí puedes definir qué tan seguido aparecen tus mobs (0.5 = 50%)
+    // PROBABILIDADES: Aquí puedes definir qué tan seguido aparecen tus mobs (0.5 =
     private static final double RANGER_CHANCE = 0.2; // 50%
     private static final double ELITE_CHANCE = 0.3; // 30%
     private static final double PUSHER_CHANCE = 0.8; // 80%
@@ -36,7 +35,7 @@ public class MilitaryMobHandler implements Listener {
     @EventHandler
     public void onSpawn(CreatureSpawnEvent e) {
         // [SPAWN NATURAL]: Este bloque decide cuándo un mob normal se vuelve militar
-        
+
         // 1. Filtro: Solo reemplazamos esqueletos y zombies que aparecen naturalmente
         // Permitir Spawn Natural, Generación de Mundo y HUEVOS (Vanilla)
         if (e.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL &&
@@ -49,26 +48,23 @@ public class MilitaryMobHandler implements Listener {
         // Manejo de SKELETONS
         if (e.getEntityType() == EntityType.SKELETON) {
             Skeleton skeleton = (Skeleton) e.getEntity();
-            
+
             if (roll < RANGER_CHANCE) {
                 equipEliteRanger(skeleton);
             }
         }
-        
+
         // Manejo de ZOMBIES
         else if (e.getEntityType() == EntityType.ZOMBIE) {
             Zombie zombie = (Zombie) e.getEntity();
-            
+
+            // Prioridad 1: Elite Killer (Más raro - 30%)
             if (roll < ELITE_CHANCE) {
                 equipEliteKiller(zombie);
-
             }
-        }
-
-        else if(e.getEntityType() == EntityType.ZOMBIE){
-            Zombie zombie = (Zombie) e.getEntity();
-
-            if(roll < PUSHER_CHANCE){
+            // Prioridad 2: Pusher (Más común - 80%)
+            // Solo se comprueba si el anterior NO se cumplió
+            else if (roll < PUSHER_CHANCE) {
                 equipPusher(zombie);
             }
         }
@@ -76,7 +72,7 @@ public class MilitaryMobHandler implements Listener {
 
     // [MÉTODO DE EQUIPAMIENTO]: Aquí defines CÓMO se ve y QUÉ HACE tu entidad
 
-    public static void equipPusher(Zombie pusher){
+    public static void equipPusher(Zombie pusher) {
         pusher.setCustomName(ChatColor.GOLD + "⇄ Pusher ⇄");
         pusher.setCustomNameVisible(true);
         pusher.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(10.0);
@@ -87,27 +83,24 @@ public class MilitaryMobHandler implements Listener {
         pusher.addScoreboardTag("Pusher");
 
         EntityEquipment equip = pusher.getEquipment();
-        if(equip != null){
+        if (equip != null) {
 
             // Arma en mano principal
             equip.setItemInMainHand(new ItemStack(Material.PISTON));
             equip.setItemInMainHandDropChance(0.0f); // No dropea
 
-            equip.setHelmet(getColorArmor(Material.LEATHER_HELMET,Color.YELLOW));
+            equip.setHelmet(getColorArmor(Material.LEATHER_HELMET, Color.YELLOW));
             equip.setChestplate(getColorArmor(Material.LEATHER_CHESTPLATE, Color.YELLOW));
             equip.setLeggings(getColorArmor(Material.LEATHER_LEGGINGS, Color.YELLOW));
             equip.setBoots(getColorArmor(Material.LEATHER_BOOTS, Color.YELLOW));
         }
 
-
     }
 
     public static void equipEliteKiller(Zombie miniboss) {
-        // [NUEVA ENTIDAD]: Elite Killer (Instakill)
         miniboss.setCustomName(ChatColor.WHITE + "☣ Elite Killer ☣ ");
         miniboss.setCustomNameVisible(true);
-        // Atributos
-        miniboss.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.17); // Lentitud 2
+        miniboss.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1); // Lentitud 4
         miniboss.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(1.0); // No retroceso
         miniboss.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(999999.0); // Instakill ( Posiblemente ) :V
         miniboss.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(1000.0);
@@ -117,18 +110,17 @@ public class MilitaryMobHandler implements Listener {
         miniboss.addScoreboardTag("EliteKiller");
 
         EntityEquipment equip = miniboss.getEquipment();
-        if(equip != null){
+        if (equip != null) {
 
             // Arma en mano principal
             equip.setItemInMainHand(new ItemStack(Material.DIAMOND_SWORD));
             equip.setItemInMainHandDropChance(0.0f); // No dropea
 
-            equip.setHelmet(getColorArmor(Material.LEATHER_HELMET,Color.WHITE));
+            equip.setHelmet(getColorArmor(Material.LEATHER_HELMET, Color.WHITE));
             equip.setChestplate(getColorArmor(Material.LEATHER_CHESTPLATE, Color.WHITE));
             equip.setLeggings(getColorArmor(Material.LEATHER_LEGGINGS, Color.WHITE));
             equip.setBoots(getColorArmor(Material.LEATHER_BOOTS, Color.WHITE));
         }
-
 
     }
 

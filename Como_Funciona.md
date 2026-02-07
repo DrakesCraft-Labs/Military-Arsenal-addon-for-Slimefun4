@@ -598,6 +598,7 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
     # para un mob y lo hace difícil de esquivar.
 
 /
+
     # Consejo: Si quieres que sea un poco más rápido que un caracol 
     # pero más lento que un humano, 0.13 es el valor perfecto.
 
@@ -718,5 +719,132 @@ Mientras se lee el texto se van a encontrar con simbolos o caracteres especiales
              // e.getDrops().add(MilitaryComponents.STEEL_PLATE.clone());
          }
      }
+ 
+ ## 13. Lógica de Probabilidades y Exclusividad
+ 
+     # En el código de spawn, usamos un "dado" virtual (`roll`) y una cadena 
+     # de decisiones (`if / else if`). Es vital entender el orden de prioridad:
+ 
+ /
+ 
+     # 1. El Dado Único:
+     double roll = random.nextDouble(); 
+     # Se genera UN solo número por cada mob que aparece. Si sale 0.05, 
+     # ese número se usará para todas las comparaciones de ese mob.
+ 
+ /
+ 
+     # 2. La Exclusividad (Prioridad):
+     # Si usas `else if` para el mismo tipo de entidad, el primero que se 
+     # cumpla "anula" a los demás.
+     
+     if (roll < 0.01) { // 1%
+         equipEliteKiller(zombie);  // Gana el más raro
+     } 
+     else if (roll < 0.10) { // 10%
+         equipPusher(zombie);       // Solo ocurre si el primero falló
+     }
+ 
+     # ¿Qué pasa aquí?
+     # - Si el dado sale 0.005: Se convierte en Elite Killer y se detiene (pasa del Pusher).
+     # - Si el dado sale 0.05: NO es Elite Killer, pero SÍ es Pusher.
+     # - Si el dado sale 0.20: No es ninguno, se queda como zombie normal.
+ 
+ /
+ 
+     # 3. Importancia del Orden:
+     # Siempre pon las probabilidades MÁS PEQUEÑAS (los mobs más raros) 
+     # al principio de la cadena. Si pusieras el 50% primero y el 1% después, 
+     # el del 1% casi nunca aparecería porque el del 50% "absorbería" su rango.
+ 
+ /
+ 
+     # 4. El error de "Doble Entidad":
+     # Si usas `if` seguidos (sin el `else`), el código intentaría ponerle 
+     # DOS equipaciones al mismo mob si el dado es bajo, causando errores visuales 
+     # o reemplazando el nombre del anterior. Por eso usamos `else if`.
+ 
+ ## 14. Bloques, Sangría y Anidación (Estructura)
+ 
+     # La "sangría" (esos espacios a la izquierda) no son solo por estética; 
+     # le dicen a Java (y a ti) qué código pertenece a qué "habitación".
+ 
+ /
+ 
+     # 1. Las Llaves `{ }` son Habitaciones:
+     # Todo lo que esté dentro de `{` y `}` pertenece a la condición de arriba.
+     
+     if (e.getEntityType() == EntityType.ZOMBIE) {
+         // --- Estás en la habitación "ZOMBIES" ---
+         // Todo lo que escribas aquí SOLO afecta a zombies.
+         
+         if (roll < 0.1) { 
+             // --- Estás en una sub-habitación "ELITE" ---
+             // Solo entras aquí si eres Zombie Y el dado es < 0.1
+         }
+     }
+ 
+ /
+ 
+     # 2. El Error de la "Habitación Cerrada":
+     # Si cierras la llave `}` de los Zombies y luego intentas preguntar 
+     # otra cosa sobre Zombies con un `else if`, Java ya "salió" de esa lógica.
+     
+     if (esZombie) { ... } 
+     else if (esZombie) { ... } // ¡ERROR LÓGICO! 
+     
+     # El segundo `else if` nunca se ejecutará porque el primero ya 
+     # "atrapó" a todos los zombies y cerró la puerta.
+ 
+ /
+ 
+     # 3. La Sangría Correcta:
+     # Cada vez que abras una llave `{`, el siguiente código debe llevar 
+     # 4 espacios extra hacia la derecha. Esto ayuda a ver visualmente 
+     # dónde termina una decisión y dónde empieza otra.
+ 
+ /
+ 
+     # 4. Anidación vs Cadenas:
+     # - CADENA (if / else if): Eliges UNA de varias opciones diferentes (Zombie O Esqueleto).
+     # - ANIDACIÓN (if dentro de if): Filtras más a fondo (Es Zombie -> Y es un Zombie Raro).
+     # Para tus mobs, lo correcto es: 
+     # 1. Preguntar qué bicho es (Cadena).
+     # 2. Dentro de ese bicho, preguntar qué variante es (Anidación).
+ 
+ ## 15. Ejemplo Maestro: Dos variantes del mismo bicho (El "Combo")
+ 
+     # Si quieres que un Zombie pueda ser o bien "Elite" o bien "Pusher", 
+     # la forma final y correcta de escribirlo para que Java no se confunda es esta:
+ 
+ /
+ 
+     # Código Final Consolidado:
+     
+     if (e.getEntityType() == EntityType.ZOMBIE) {
+         Zombie zombie = (Zombie) e.getEntity();
+         double roll = random.nextDouble(); // El dado se tira AQUÍ
+ 
+         if (roll < 0.05) { 
+             // 1. ¿Es el 5% más raro? -> Se vuelve ELITE KILLER
+             equipEliteKiller(zombie);
+         } 
+         else if (roll < 0.15) { 
+             // 2. ¿No fue Elite pero es el siguiente 10%? -> Se vuelve PUSHER
+             // (Este rango va de 0.05 a 0.15)
+             equipPusher(zombie);
+         }
+         
+         // Si el dado es 0.16 o más, no entra en ningún 'if' y se queda normal.
+     }
+ 
+ /
+ 
+     # ¿Por qué esta es la "Opción Ganadora"?
+     
+     # 1. CPU Eficiente: Solo preguntas una vez si es un Zombie.
+     # 2. Sin Conflictos: Un Zombie nunca intentará tener dos nombres a la vez.
+     # 3. Rareza Real: El Elite Killer tiene prioridad absoluta por estar arriba.
+     # 4. Limpieza: Todo lo relacionado con Zombies vive en el mismo bloque `{ }`.
  
  **
