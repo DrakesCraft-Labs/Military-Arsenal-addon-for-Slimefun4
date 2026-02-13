@@ -41,8 +41,11 @@ public class UpgradeTableHandler implements Listener {
     private static final int UPGRADE_COST = 50000;
     private static final int MAX_UPGRADE_LEVEL = 5;
     private static final double DAMAGE_PER_LEVEL = 2.0; // +2 damage per level
-    private static final double SPEED_PER_LEVEL = 0.15; // +0.15 speed per level
+    private static final double SPEED_PER_LEVEL = 0.2; // +0.15 speed per level
     private static final Map<UUID, Location> openTables = new HashMap<>();
+
+    // Hidden marker to identify our lore lines
+    private static final String LORE_MARKER = ChatColor.BLACK + "" + ChatColor.DARK_GRAY + "" + ChatColor.RESET;
 
     // Valid weapon/tool materials
     private static final Set<Material> VALID_UPGRADE_ITEMS = EnumSet.of(
@@ -336,23 +339,72 @@ public class UpgradeTableHandler implements Listener {
         NamespacedKey levelKey = new NamespacedKey(WeaponsAddon.getInstance(), "upgrade_damage_level");
         meta.getPersistentDataContainer().set(levelKey, PersistentDataType.INTEGER, newLevel);
 
-        // Remove old damage modifiers from our upgrade
-        removeOurModifiers(meta, Attribute.GENERIC_ATTACK_DAMAGE, "military_damage");
-
-        // Add single modifier with ACCUMULATED damage
-        double totalBonus = DAMAGE_PER_LEVEL * newLevel;
-        AttributeModifier modifier = new AttributeModifier(
-                UUID.randomUUID(), "military_damage",
-                totalBonus, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
-        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, modifier);
+        // Apply both attributes to ensure consistency
+        applySynchronizedAttributes(meta, item.getType());
 
         // Hide vanilla attributes
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
 
-        // Update lore
-        updateDamageLore(item, newLevel, totalBonus);
+        // Update all lore at once
+        updateWeaponLore(item);
         return true;
+    }
+
+    private void applySynchronizedAttributes(ItemMeta meta, Material type) {
+        // 1. Clear ALL our military modifiers first
+        removeOurModifiers(meta, Attribute.GENERIC_ATTACK_DAMAGE, "military_damage");
+        removeOurModifiers(meta, Attribute.GENERIC_ATTACK_SPEED, "military_speed");
+
+        // 1.1 Clear legacy boss modifiers if they exist (to prevent stacking)
+        removeOurModifiers(meta, Attribute.GENERIC_ATTACK_DAMAGE, "att");
+        removeOurModifiers(meta, Attribute.GENERIC_ATTACK_SPEED, "att_speed");
+
+        // 2. Resolve Levels
+        int dmgLevel = meta.getPersistentDataContainer().getOrDefault(
+                new NamespacedKey(WeaponsAddon.getInstance(), "upgrade_damage_level"), PersistentDataType.INTEGER, 0);
+        int spdLevel = meta.getPersistentDataContainer().getOrDefault(
+                new NamespacedKey(WeaponsAddon.getInstance(), "upgrade_speed_level"), PersistentDataType.INTEGER, 0);
+
+        // 3. Resolve Boss Bonuses
+        double bossDmgBonus = meta.getPersistentDataContainer().getOrDefault(
+                new NamespacedKey(WeaponsAddon.getInstance(), "boss_damage_bonus"), PersistentDataType.DOUBLE, 0.0);
+
+        // 4. Apply Damage
+        double upgradeDmgBonus = dmgLevel * DAMAGE_PER_LEVEL;
+        double totalDmgBonus = bossDmgBonus + upgradeDmgBonus;
+
+        if (totalDmgBonus > 0) {
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(
+                    UUID.randomUUID(), "military_damage",
+                    totalDmgBonus, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND));
+        }
+
+        // 5. Apply Speed (CRITICAL: Always apply a base modifier if we hide attributes,
+        // even if spdLevel is 0)
+        double baseSpdModifier = getBaseSpeedModifier(type);
+        double spdBonus = spdLevel * SPEED_PER_LEVEL;
+
+        // We ALWAYS apply a speed modifier if ANY upgrade exists, to prevent reset to
+        // 4.0
+        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(
+                UUID.randomUUID(), "military_speed",
+                baseSpdModifier + spdBonus, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND));
+    }
+
+    private double getBaseSpeedModifier(Material type) {
+        String name = type.name();
+        if (name.contains("SWORD"))
+            return -2.4; // 1.6 total
+        if (name.contains("_AXE"))
+            return -3.0; // 1.0 total
+        if (name.contains("_SHOVEL"))
+            return -3.0; // 1.0 total
+        if (name.contains("_PICKAXE"))
+            return -2.8; // 1.2 total
+        if (name.contains("_HOE"))
+            return 0.0; // Varies, but usually fast
+        return -2.4; // Default safe bet
     }
 
     private boolean applySpeedUpgrade(ItemStack item, int newLevel) {
@@ -364,21 +416,15 @@ public class UpgradeTableHandler implements Listener {
         NamespacedKey levelKey = new NamespacedKey(WeaponsAddon.getInstance(), "upgrade_speed_level");
         meta.getPersistentDataContainer().set(levelKey, PersistentDataType.INTEGER, newLevel);
 
-        // Remove old speed modifiers
-        removeOurModifiers(meta, Attribute.GENERIC_ATTACK_SPEED, "military_speed");
+        // Apply synchronized attributes
+        applySynchronizedAttributes(meta, item.getType());
 
-        // Add single modifier with ACCUMULATED speed
-        double totalBonus = SPEED_PER_LEVEL * newLevel;
-        AttributeModifier modifier = new AttributeModifier(
-                UUID.randomUUID(), "military_speed",
-                totalBonus, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
-        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, modifier);
-
+        // Hide vanilla attributes
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
 
-        // Update lore
-        updateSpeedLore(item, newLevel, totalBonus);
+        // Update all lore at once
+        updateWeaponLore(item);
         return true;
     }
 
@@ -396,72 +442,117 @@ public class UpgradeTableHandler implements Listener {
         }
     }
 
-    private void updateDamageLore(ItemStack item, int level, double bonus) {
+    private void updateWeaponLore(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null)
             return;
 
         List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
 
-        // Remove old damage upgrade lines
-        lore.removeIf(line -> line.contains("⚔ Damage") || line.contains("DAMAGE:"));
+        // 1. Precise Cleanup: Remove our lines, redundant stats, AND blank lines.
+        // We use color-agnostic checks to catch lines from other plugins.
+        lore.removeIf(line -> {
+            String stripped = ChatColor.stripColor(line).toLowerCase().trim();
+            return stripped.isEmpty() ||
+                    line.startsWith(LORE_MARKER) ||
+                    stripped.contains("damage:") ||
+                    stripped.contains("speed:") ||
+                    stripped.contains("attack speed") ||
+                    stripped.contains("weapon damage") ||
+                    stripped.contains("velocidad de ataque") ||
+                    stripped.contains("upgrade:");
+        });
 
-        // Calculate total damage
+        // 2. Damage and Speed calculation (Recalculate Totals)
         double totalDamage = calculateTotalDamage(item);
-
-        // Add new damage line at beginning
-        String damageBar = createProgressBar(level, MAX_UPGRADE_LEVEL);
-        lore.add(0, "");
-        lore.add(1, ChatColor.translateAlternateColorCodes('&',
-                "&c⚔ DAMAGE: &f" + String.format("%.1f", totalDamage) + " &7(+" + String.format("%.1f", bonus) + ")"));
-        lore.add(2, ChatColor.translateAlternateColorCodes('&',
-                "&7Upgrade: " + damageBar + " &f" + level + "/" + MAX_UPGRADE_LEVEL));
-
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-    }
-
-    private void updateSpeedLore(ItemStack item, int level, double bonus) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null)
-            return;
-
-        List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
-
-        // Remove old speed upgrade lines
-        lore.removeIf(line -> line.contains("⚡ SPEED") || line.contains("SPEED:"));
-
-        // Calculate total attack speed
         double totalSpeed = calculateTotalSpeed(item);
 
-        // Add speed line
-        String speedBar = createProgressBar(level, MAX_UPGRADE_LEVEL);
-        lore.add("");
-        lore.add(ChatColor.translateAlternateColorCodes('&',
-                "&b⚡ SPEED: &f" + String.format("%.2f", totalSpeed) + " &7(+" + String.format("%.2f", bonus) + ")"));
-        lore.add(ChatColor.translateAlternateColorCodes('&',
-                "&7Upgrade: " + speedBar + " &f" + level + "/" + MAX_UPGRADE_LEVEL));
+        int dmgLevel = getUpgradeLevel(item, "damage");
+        int spdLevel = getUpgradeLevel(item, "speed");
+        double dmgBonusAtCurrentLevel = dmgLevel * DAMAGE_PER_LEVEL;
+        double spdBonusAtCurrentLevel = spdLevel * SPEED_PER_LEVEL;
+
+        // 4. Build and Add New Lore (at the top after any special icons/names)
+        int insertIndex = 0;
+
+        // Find a good place to insert (after existing non-stat lore if possible)
+        for (int i = 0; i < lore.size(); i++) {
+            String line = ChatColor.stripColor(lore.get(i)).trim();
+            if (!line.isEmpty()) {
+                insertIndex = i + 1;
+                // If we hit technical tags, stop there
+                if (line.startsWith("minecraft:") || line.equals("Unbreakable")) {
+                    insertIndex = i;
+                    break;
+                }
+            }
+        }
+
+        List<String> newStats = new ArrayList<>();
+
+        // Add spacer before our stats if there is lore above us
+        if (insertIndex > 0) {
+            newStats.add(LORE_MARKER);
+        }
+
+        if (dmgLevel > 0) {
+            newStats.add(LORE_MARKER + ChatColor.translateAlternateColorCodes('&',
+                    "&c⚔ DAMAGE: &f" + String.format("%.1f", totalDamage)
+                            + (dmgBonusAtCurrentLevel > 0
+                                    ? " &7(+" + String.format("%.1f", dmgBonusAtCurrentLevel) + ")"
+                                    : "")));
+            newStats.add(LORE_MARKER + ChatColor.translateAlternateColorCodes('&',
+                    "&7Upgrade: " + createProgressBar(dmgLevel, MAX_UPGRADE_LEVEL) + " &f" + dmgLevel + "/"
+                            + MAX_UPGRADE_LEVEL));
+        }
+
+        if (spdLevel > 0) {
+            newStats.add(LORE_MARKER + ChatColor.translateAlternateColorCodes('&',
+                    "&b⚡ SPEED: &f" + String.format("%.2f", totalSpeed)
+                            + (spdBonusAtCurrentLevel > 0
+                                    ? " &7(+" + String.format("%.2f", spdBonusAtCurrentLevel) + ")"
+                                    : "")));
+            newStats.add(LORE_MARKER + ChatColor.translateAlternateColorCodes('&',
+                    "&7Upgrade: " + createProgressBar(spdLevel, MAX_UPGRADE_LEVEL) + " &f" + spdLevel + "/"
+                            + MAX_UPGRADE_LEVEL));
+        }
+
+        // Add spacer after our stats if there is lore below us (like technical tags)
+        if (insertIndex < lore.size()) {
+            // Ensure we don't double-spacer if the line above is already a LORE_MARKER
+            if (newStats.get(newStats.size() - 1) != LORE_MARKER) {
+                newStats.add(LORE_MARKER);
+            }
+        }
+
+        lore.addAll(insertIndex, newStats);
 
         meta.setLore(lore);
         item.setItemMeta(meta);
     }
 
     private double calculateTotalSpeed(ItemStack item) {
-        double speed = BASE_SPEED.getOrDefault(item.getType(), 4.0); // Default hand speed is 4.0
-
         ItemMeta meta = item.getItemMeta();
+        double speed;
+
+        // If the item has explicit modifiers, Minecraft starts from 4.0 (the player's
+        // hand)
+        // rather than the material's default pre-calculated speed.
         if (meta != null && meta.hasAttributeModifiers()) {
             Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_SPEED);
-            if (mods != null) {
+            if (mods != null && !mods.isEmpty()) {
+                speed = 4.0; // Starting base for player hand
                 for (AttributeModifier mod : mods) {
                     if (mod.getOperation() == AttributeModifier.Operation.ADD_NUMBER) {
                         speed += mod.getAmount();
                     }
                 }
+                return speed;
             }
         }
 
-        return speed;
+        // If no modifiers, use our pre-calculated material table
+        return BASE_SPEED.getOrDefault(item.getType(), 4.0);
     }
 
     private String createProgressBar(int current, int max) {
@@ -475,18 +566,24 @@ public class UpgradeTableHandler implements Listener {
     }
 
     private double calculateTotalDamage(ItemStack item) {
-        double damage = BASE_DAMAGE.getOrDefault(item.getType(), 1.0);
-
         ItemMeta meta = item.getItemMeta();
+        double damage;
+
+        // If the item has explicit modifiers, start from 1.0 (the player's hand base)
         if (meta != null && meta.hasAttributeModifiers()) {
             Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
-            if (mods != null) {
+            if (mods != null && !mods.isEmpty()) {
+                damage = 1.0; // Starting base for player hand
                 for (AttributeModifier mod : mods) {
                     if (mod.getOperation() == AttributeModifier.Operation.ADD_NUMBER) {
                         damage += mod.getAmount();
                     }
                 }
+            } else {
+                damage = BASE_DAMAGE.getOrDefault(item.getType(), 1.0);
             }
+        } else {
+            damage = BASE_DAMAGE.getOrDefault(item.getType(), 1.0);
         }
 
         if (item.containsEnchantment(Enchantment.SHARPNESS)) {

@@ -2,6 +2,7 @@ package com.Chagui68.weaponsaddon.handlers;
 
 import com.Chagui68.weaponsaddon.items.MachineGun;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
@@ -74,12 +75,12 @@ public class MilitaryMobHandler implements Listener {
             if (roll < ELITE_CHANCE) {
                 equipEliteKiller(zombie);
             }
-            //Pusher (80%)
+            // Pusher (80%)
             else if (roll < PUSHER_CHANCE) {
                 equipPusher(zombie);
             }
         }
-        //Manerjo Aldeanos zombies
+        // Manerjo Aldeanos zombies
         else if (e.getEntityType() == EntityType.ZOMBIE_VILLAGER) {
             ZombieVillager zombieVillager = (ZombieVillager) e.getEntity();
 
@@ -124,7 +125,7 @@ public class MilitaryMobHandler implements Listener {
                         "protection", 5,
                         AttributeModifier.Operation.ADD_NUMBER,
                         EquipmentSlot.HEAD);
-                
+
                 AttributeModifier helmet_toughness = new AttributeModifier(
                         UUID.randomUUID(),
                         "Toughness", 4,
@@ -133,31 +134,41 @@ public class MilitaryMobHandler implements Listener {
 
                 metaCasco.addAttributeModifier(Attribute.GENERIC_ARMOR, helmet_protection);
                 metaCasco.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, helmet_toughness);
-                
+
                 metaCasco.setDisplayName(ChatColor.of("#CFCD8A") + "♔ The King's Crown ♔");
                 metaCasco.addEnchant(Enchantment.PROTECTION, 5, true);
-                metaCasco.addEnchant(Enchantment.PROJECTILE_PROTECTION,5,true);
-                metaCasco.addEnchant(Enchantment.BLAST_PROTECTION,5,true);
-                metaCasco.addEnchant(Enchantment.FIRE_PROTECTION,5,true);
-                
+                metaCasco.addEnchant(Enchantment.PROJECTILE_PROTECTION, 5, true);
+                metaCasco.addEnchant(Enchantment.BLAST_PROTECTION, 5, true);
+                metaCasco.addEnchant(Enchantment.FIRE_PROTECTION, 5, true);
+
+                // Add persistent tag for wearability logic
+                metaCasco.getPersistentDataContainer().set(
+                        new NamespacedKey(com.Chagui68.weaponsaddon.WeaponsAddon.getInstance(), "is_king_crown"),
+                        org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+
                 casco.setItemMeta(metaCasco);
             }
             equip.setHelmet(casco);
-            equip.setHelmetDropChance(0.01f); //1%
+            equip.setHelmetDropChance(0.01f); // 1%
 
             ItemStack arma = new ItemStack(Material.GOLDEN_SWORD);
             ItemMeta metaArma = arma.getItemMeta();
             if (metaArma != null) {
                 AttributeModifier sword_damage = new AttributeModifier(
                         UUID.randomUUID(),
-                        "att", 15,
-                        AttributeModifier.Operation.ADD_NUMBER, // Ataque = 15 de daño
+                        "military_damage", 15,
+                        AttributeModifier.Operation.ADD_NUMBER,
                         EquipmentSlot.HAND);
 
                 AttributeModifier sword_attack_speed = new AttributeModifier(
-                        UUID.randomUUID(), "att_speed", -2.4,
+                        UUID.randomUUID(), "military_speed", -2.4,
                         AttributeModifier.Operation.ADD_NUMBER,
                         EquipmentSlot.HAND);
+
+                // Store boss damage bonus in PDC for UpgradeTableHandler compatibility
+                metaArma.getPersistentDataContainer().set(
+                        new NamespacedKey(com.Chagui68.weaponsaddon.WeaponsAddon.getInstance(), "boss_damage_bonus"),
+                        org.bukkit.persistence.PersistentDataType.DOUBLE, 15.0);
                 // Daño dinamico en base atributos
 
                 // Todos los valores o variables son exclusivos de esta entidad. En otras
@@ -199,12 +210,12 @@ public class MilitaryMobHandler implements Listener {
             }
             equip.setItemInMainHand(arma);
             equip.setItemInMainHandDropChance(0.1f); // 10%
-            
+
             // Resto de la armadura (puedes personalizarlos luego igual que el casco)
             equip.setChestplate(new ItemStack(Material.GOLDEN_CHESTPLATE));
             equip.setLeggings(new ItemStack(Material.GOLDEN_LEGGINGS));
             equip.setBoots(new ItemStack(Material.GOLDEN_BOOTS));
-            
+
             equip.setChestplateDropChance(0.0f);
             equip.setLeggingsDropChance(0.0f);
             equip.setBootsDropChance(0.0f);

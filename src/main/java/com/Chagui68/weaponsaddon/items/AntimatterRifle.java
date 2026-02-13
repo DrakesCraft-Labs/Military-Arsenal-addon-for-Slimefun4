@@ -39,8 +39,7 @@ public class AntimatterRifle extends SlimefunItem {
             "&c⚠ Use with caution",
             "",
             "&eRight-Click to fire antimatter beam",
-            "&7Crafted at Antimatter Ritual Altar"
-    );
+            "&7Crafted at Antimatter Ritual Altar");
 
     static {
         ItemMeta meta = ANTIMATTER_RIFLE.getItemMeta();
@@ -75,32 +74,38 @@ public class AntimatterRifle extends SlimefunItem {
                     direction,
                     50.0,
                     0.5,
-                    entity -> entity instanceof LivingEntity && entity != p
-            );
+                    entity -> entity instanceof LivingEntity && entity != p);
 
             if (result != null && result.getHitEntity() instanceof LivingEntity) {
                 LivingEntity target = (LivingEntity) result.getHitEntity();
 
                 for (double i = 0; i < result.getHitPosition().distance(p.getEyeLocation().toVector()); i += 0.5) {
                     Vector point = p.getEyeLocation().toVector().add(direction.clone().multiply(i));
-                    p.getWorld().spawnParticle(Particle.ELECTRIC_SPARK,
+                    p.getWorld().spawnParticle(Particle.CRIT,
                             point.getX(), point.getY(), point.getZ(),
                             1, 0, 0, 0, 0);
-                    p.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME,
+                    p.getWorld().spawnParticle(Particle.SMOKE,
                             point.getX(), point.getY(), point.getZ(),
-                            2, 0.1, 0.1, 0.1, 0.01);
+                            1, 0, 0, 0, 0.02);
+                    if (i % 2 == 0) {
+                        p.getWorld().spawnParticle(Particle.FLASH,
+                                point.getX(), point.getY(), point.getZ(),
+                                1, 0, 0, 0, 0);
+                    }
                 }
 
-                target.getWorld().spawnParticle(Particle.EXPLOSION, target.getLocation().add(0, 1, 0), 50, 1, 1, 1, 0.3);
+                target.getWorld().spawnParticle(Particle.EXPLOSION, target.getLocation().add(0, 1, 0), 50, 1, 1, 1,
+                        0.3);
                 target.getWorld().spawnParticle(Particle.FLASH, target.getLocation().add(0, 1, 0), 10);
                 target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 2.0f, 0.5f);
                 p.getWorld().playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 1.5f);
 
-                target.damage(999999, p); //Daño del arma xd
+                target.damage(999999, p); // Daño del arma xd
 
                 p.sendMessage(ChatColor.DARK_RED + "☢ " + ChatColor.RED + "ANTIMATTER ANNIHILATION!");
                 p.sendMessage(ChatColor.GRAY + "Target eliminated at " +
-                        String.format("%.1f", result.getHitPosition().distance(p.getEyeLocation().toVector())) + " blocks");
+                        String.format("%.1f", result.getHitPosition().distance(p.getEyeLocation().toVector()))
+                        + " blocks");
 
                 p.setCooldown(Material.NETHERITE_SWORD, 320); // Intervalo de disparo del arma en ticks
             } else {
@@ -113,8 +118,7 @@ public class AntimatterRifle extends SlimefunItem {
     public static void register(SlimefunAddon addon, ItemGroup category) {
         RecipeType ritualRecipe = new RecipeType(
                 new NamespacedKey(WeaponsAddon.getInstance(), "antimatter_ritual"),
-                AntimatterRitual.ANTIMATTER_RITUAL_CORE
-        );
+                AntimatterRitual.ANTIMATTER_RITUAL_CORE);
 
         new AntimatterRifle(category, ANTIMATTER_RIFLE, ritualRecipe).register(addon);
     }

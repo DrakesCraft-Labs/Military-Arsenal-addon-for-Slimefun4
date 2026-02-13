@@ -22,7 +22,7 @@ public class RecipeViewerGUI implements Listener {
     private static final Map<UUID, String> openViewers = new HashMap<>();
 
     public static void open4x4Recipe(Player p, String itemName, ItemStack result, ItemStack[] recipe) {
-        Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + "⚒ Recipe: " + itemName);
+        Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + itemName);
 
         // Fondo negro
         ItemStack background = new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ");
@@ -79,7 +79,7 @@ public class RecipeViewerGUI implements Listener {
     }
 
     public static void open6x6Recipe(Player p, String itemName, ItemStack result, ItemStack[] recipe) {
-        Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + "⚙ Recipe: " + itemName);
+        Inventory inv = Bukkit.createInventory(null, 54, ChatColor.DARK_RED + itemName);
 
         // Fondo negro
         ItemStack background = new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ");

@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
+import org.bukkit.util.RayTraceResult;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -31,56 +32,58 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent, Listener {
+public class SniperTurret extends CustomRecipeItem implements EnergyNetComponent, Listener {
 
-    private static final int ENERGY_CAPACITY = 5000;
-    private static final int ENERGY_PER_SHOT = 100;
-    private static final double RANGE = 15.0;
-    private static final double DAMAGE = 10.0;
+    private static final int ENERGY_CAPACITY = 6000;
+    private static final int ENERGY_PER_SHOT = 250;
+    private static final double RANGE = 55.0;
+    private static final double DAMAGE = 100.0;
+    private static final int SHOT_COOLDOWN = 3; // Cooldown in Slimefun ticks
 
-    // --- VISUAL CONFIGURATION CONSTANTS (Tweak these for design) ---
-    private static final float STEM_SCALE_X = 0.3f;
-    private static final float STEM_SCALE_Y = 0.95f;
-    private static final float STEM_SCALE_Z = 0.3f;
-    private static final float STEM_OFFSET_X = -0.15f;
+    // --- VISUAL CONFIGURATION CONSTANTS ---
+    private static final float STEM_SCALE_X = 0.25f;
+    private static final float STEM_SCALE_Y = 1.1f;
+    private static final float STEM_SCALE_Z = 0.25f;
+    private static final float STEM_OFFSET_X = -0.125f;
 
-    private static final float HEAD_OFFSET_Y = 0.95f; // Elevation of the head
-    private static final float HEAD_SCALE = 0.7f;
-    private static final float HEAD_INT_OFFSET = -0.35f; // Internal centering
+    private static final float HEAD_OFFSET_Y = 1.1f;
+    private static final float HEAD_SCALE = 0.5f;
+    private static final float HEAD_INT_OFFSET = -0.25f;
 
     private static final float BARREL_OFFSET_Z = 0.1f;
-    private static final float BARREL_SCALE_X = 0.2f;
-    private static final float BARREL_SCALE_Y = 0.2f;
-    private static final float BARREL_SCALE_Z = 0.6f; // Shortened from 1.0/0.8
+    private static final float BARREL_SCALE_X = 0.12f;
+    private static final float BARREL_SCALE_Y = 0.12f;
+    private static final float BARREL_SCALE_Z = 1.4f;
 
-    private static final float SENSOR_OFFSET_X = 0.15f;
-    private static final float SENSOR_OFFSET_Y = 0.3f;
-    private static final float SENSOR_OFFSET_Z = 0.3f; // Forward position
-    private static final float SENSOR_SCALE = 0.15f;
+    private static final float SENSOR_OFFSET_X = 0.1f;
+    private static final float SENSOR_OFFSET_Y = 0.20f;
+    private static final float SENSOR_OFFSET_Z = 0.20f;
+    private static final float SENSOR_SCALE = 0.12f;
 
-    private static final Material STEM_MATERIAL = Material.GRAY_CONCRETE;
-    private static final Material HEAD_MATERIAL = Material.NETHERITE_BLOCK;
-    private static final Material BARREL_MATERIAL = Material.IRON_BLOCK;
-    private static final Material SENSOR_MATERIAL = Material.CYAN_STAINED_GLASS;
+    private static final Material STEM_MATERIAL = Material.BLACK_CONCRETE;
+    private static final Material HEAD_MATERIAL = Material.GOLD_BLOCK;
+    private static final Material BARREL_MATERIAL = Material.GRAY_CONCRETE;
+    private static final Material SENSOR_MATERIAL = Material.RED_STAINED_GLASS;
     // -----------------------------------------------------------------
 
     public static final SlimefunItemStack SNIPER_TURRET = new SlimefunItemStack(
-            "ATTACK_TURRET",
-            Material.NETHERITE_BLOCK,
-            "&1🛡 &9Industrial Attack Turret",
+            "SNIPER_TURRET",
+            Material.RED_STAINED_GLASS,
+            "&1🎯 &9Long-Range Sniper Turret",
             "",
-            "&7Automated robotic defense system.",
-            "&7Advanced AI with targeting sensors.",
+            "&7Precision-engineered for long-range",
+            "&7elimination of hostile targets.",
             "",
-            "&6Range: &e30 Blocks",
-            "&6Damage: &e15.0 HP",
-            "&6Energy: &e100 J per shot",
-            "&6Capacity: &e5000 J",
+            "&6Maximum Range: &e45 Blocks",
+            "&6Precision Damage: &e30.0 HP",
+            "&6Fire Rate: &eVery Slow (3s)",
+            "&6Energy: &e250 J per shot",
+            "&6Capacity: &e6000 J",
             "",
             "&eRight-Click to place",
-            "&8(Invisible anchor block)");
+            "&8(Animated 3D Model)");
 
-    public SpinerTurret(ItemGroup itemGroup, SlimefunItemStack item, ItemStack[] recipe) {
+    public SniperTurret(ItemGroup itemGroup, SlimefunItemStack item, ItemStack[] recipe) {
         super(itemGroup, item, MilitaryRecipeTypes.getMilitaryMachineFabricator(), recipe, RecipeGridSize.GRID_6x6);
     }
 
@@ -100,9 +103,8 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
         addItemHandler(new BlockPlaceHandler(false) {
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
-                // Change the block to LIGHT to act as an anchor
                 e.getBlock().setType(Material.LIGHT);
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "ATTACK_TURRET");
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "SNIPER_TURRET");
                 spawnPvzModel(e.getBlock().getLocation());
             }
         });
@@ -122,7 +124,7 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
         addItemHandler(new BlockTicker() {
             @Override
             public void tick(Block b, SlimefunItem item, me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config data) {
-                SpinerTurret.this.tick(b);
+                SniperTurret.this.tick(b);
             }
 
             @Override
@@ -134,25 +136,45 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
 
     private void tick(Block b) {
         Location loc = b.getLocation();
-        // checkHitboxBreak(loc); // We use the Listener now for cleaner breaking
+
+        // --- Persistence Fix: Auto-Respawn Model if missing ---
+        String tag = "PVZ_SNIPER_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
+        Entity modelPart = loc.getWorld().getNearbyEntities(loc.clone().add(0.5, 0.5, 0.5), 1.5, 1.5, 1.5)
+                .stream().filter(e -> e.getScoreboardTags().contains(tag)).findFirst().orElse(null);
+
+        if (modelPart == null) {
+            spawnPvzModel(loc);
+        }
+        // -----------------------------------------------------
+
+        // Handle Cooldown using BlockStorage
+        String cooldownStr = BlockStorage.getLocationInfo(loc, "cooldown");
+        int cooldown = cooldownStr == null ? 0 : Integer.parseInt(cooldownStr);
+
+        if (cooldown > 0) {
+            BlockStorage.addBlockInfo(loc, "cooldown", String.valueOf(cooldown - 1));
+            // Rotate towards target even during cooldown
+            LivingEntity target = findTarget(loc.clone().add(0.5, 0.5, 0.5));
+            updateModelRotation(loc, target);
+            return;
+        }
 
         Location centerLoc = loc.clone().add(0.5, 0.5, 0.5);
-        int charge = EnergyManager.getCharge(b.getLocation());
+        int charge = EnergyManager.getCharge(loc);
 
         LivingEntity target = findTarget(centerLoc);
-        updateModelRotation(b.getLocation(), target);
+        updateModelRotation(loc, target);
 
         if (target == null)
             return;
 
-        // Debug: Only shoot if energy allows
         if (charge < ENERGY_PER_SHOT) {
-            // Optional: world.spawnParticle(Particle.SMOKE_NORMAL, centerLoc, 1);
             return;
         }
 
         shoot(centerLoc, target);
-        EnergyManager.removeCharge(b.getLocation(), ENERGY_PER_SHOT);
+        EnergyManager.removeCharge(loc, ENERGY_PER_SHOT);
+        BlockStorage.addBlockInfo(loc, "cooldown", String.valueOf(SHOT_COOLDOWN));
     }
 
     private LivingEntity findTarget(Location loc) {
@@ -161,46 +183,58 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
         double closestDist = Double.MAX_VALUE;
 
         for (Entity e : nearby) {
-            // Target all LivingEntities that are not Players and not ArmorStands/Displays
             if (e instanceof LivingEntity && !(e instanceof Player) && !(e instanceof ArmorStand) && !e.isDead()
-                    && !e.hasMetadata("no_target")) {
+                    && !e.hasMetadata("no_target")
+                    && !e.getScoreboardTags().contains("PVZ_HEAD")
+                    && !e.getScoreboardTags().contains("PVZ_GUARDIAN")) {
                 double dist = e.getLocation().distanceSquared(loc);
                 if (dist < closestDist && dist <= RANGE * RANGE) {
-                    closestDist = dist;
-                    closest = (LivingEntity) e;
+                    if (hasLineOfSight(loc, (LivingEntity) e)) {
+                        closestDist = dist;
+                        closest = (LivingEntity) e;
+                    }
                 }
             }
         }
         return closest;
     }
 
+    private boolean hasLineOfSight(Location loc, LivingEntity target) {
+        Location start = loc.clone().add(0, HEAD_OFFSET_Y, 0);
+        Location end = target.getEyeLocation();
+        Vector direction = end.toVector().subtract(start.toVector());
+        double distance = direction.length();
+
+        // Raytrace to check for solid blocks
+        RayTraceResult result = loc.getWorld().rayTraceBlocks(start, direction.normalize(), distance,
+                FluidCollisionMode.NEVER, true);
+
+        // If result is null, it means nothing was hit, so LOS is clear
+        return result == null || result.getHitBlock() == null;
+    }
+
     private void shoot(Location start, LivingEntity target) {
         Location targetLoc = target.getEyeLocation();
-
-        // Calculate muzzle location based on current turret rotation
         Vector direction = targetLoc.toVector().subtract(start.toVector()).normalize();
         float yaw = (float) Math.toDegrees(Math.atan2(-direction.getX(), direction.getZ()));
 
-        // Offset starting point to the muzzle
         double radYaw = Math.toRadians(yaw);
         Location muzzle = start.clone().add(
                 -Math.sin(radYaw) * (BARREL_SCALE_Z + 0.1),
-                0.4 + (HEAD_OFFSET_Y - 0.95), // Adjust based on head elevation
+                0.4 + (HEAD_OFFSET_Y - 0.95),
                 Math.cos(radYaw) * (BARREL_SCALE_Z + 0.1));
-        // Visual and Sound effects
+
         muzzle.getWorld().playSound(muzzle, Sound.ENTITY_EGG_THROW, 1.5f, 0.8f);
         muzzle.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, muzzle, 5, 0.1, 0.1, 0.1, 0.05);
 
-        // Visual "Bullet" (Fast moving particle)
         Location bullet = muzzle.clone();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 20; i++) {
             bullet.add(direction.clone().multiply(0.5));
             if (bullet.distanceSquared(muzzle) > RANGE * RANGE)
                 break;
             start.getWorld().spawnParticle(Particle.COMPOSTER, bullet, 1, 0, 0, 0, 0);
         }
 
-        // Direct damage with no-damage-ticks bypass
         target.setNoDamageTicks(0);
         target.damage(DAMAGE);
 
@@ -211,9 +245,8 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
     private void spawnPvzModel(Location loc) {
         Location center = loc.clone().add(0.5, 0, 0.5);
         World world = loc.getWorld();
-        String tag = "PVZ_TURRET_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
+        String tag = "PVZ_SNIPER_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
 
-        // 1. HYDRAULIC STEM (Industrial base)
         BlockDisplay stem = (BlockDisplay) world.spawnEntity(center, EntityType.BLOCK_DISPLAY);
         stem.setBlock(STEM_MATERIAL.createBlockData());
         stem.setTransformation(new Transformation(
@@ -223,7 +256,6 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
                 new Quaternionf()));
         stem.addScoreboardTag(tag);
 
-        // 2. SUPPORT FRAME (Mechanical detail)
         BlockDisplay frame = (BlockDisplay) world.spawnEntity(center, EntityType.BLOCK_DISPLAY);
         frame.setBlock(Material.IRON_BARS.createBlockData());
         frame.setTransformation(new Transformation(
@@ -233,7 +265,6 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
                 new Quaternionf()));
         frame.addScoreboardTag(tag);
 
-        // 3. ARMORED HEAD
         BlockDisplay head = (BlockDisplay) world.spawnEntity(center.clone().add(0, HEAD_OFFSET_Y, 0),
                 EntityType.BLOCK_DISPLAY);
         head.setBlock(HEAD_MATERIAL.createBlockData());
@@ -245,7 +276,6 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
         head.addScoreboardTag(tag);
         head.addScoreboardTag("PVZ_HEAD");
 
-        // 4. RAILGUN MUZZLE
         BlockDisplay mouth = (BlockDisplay) world.spawnEntity(center.clone().add(0, HEAD_OFFSET_Y, 0),
                 EntityType.BLOCK_DISPLAY);
         mouth.setBlock(BARREL_MATERIAL.createBlockData());
@@ -257,7 +287,6 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
         mouth.addScoreboardTag(tag);
         mouth.addScoreboardTag("PVZ_MOUTH");
 
-        // 5. OPTICAL SENSOR (Targeting)
         BlockDisplay sensor = (BlockDisplay) world.spawnEntity(center.clone().add(0, HEAD_OFFSET_Y, 0),
                 EntityType.BLOCK_DISPLAY);
         sensor.setBlock(SENSOR_MATERIAL.createBlockData());
@@ -269,7 +298,6 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
         sensor.addScoreboardTag(tag);
         sensor.addScoreboardTag("PVZ_SENSOR");
 
-        // 6. DYNAMIC HITBOX (Interaction Entity)
         Interaction interaction = (Interaction) world.spawnEntity(center, EntityType.INTERACTION);
         interaction.setInteractionWidth(1.2f);
         interaction.setInteractionHeight(HEAD_OFFSET_Y + HEAD_SCALE);
@@ -287,7 +315,7 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
             return;
 
         for (String tag : interaction.getScoreboardTags()) {
-            if (tag.startsWith("PVZ_TURRET_")) {
+            if (tag.startsWith("PVZ_SNIPER_")) {
                 String[] parts = tag.split("_");
                 if (parts.length == 5) {
                     try {
@@ -297,16 +325,13 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
                         Location loc = new Location(interaction.getWorld(), x, y, z);
 
                         if (e.getDamager() instanceof Player) {
-                            // Visual and sound feedback
                             interaction.getWorld().playSound(interaction.getLocation(), Sound.BLOCK_LANTERN_BREAK, 1f,
                                     1f);
                             interaction.getWorld().spawnParticle(Particle.WAX_OFF,
                                     interaction.getLocation().add(0, 0.5, 0), 15, 0.2, 0.2, 0.2, 0.1);
 
-                            // Force drop the item manually
                             interaction.getWorld().dropItemNaturally(loc, SNIPER_TURRET.clone());
 
-                            // Clear block and Slimefun data COMPLETELY
                             loc.getBlock().setType(Material.AIR);
                             BlockStorage.clearBlockInfo(loc);
                             removePvzModel(loc);
@@ -332,7 +357,7 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
     }
 
     private void removePvzModel(Location loc) {
-        String tag = "PVZ_TURRET_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
+        String tag = "PVZ_SNIPER_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
         for (Entity entity : loc.getWorld().getNearbyEntities(loc.clone().add(0.5, 0.5, 0.5), 1.5, 1.5, 1.5)) {
             if (entity.getScoreboardTags().contains(tag)) {
                 entity.remove();
@@ -341,7 +366,7 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
     }
 
     private void updateModelRotation(Location loc, LivingEntity target) {
-        String tag = "PVZ_TURRET_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
+        String tag = "PVZ_SNIPER_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
         Location center = loc.clone().add(0.5, 0.6, 0.5);
 
         float yaw = 0;
@@ -365,17 +390,28 @@ public class SpinerTurret extends CustomRecipeItem implements EnergyNetComponent
 
     public static void register(SlimefunAddon addon, ItemGroup category) {
         ItemStack[] recipe = new ItemStack[] {
-                MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME,
-                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
-                MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
-                MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
-                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
-                MilitaryComponents.REINFORCED_FRAME, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.HYDRAULIC_SYSTEM, MilitaryComponents.COOLANT_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.REINFORCED_FRAME
+                MilitaryComponents.FIREARM_BARREL, MilitaryComponents.QUANTUM_PROCESSOR,
+                MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.ENERGY_MATRIX,
+                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.FIREARM_BARREL,
+                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM,
+                MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM,
+                MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
+                MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM,
+                MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.EXPLOSIVE_CORE,
+                MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
+                MilitaryComponents.ENERGY_MATRIX, MilitaryComponents.TARGETING_SYSTEM,
+                MilitaryComponents.EXPLOSIVE_CORE, MilitaryComponents.EXPLOSIVE_CORE,
+                MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.ENERGY_MATRIX,
+                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.TARGETING_SYSTEM,
+                MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.TARGETING_SYSTEM,
+                MilitaryComponents.TARGETING_SYSTEM, MilitaryComponents.QUANTUM_PROCESSOR,
+                MilitaryComponents.FIREARM_BARREL, MilitaryComponents.QUANTUM_PROCESSOR,
+                MilitaryComponents.HYDRAULIC_SYSTEM, MilitaryComponents.COOLANT_SYSTEM,
+                MilitaryComponents.QUANTUM_PROCESSOR, MilitaryComponents.FIREARM_BARREL
         };
-        SpinerTurret turret = new SpinerTurret(category, SNIPER_TURRET, recipe);
+        SniperTurret turret = new SniperTurret(category, SNIPER_TURRET, recipe);
         turret.register(addon);
 
-        // Register the hitbox listener
         if (addon instanceof org.bukkit.plugin.Plugin) {
             org.bukkit.Bukkit.getPluginManager().registerEvents(turret, (org.bukkit.plugin.Plugin) addon);
         }

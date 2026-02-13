@@ -40,7 +40,7 @@ public class MilitaryVouchers {
                         "&7★ Boss Reward Voucher",
                         "&7Bring this to the Military Workbench",
                         "",
-                        "&e▶ Right-click to redeem (Coming soon)");
+                        "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_TANK_PART = new SlimefunItemStack(
                         "VOUCHER_TANK_PART",
@@ -50,7 +50,7 @@ public class MilitaryVouchers {
                         "&7★ Boss Reward Voucher",
                         "&7A piece of a heavy war machine",
                         "",
-                        "&e▶ Right-click to redeem (Coming soon)");
+                        "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_BATTERY = new SlimefunItemStack(
                         "VOUCHER_BATTERY",
@@ -60,7 +60,7 @@ public class MilitaryVouchers {
                         "&7★ Boss Reward Voucher",
                         "&7Highly unstable energy source",
                         "",
-                        "&e▶ Right-click to redeem (Coming soon)");
+                        "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_DOCUMENT = new SlimefunItemStack(
                         "VOUCHER_DOCUMENT",
@@ -70,7 +70,7 @@ public class MilitaryVouchers {
                         "&7★ Boss Reward Voucher",
                         "&7Unlock secret military knowledge",
                         "",
-                        "&e▶ Right-click to redeem (Coming soon)");
+                        "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_KEY = new SlimefunItemStack(
                         "VOUCHER_KEY",
@@ -80,7 +80,7 @@ public class MilitaryVouchers {
                         "&7★ Boss Reward Voucher",
                         "&7Used to open military supply drops",
                         "",
-                        "&e▶ Right-click to redeem (Coming soon)");
+                        "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_COMMENDATION = new SlimefunItemStack(
                         "VOUCHER_COMMENDATION",
@@ -90,7 +90,7 @@ public class MilitaryVouchers {
                         "&7★ Boss Reward Voucher",
                         "&7Signed by the High Command",
                         "",
-                        "&e▶ Right-click to redeem (Coming soon)");
+                        "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_EMBLEM = new SlimefunItemStack(
                         "VOUCHER_EMBLEM",
@@ -100,7 +100,7 @@ public class MilitaryVouchers {
                         "&7★ Boss Reward Voucher",
                         "&7Proof of your combat supremacy",
                         "",
-                        "&e▶ Right-click to redeem (Coming soon)");
+                        "&eAn important part of something more powerful");
 
         public static void register(SlimefunAddon addon, ItemGroup category) {
                 RecipeType bossDropType = getBossDropRecipeType();

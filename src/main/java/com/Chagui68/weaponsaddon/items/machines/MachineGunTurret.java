@@ -43,56 +43,36 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent, Listener {
+public class MachineGunTurret extends CustomRecipeItem implements EnergyNetComponent, Listener {
 
-    private static final int ENERGY_CAPACITY = 5000;
-    private static final int ENERGY_PER_SHOT = 100;
-    private static final double RANGE = 15.0;
-    private static final double DAMAGE = 30.0;
+    private static final int ENERGY_CAPACITY = 3000;
+    private static final int ENERGY_PER_SHOT = 20;
+    private static final double RANGE = 10.0;
+    private static final double DAMAGE = 4.0; // Lower damage but higher fire rate
 
-    // --- VISUAL CONFIGURATION CONSTANTS (Tweak these for design) ---
-    private static final float STEM_SCALE_X = 0.3f;
-    private static final float STEM_SCALE_Y = 0.95f;
-    private static final float STEM_SCALE_Z = 0.3f;
-    private static final float STEM_OFFSET_X = -0.15f;
+    // --- VISUAL CONFIGURATION ---
+    private static final float HEAD_OFFSET_Y = 0.8f;
+    private static final float HEAD_SCALE = 0.6f;
 
-    private static final float HEAD_OFFSET_Y = 0.95f; // Elevation of the head
-    private static final float HEAD_SCALE = 0.7f;
-    private static final float HEAD_INT_OFFSET = -0.35f; // Internal centering
+    private static final float BARREL_SCALE_Z = 0.5f;
 
-    private static final float BARREL_OFFSET_Z = 0.1f;
-    private static final float BARREL_SCALE_X = 0.2f;
-    private static final float BARREL_SCALE_Y = 0.2f;
-    private static final float BARREL_SCALE_Z = 0.6f; // Shortened from 1.0/0.8
-
-    private static final float SENSOR_OFFSET_X = 0.15f;
-    private static final float SENSOR_OFFSET_Y = 0.3f;
-    private static final float SENSOR_OFFSET_Z = 0.3f; // Forward position
-    private static final float SENSOR_SCALE = 0.15f;
-
-    private static final Material STEM_MATERIAL = Material.GRAY_CONCRETE;
-    private static final Material HEAD_MATERIAL = Material.NETHERITE_BLOCK;
-    private static final Material BARREL_MATERIAL = Material.IRON_BLOCK;
-    private static final Material SENSOR_MATERIAL = Material.CYAN_STAINED_GLASS;
-    // -----------------------------------------------------------------
-
-    public static final SlimefunItemStack ATTACK_TURRET = new SlimefunItemStack(
-            "ATTACK_TURRET",
-            Material.NETHERITE_BLOCK,
-            "&1🛡 &9Industrial Attack Turret",
+    public static final SlimefunItemStack MACHINE_GUN_TURRET = new SlimefunItemStack(
+            "MACHINE_GUN_TURRET",
+            Material.IRON_BLOCK,
+            "&4🔫 &cMachine Gun Turret",
             "",
-            "&7Automated robotic defense system.",
-            "&7Advanced AI with targeting sensors.",
+            "&7A rapid-fire automated defense system.",
+            "&7Equipped with 4 rotary mini-guns.",
             "",
-            "&6Range: &e30 Blocks",
-            "&6Damage: &e15.0 HP",
-            "&6Energy: &e100 J per shot",
-            "&6Capacity: &e5000 J",
+            "&6Range: &e10 Blocks",
+            "&6Damage: &e4.0 HP (High fire-rate)",
+            "&6Energy: &e20 J per shot",
+            "&6Capacity: &e3000 J",
             "",
             "&eRight-Click to place",
             "&8(Invisible anchor block)");
 
-    public AttackTurret(ItemGroup itemGroup, SlimefunItemStack item, ItemStack[] recipe) {
+    public MachineGunTurret(ItemGroup itemGroup, SlimefunItemStack item, ItemStack[] recipe) {
         super(itemGroup, item, MilitaryRecipeTypes.getMilitaryMachineFabricator(), recipe, RecipeGridSize.GRID_6x6);
     }
 
@@ -112,29 +92,28 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
         addItemHandler(new BlockPlaceHandler(false) {
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
-                // Change the block to LIGHT to act as an anchor
                 e.getBlock().setType(Material.LIGHT);
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "ATTACK_TURRET");
-                spawnPvzModel(e.getBlock().getLocation());
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "MACHINE_GUN_TURRET");
+                spawnModel(e.getBlock().getLocation());
             }
         });
 
         addItemHandler(new io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler(false, false) {
             @Override
             public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
-                removePvzModel(e.getBlock().getLocation());
+                removeModel(e.getBlock().getLocation());
             }
 
             @Override
             public void onExplode(Block b, List<ItemStack> drops) {
-                removePvzModel(b.getLocation());
+                removeModel(b.getLocation());
             }
         });
 
         addItemHandler(new BlockTicker() {
             @Override
             public void tick(Block b, SlimefunItem item, me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config data) {
-                AttackTurret.this.tick(b);
+                MachineGunTurret.this.tick(b);
             }
 
             @Override
@@ -146,16 +125,14 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
 
     private void tick(Block b) {
         Location loc = b.getLocation();
+        String tag = "MG_TURRET_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
 
-        // --- Persistence Fix: Auto-Respawn Model if missing ---
-        String tag = "PVZ_ATTACK_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
         Entity modelPart = loc.getWorld().getNearbyEntities(loc.clone().add(0.5, 0.5, 0.5), 1.5, 1.5, 1.5)
                 .stream().filter(e -> e.getScoreboardTags().contains(tag)).findFirst().orElse(null);
 
         if (modelPart == null) {
-            spawnPvzModel(loc);
+            spawnModel(loc);
         }
-        // -----------------------------------------------------
 
         Location centerLoc = loc.clone().add(0.5, 0.5, 0.5);
         int charge = EnergyManager.getCharge(b.getLocation());
@@ -163,10 +140,7 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
         LivingEntity target = findTarget(centerLoc);
         updateModelRotation(b.getLocation(), target);
 
-        if (target == null)
-            return;
-
-        if (charge < ENERGY_PER_SHOT) {
+        if (target == null || charge < ENERGY_PER_SHOT) {
             return;
         }
 
@@ -180,7 +154,6 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
         double closestDist = Double.MAX_VALUE;
 
         for (Entity e : nearby) {
-            // Target all LivingEntities that are not Players and not ArmorStands/Displays
             if (e instanceof LivingEntity && !(e instanceof Player) && !(e instanceof ArmorStand) && !e.isDead()
                     && !e.hasMetadata("no_target")
                     && !e.getScoreboardTags().contains("PVZ_HEAD")
@@ -201,130 +174,115 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
         Location start = loc.clone().add(0, HEAD_OFFSET_Y, 0);
         Location end = target.getEyeLocation();
         Vector direction = end.toVector().subtract(start.toVector());
-        double distance = direction.length();
-
-        // Raytrace to check for solid blocks
-        RayTraceResult result = loc.getWorld().rayTraceBlocks(start, direction.normalize(), distance,
+        RayTraceResult result = loc.getWorld().rayTraceBlocks(start, direction.normalize(), direction.length(),
                 FluidCollisionMode.NEVER, true);
-
-        // If result is null, it means nothing was hit, so LOS is clear
         return result == null || result.getHitBlock() == null;
     }
 
     private void shoot(Location start, LivingEntity target) {
         Location targetLoc = target.getEyeLocation();
-
-        // Calculate muzzle location based on current turret rotation
         Vector direction = targetLoc.toVector().subtract(start.toVector()).normalize();
         float yaw = (float) Math.toDegrees(Math.atan2(-direction.getX(), direction.getZ()));
-
-        // Offset starting point to the muzzle
         double radYaw = Math.toRadians(yaw);
+
+        // Fire from one of the 4 barrels (randomly or sequentially)
+        // For simplicity, fire from the center area with multiple particles
         Location muzzle = start.clone().add(
                 -Math.sin(radYaw) * (BARREL_SCALE_Z + 0.1),
-                0.4 + (HEAD_OFFSET_Y - 0.95), // Adjust based on head elevation
+                0.4 + (HEAD_OFFSET_Y - 0.7),
                 Math.cos(radYaw) * (BARREL_SCALE_Z + 0.1));
-        // Visual and Sound effects
-        muzzle.getWorld().playSound(muzzle, Sound.ENTITY_EGG_THROW, 1.5f, 0.8f);
-        muzzle.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, muzzle, 5, 0.1, 0.1, 0.1, 0.05);
 
-        // Visual "Bullet" (Fast moving particle)
+        muzzle.getWorld().playSound(muzzle, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.5f);
+        muzzle.getWorld().spawnParticle(Particle.FLASH, muzzle, 1, 0.05, 0.05, 0.05, 0.05);
+
         Location bullet = muzzle.clone();
-        for (int i = 0; i < 15; i++) {
-            bullet.add(direction.clone().multiply(0.5));
+        for (int i = 0; i < 10; i++) {
+            bullet.add(direction.clone().multiply(1.0));
             if (bullet.distanceSquared(muzzle) > RANGE * RANGE)
                 break;
-            start.getWorld().spawnParticle(Particle.COMPOSTER, bullet, 1, 0, 0, 0, 0);
+            start.getWorld().spawnParticle(Particle.CRIT, bullet, 1, 0, 0, 0, 0);
         }
 
-        // Direct damage with no-damage-ticks bypass
         target.setNoDamageTicks(0);
         target.damage(DAMAGE);
-
-        target.getWorld().spawnParticle(Particle.ANGRY_VILLAGER, targetLoc, 5, 0.2, 0.2, 0.2, 0.05);
-        target.getWorld().playSound(targetLoc, Sound.ENTITY_SLIME_ATTACK, 1.0f, 1.2f);
     }
 
-    private void spawnPvzModel(Location loc) {
+    private void spawnModel(Location loc) {
         Location center = loc.clone().add(0.5, 0, 0.5);
         World world = loc.getWorld();
-        String tag = "PVZ_ATTACK_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
+        String tag = "MG_TURRET_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
 
-        // 1. HYDRAULIC STEM (Industrial base)
-        BlockDisplay stem = (BlockDisplay) world.spawnEntity(center, EntityType.BLOCK_DISPLAY);
-        stem.setBlock(STEM_MATERIAL.createBlockData());
-        stem.setTransformation(new Transformation(
-                new Vector3f(STEM_OFFSET_X, 0.0f, STEM_OFFSET_X),
+        // 1. BLACK BASE (Image 1 bottom)
+        BlockDisplay base = (BlockDisplay) world.spawnEntity(center, EntityType.BLOCK_DISPLAY);
+        base.setBlock(Material.BLACK_CONCRETE.createBlockData());
+        base.setTransformation(new Transformation(
+                new Vector3f(-0.35f, 0.0f, -0.35f),
                 new Quaternionf(),
-                new Vector3f(STEM_SCALE_X, STEM_SCALE_Y, STEM_SCALE_Z),
+                new Vector3f(0.7f, 0.2f, 0.7f),
                 new Quaternionf()));
-        stem.addScoreboardTag(tag);
+        base.addScoreboardTag(tag);
 
-        // 2. SUPPORT FRAME (Mechanical detail)
-        BlockDisplay frame = (BlockDisplay) world.spawnEntity(center, EntityType.BLOCK_DISPLAY);
-        frame.setBlock(Material.IRON_BARS.createBlockData());
-        frame.setTransformation(new Transformation(
-                new Vector3f(-0.2f, 0.0f, -0.2f),
+        // 2. VERTICAL POST (Image 1 center)
+        BlockDisplay post = (BlockDisplay) world.spawnEntity(center, EntityType.BLOCK_DISPLAY);
+        post.setBlock(Material.LIGHT_GRAY_CONCRETE.createBlockData());
+        post.setTransformation(new Transformation(
+                new Vector3f(-0.1f, 0.2f, -0.1f),
                 new Quaternionf(),
-                new Vector3f(0.4f, STEM_SCALE_Y * 0.9f, 0.4f),
+                new Vector3f(0.2f, 0.7f, 0.2f),
                 new Quaternionf()));
-        frame.addScoreboardTag(tag);
+        post.addScoreboardTag(tag);
 
-        // 3. ARMORED HEAD
-        BlockDisplay head = (BlockDisplay) world.spawnEntity(center.clone().add(0, HEAD_OFFSET_Y, 0),
-                EntityType.BLOCK_DISPLAY);
-        head.setBlock(HEAD_MATERIAL.createBlockData());
+        // 3. MAIN HEAD CUBE (Image 1 top)
+        BlockDisplay head = (BlockDisplay) world.spawnEntity(center.clone().add(0, 0.9, 0), EntityType.BLOCK_DISPLAY);
+        head.setBlock(Material.LIGHT_GRAY_CONCRETE.createBlockData());
         head.setTransformation(new Transformation(
-                new Vector3f(HEAD_INT_OFFSET, -0.15f, HEAD_INT_OFFSET),
+                new Vector3f(-0.25f, -0.15f, -0.25f),
                 new Quaternionf(),
-                new Vector3f(HEAD_SCALE, HEAD_SCALE, HEAD_SCALE),
+                new Vector3f(0.5f, 0.5f, 0.5f),
                 new Quaternionf()));
         head.addScoreboardTag(tag);
-        head.addScoreboardTag("PVZ_HEAD");
+        head.addScoreboardTag("MG_HEAD");
 
-        // 4. RAILGUN MUZZLE
-        BlockDisplay mouth = (BlockDisplay) world.spawnEntity(center.clone().add(0, HEAD_OFFSET_Y, 0),
-                EntityType.BLOCK_DISPLAY);
-        mouth.setBlock(BARREL_MATERIAL.createBlockData());
-        mouth.setTransformation(new Transformation(
-                new Vector3f(-BARREL_SCALE_X / 2f, 0.0f, BARREL_OFFSET_Z),
-                new Quaternionf(),
-                new Vector3f(BARREL_SCALE_X, BARREL_SCALE_Y, BARREL_SCALE_Z),
-                new Quaternionf()));
-        mouth.addScoreboardTag(tag);
-        mouth.addScoreboardTag("PVZ_MOUTH");
+        // 4. 4 BLACK BARRELS (Faithful to Image 1 vertical spacing)
+        // Two on left, two on right, with vertical gap
+        float[][] barrelOffsets = {
+                { -0.55f, 0.15f, -0.1f }, // Left Top
+                { -0.55f, -0.15f, -0.1f }, // Left Bottom
+                { 0.25f, 0.15f, -0.1f }, // Right Top
+                { 0.25f, -0.15f, -0.1f } // Right Bottom
+        };
 
-        // 5. OPTICAL SENSOR (Targeting)
-        BlockDisplay sensor = (BlockDisplay) world.spawnEntity(center.clone().add(0, HEAD_OFFSET_Y, 0),
-                EntityType.BLOCK_DISPLAY);
-        sensor.setBlock(SENSOR_MATERIAL.createBlockData());
-        sensor.setTransformation(new Transformation(
-                new Vector3f(SENSOR_OFFSET_X, SENSOR_OFFSET_Y, SENSOR_OFFSET_Z),
-                new Quaternionf(),
-                new Vector3f(SENSOR_SCALE, SENSOR_SCALE, SENSOR_SCALE),
-                new Quaternionf()));
-        sensor.addScoreboardTag(tag);
-        sensor.addScoreboardTag("PVZ_SENSOR");
+        for (int i = 0; i < 4; i++) {
+            BlockDisplay barrel = (BlockDisplay) world.spawnEntity(center.clone().add(0, 0.9, 0),
+                    EntityType.BLOCK_DISPLAY);
+            barrel.setBlock(Material.BLACK_CONCRETE.createBlockData());
+            barrel.setTransformation(new Transformation(
+                    new Vector3f(barrelOffsets[i][0], barrelOffsets[i][1], 0.05f), // Slightly further forward
+                    new Quaternionf(),
+                    new Vector3f(0.25f, 0.18f, 0.9f), // Increased Z-scale from 0.4 to 0.9
+                    new Quaternionf()));
+            barrel.addScoreboardTag(tag);
+            barrel.addScoreboardTag("MG_BARREL");
+        }
 
-        // 6. DYNAMIC HITBOX (Interaction Entity)
+        // 5. HITBOX
         Interaction interaction = (Interaction) world.spawnEntity(center, EntityType.INTERACTION);
         interaction.setInteractionWidth(1.2f);
         interaction.setInteractionHeight(HEAD_OFFSET_Y + HEAD_SCALE);
         interaction.addScoreboardTag(tag);
-        interaction.addScoreboardTag("PVZ_HITBOX");
+        interaction.addScoreboardTag("MG_HITBOX");
     }
 
     @EventHandler
     public void onHitboxAttack(EntityDamageByEntityEvent e) {
         if (!(e.getEntity() instanceof Interaction))
             return;
-
         Interaction interaction = (Interaction) e.getEntity();
-        if (!interaction.getScoreboardTags().contains("PVZ_HITBOX"))
+        if (!interaction.getScoreboardTags().contains("MG_HITBOX"))
             return;
 
         for (String tag : interaction.getScoreboardTags()) {
-            if (tag.startsWith("PVZ_ATTACK_")) {
+            if (tag.startsWith("MG_TURRET_")) {
                 String[] parts = tag.split("_");
                 if (parts.length == 5) {
                     try {
@@ -332,22 +290,11 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
                         int y = Integer.parseInt(parts[3]);
                         int z = Integer.parseInt(parts[4]);
                         Location loc = new Location(interaction.getWorld(), x, y, z);
-
                         if (e.getDamager() instanceof Player) {
-                            // Visual and sound feedback
-                            interaction.getWorld().playSound(interaction.getLocation(), Sound.BLOCK_LANTERN_BREAK, 1f,
-                                    1f);
-                            interaction.getWorld().spawnParticle(Particle.WAX_OFF,
-                                    interaction.getLocation().add(0, 0.5, 0), 15, 0.2, 0.2, 0.2, 0.1);
-
-                            // Force drop the item manually
-                            interaction.getWorld().dropItemNaturally(loc, ATTACK_TURRET.clone());
-
-                            // Clear block and Slimefun data COMPLETELY
+                            interaction.getWorld().dropItemNaturally(loc, MACHINE_GUN_TURRET.clone());
                             loc.getBlock().setType(Material.AIR);
                             BlockStorage.clearBlockInfo(loc);
-                            removePvzModel(loc);
-
+                            removeModel(loc);
                             e.setCancelled(true);
                         }
                     } catch (NumberFormatException ignored) {
@@ -361,15 +308,15 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
     public static void cleanupAllModels() {
         for (World world : org.bukkit.Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
-                if (entity.getScoreboardTags().stream().anyMatch(tag -> tag.startsWith("PVZ_"))) {
+                if (entity.getScoreboardTags().stream().anyMatch(tag -> tag.startsWith("MG_"))) {
                     entity.remove();
                 }
             }
         }
     }
 
-    private void removePvzModel(Location loc) {
-        String tag = "PVZ_ATTACK_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
+    private void removeModel(Location loc) {
+        String tag = "MG_TURRET_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
         for (Entity entity : loc.getWorld().getNearbyEntities(loc.clone().add(0.5, 0.5, 0.5), 1.5, 1.5, 1.5)) {
             if (entity.getScoreboardTags().contains(tag)) {
                 entity.remove();
@@ -378,9 +325,8 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
     }
 
     private void updateModelRotation(Location loc, LivingEntity target) {
-        String tag = "PVZ_ATTACK_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
+        String tag = "MG_TURRET_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
         Location center = loc.clone().add(0.5, 0.6, 0.5);
-
         float yaw = 0;
         if (target != null) {
             Vector dir = target.getLocation().toVector().subtract(center.toVector());
@@ -389,10 +335,9 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
 
         for (Entity entity : loc.getWorld().getNearbyEntities(center, 1.5, 1.5, 1.5)) {
             if (entity.getScoreboardTags().contains(tag) &&
-                    (entity.getScoreboardTags().contains("PVZ_HEAD")
-                            || entity.getScoreboardTags().contains("PVZ_MOUTH")
-                            || entity.getScoreboardTags().contains("PVZ_SENSOR"))) {
-
+                    (entity.getScoreboardTags().contains("MG_HEAD") ||
+                            entity.getScoreboardTags().contains("MG_BARREL") ||
+                            entity.getScoreboardTags().contains("MG_SENSOR"))) {
                 Location eloc = entity.getLocation();
                 eloc.setYaw(yaw);
                 entity.teleport(eloc);
@@ -404,21 +349,13 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
         ItemStack[] recipe = new ItemStack[36];
         for (int i = 0; i < 36; i++)
             recipe[i] = MilitaryComponents.REINFORCED_PLATING;
-
-        // Customizing some parts of the heavy recipe
         recipe[14] = MilitaryComponents.TARGETING_SYSTEM;
         recipe[15] = MilitaryComponents.TARGETING_SYSTEM;
-        recipe[20] = MilitaryComponents.TARGETING_SYSTEM;
-        recipe[21] = MilitaryComponents.TARGETING_SYSTEM;
         recipe[2] = MilitaryComponents.ADVANCED_CIRCUIT;
-        recipe[3] = MilitaryComponents.ADVANCED_CIRCUIT;
         recipe[32] = MilitaryComponents.ENERGY_MATRIX;
-        recipe[33] = MilitaryComponents.ENERGY_MATRIX;
 
-        AttackTurret turret = new AttackTurret(category, ATTACK_TURRET, recipe);
+        MachineGunTurret turret = new MachineGunTurret(category, MACHINE_GUN_TURRET, recipe);
         turret.register(addon);
-
-        // Register the hitbox listener
         if (addon instanceof org.bukkit.plugin.Plugin) {
             org.bukkit.Bukkit.getPluginManager().registerEvents(turret, (org.bukkit.plugin.Plugin) addon);
         }

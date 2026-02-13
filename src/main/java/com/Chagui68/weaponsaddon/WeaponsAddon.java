@@ -20,6 +20,10 @@ import com.Chagui68.weaponsaddon.items.machines.MilitaryCraftingTable;
 import com.Chagui68.weaponsaddon.items.machines.MilitaryMachineFabricator;
 import com.Chagui68.weaponsaddon.items.machines.TerminalClickHandler;
 import com.Chagui68.weaponsaddon.items.machines.AttackTurret;
+import com.Chagui68.weaponsaddon.items.machines.SniperTurret;
+import com.Chagui68.weaponsaddon.items.machines.MeleeTurret;
+import com.Chagui68.weaponsaddon.items.machines.MachineGunTurret;
+import com.Chagui68.weaponsaddon.items.machines.MountableTurret;
 import com.Chagui68.weaponsaddon.items.machines.WeaponUpgradeTable;
 import com.Chagui68.weaponsaddon.commands.WeaponsCommand;
 import com.Chagui68.weaponsaddon.handlers.MilitaryCombatHandler;
@@ -27,6 +31,7 @@ import com.Chagui68.weaponsaddon.handlers.MilitaryMobHandler;
 import com.Chagui68.weaponsaddon.items.vouchers.MilitaryVouchers;
 import com.Chagui68.weaponsaddon.listeners.BossAIHandler;
 import com.Chagui68.weaponsaddon.listeners.SlimefunGuideListener;
+import com.Chagui68.weaponsaddon.handlers.InventoryEffectHandler;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.api.items.groups.NestedItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.groups.SubItemGroup;
@@ -116,8 +121,12 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
                 upgradesGroup.register(this);
                 defensesGroup.register(this);
 
+                // Register Inventory Effect Task
+                new InventoryEffectHandler().runTaskTimer(this, 0L, 40L);
+
                 // Register items with debug logging
                 try {
+                        getLogger().info("#########################################");
                         getLogger().info("Registering MilitaryComponents...");
                         MilitaryComponents.register(this, componentsGroup, upgradesGroup);
                         getLogger().info("MilitaryComponents registered successfully!");
@@ -175,6 +184,22 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
                         getLogger().info("Registering AttackTurret...");
                         AttackTurret.register(this, defensesGroup);
                         getLogger().info("AttackTurret registered successfully!");
+
+                        getLogger().info("Registering SniperTurret...");
+                        SniperTurret.register(this, defensesGroup);
+                        getLogger().info("SniperTurret registered successfully!");
+
+                        getLogger().info("Registering MeleeTurret...");
+                        MeleeTurret.register(this, defensesGroup);
+                        getLogger().info("MeleeTurret registered successfully!");
+
+                        getLogger().info("Registering MachineGunTurret...");
+                        MachineGunTurret.register(this, defensesGroup);
+                        getLogger().info("MachineGunTurret registered successfully!");
+
+                        getLogger().info("Registering MountableTurret...");
+                        MountableTurret.register(this, warMachinesGroup);
+                        getLogger().info("MountableTurret registered successfully!");
                 } catch (Exception e) {
                         getLogger().severe("Failed to register AttackTurret: " + e.getMessage());
                         e.printStackTrace();
@@ -269,6 +294,10 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
         @Override
         public void onDisable() {
                 AttackTurret.cleanupAllModels();
+                SniperTurret.cleanupAllModels();
+                MeleeTurret.cleanupAllModels();
+                MachineGunTurret.cleanupAllModels();
+                MountableTurret.cleanupAllModels();
                 getLogger().info("Military Arsenal addon disabled!");
         }
 

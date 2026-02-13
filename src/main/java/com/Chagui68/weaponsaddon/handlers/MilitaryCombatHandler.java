@@ -9,7 +9,14 @@ import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataType;
+import com.Chagui68.weaponsaddon.WeaponsAddon;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -24,6 +31,55 @@ public class MilitaryCombatHandler implements Listener {
     public MilitaryCombatHandler(Plugin plugin) {
         this.plugin = plugin;
         startCombatTask();
+    }
+
+    // --- EQUIPMENT WEARABILITY HANDLER (FOR KING'S CROWN) ---
+
+    @EventHandler
+    public void onCrownRightClick(PlayerInteractEvent e) {
+        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            ItemStack item = e.getItem();
+            if (item == null || item.getType() != Material.YELLOW_STAINED_GLASS)
+                return;
+
+            if (isKingCrown(item)) {
+                Player p = e.getPlayer();
+                ItemStack currentHelmet = p.getInventory().getHelmet();
+
+                // Equip crown and return current helmet or clear hand
+                p.getInventory().setHelmet(item.clone());
+                p.getInventory().setItemInMainHand(currentHelmet);
+                p.playSound(p.getLocation(), Sound.ITEM_ARMOR_EQUIP_GOLD, 1.0f, 1.0f);
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onCrownInventoryClick(InventoryClickEvent e) {
+        if (e.getSlotType() == InventoryType.SlotType.ARMOR && e.getRawSlot() == 5) { // Helmet slot
+            ItemStack cursor = e.getCursor();
+            if (cursor != null && cursor.getType() == Material.YELLOW_STAINED_GLASS) {
+                if (isKingCrown(cursor)) {
+                    // Allow placing glass in helmet slot
+                    ItemStack current = e.getCurrentItem();
+                    e.setCurrentItem(cursor.clone());
+                    e.getWhoClicked().setItemOnCursor(current);
+                    e.setCancelled(true);
+                    if (e.getWhoClicked() instanceof Player) {
+                        ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(),
+                                Sound.ITEM_ARMOR_EQUIP_GOLD, 1.0f, 1.0f);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isKingCrown(ItemStack item) {
+        if (item == null || !item.hasItemMeta())
+            return false;
+        NamespacedKey key = new NamespacedKey(WeaponsAddon.getInstance(), "is_king_crown");
+        return item.getItemMeta().getPersistentDataContainer().has(key, PersistentDataType.BYTE);
     }
 
     // --- DAMAGE HANDLER ---
@@ -100,13 +156,22 @@ public class MilitaryCombatHandler implements Listener {
     // --- TARGET HANDLER ---
     @EventHandler
     public void onEntityTarget(org.bukkit.event.entity.EntityTargetLivingEntityEvent e) {
-        if (e.getEntity() instanceof Skeleton) {
-            Skeleton skeleton = (Skeleton) e.getEntity();
-            if (skeleton.getScoreboardTags().contains("EliteRanger")) {
-                // Solo permitir atacar a Jugadores
-                if (!(e.getTarget() instanceof Player)) {
-                    e.setCancelled(true);
-                }
+        Entity entity = e.getEntity();
+
+        // List of all our military mod tags
+        boolean isMilitaryMob = entity.getScoreboardTags().contains("EliteRanger") ||
+                entity.getScoreboardTags().contains("EliteKiller") ||
+                entity.getScoreboardTags().contains("TheKing") ||
+                entity.getScoreboardTags().contains("Pusher") ||
+                entity.getScoreboardTags().contains("HeavyGunner") ||
+                entity.getScoreboardTags().contains("Warrior") ||
+                entity.getScoreboardTags().contains("BattleWitch");
+
+        if (isMilitaryMob) {
+            // Only allow targeting Players to prevent them from attacking Armor Stands or
+            // Turrets
+            if (e.getTarget() != null && !(e.getTarget() instanceof Player)) {
+                e.setCancelled(true);
             }
         }
     }
