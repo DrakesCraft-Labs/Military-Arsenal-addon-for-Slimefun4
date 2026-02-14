@@ -36,7 +36,14 @@ public class AntimatterRifle extends SlimefunItem {
         ItemMeta meta = ANTIMATTER_RIFLE.getItemMeta();
         if (meta != null) {
             meta.setUnbreakable(true);
+
+            // Add damage bonus for dynamic calculation (Instant Kill)
+            meta.getPersistentDataContainer().set(
+                    new NamespacedKey(com.Chagui68.weaponsaddon.WeaponsAddon.getInstance(), "boss_damage_bonus"),
+                    org.bukkit.persistence.PersistentDataType.DOUBLE, 999991.0); // 8 (base) + 999991 = 999999 total
+
             ANTIMATTER_RIFLE.setItemMeta(meta);
+            com.Chagui68.weaponsaddon.handlers.UpgradeTableHandler.updateWeaponLore(ANTIMATTER_RIFLE);
         }
     }
 

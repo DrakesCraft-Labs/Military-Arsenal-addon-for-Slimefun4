@@ -11,6 +11,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,9 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args.length < 2 || (!args[0].equalsIgnoreCase("delete") && !args[0].equalsIgnoreCase("summon"))) {
-            sender.sendMessage(ChatColor.RED + "Usage: /weapons <delete|summon> <args>");
+        if (args.length < 2 || (!args[0].equalsIgnoreCase("delete") && !args[0].equalsIgnoreCase("summon")
+                && !args[0].equalsIgnoreCase("give"))) {
+            sender.sendMessage(ChatColor.RED + "Usage: /weapons <delete|summon|give> <args>");
             return true;
         }
 
@@ -72,14 +74,14 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                     switch (mobType) {
                         case "juan":
                             Horse horse = (Horse) world
-                                .spawnEntity(loc, EntityType.HORSE);
-                                MilitaryMobHandler.equipHorseJuan(horse);
+                                    .spawnEntity(loc, EntityType.HORSE);
+                            MilitaryMobHandler.equipHorseJuan(horse);
                             sender.sendMessage(ChatColor.GREEN + "✓ Summoned Juan!");
-                                break;
+                            break;
                         case "king":
                             ZombieVillager king = (ZombieVillager) world
                                     .spawnEntity(loc, EntityType.ZOMBIE_VILLAGER);
-                                    MilitaryMobHandler.equipKing(king);
+                            MilitaryMobHandler.equipKing(king);
                             sender.sendMessage(ChatColor.GREEN + "✓ Summoned The King!");
                             break;
                         case "warrior":
@@ -90,13 +92,13 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                             break;
                         case "pusher":
                             Zombie pusher = (Zombie) world
-                                    .spawnEntity (loc, EntityType.ZOMBIE);
+                                    .spawnEntity(loc, EntityType.ZOMBIE);
                             MilitaryMobHandler.equipPusher(pusher);
                             sender.sendMessage(ChatColor.GREEN + "✓ Summoned a Pusher!");
                             break;
                         case "elite_killer":
-                           Zombie killer = (Zombie) world
-                                   .spawnEntity(loc, EntityType.ZOMBIE);
+                            Zombie killer = (Zombie) world
+                                    .spawnEntity(loc, EntityType.ZOMBIE);
                             MilitaryMobHandler.equipEliteKiller(killer);
                             sender.sendMessage(ChatColor.GREEN + "✓ Summoned an Elite Killer!");
                             break;
@@ -128,8 +130,46 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                 }
                 break;
 
+            case "give":
+                if (!(sender instanceof Player) && args.length < 3) {
+                    sender.sendMessage(ChatColor.RED + "Usage: /weapons give <item> <player>");
+                    return true;
+                }
+
+                Player target;
+                if (args.length >= 3) {
+                    target = org.bukkit.Bukkit.getPlayer(args[2]);
+                    if (target == null) {
+                        sender.sendMessage(ChatColor.RED + "Player not found!");
+                        return true;
+                    }
+                } else {
+                    target = (Player) sender;
+                }
+
+                String itemType = args[1].toLowerCase();
+                ItemStack itemToGive = null;
+
+                switch (itemType) {
+                    case "kings_sword":
+                        itemToGive = MilitaryMobHandler.getKingsSword();
+                        break;
+                    case "kings_crown":
+                        itemToGive = MilitaryMobHandler.getKingsCrown();
+                        break;
+                    default:
+                        sender.sendMessage(ChatColor.RED + "Unknown item type. Use: kings_sword, kings_crown.");
+                        return true;
+                }
+
+                if (itemToGive != null) {
+                    target.getInventory().addItem(itemToGive);
+                    sender.sendMessage(ChatColor.GREEN + "✓ Given " + itemType + " to " + target.getName() + "!");
+                }
+                break;
+
             default:
-                sender.sendMessage(ChatColor.RED + "Unknown type. Use 'delete' or 'summon'.");
+                sender.sendMessage(ChatColor.RED + "Unknown type. Use 'delete', 'summon', or 'give'.");
                 break;
         }
 
@@ -143,6 +183,7 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             completions.add("delete");
             completions.add("summon");
+            completions.add("give");
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("delete")) {
                 completions.add("arena");
@@ -156,7 +197,12 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                 completions.add("elite_ranger");
                 completions.add("battle_witch");
                 completions.add("juan");
+            } else if (args[0].equalsIgnoreCase("give")) {
+                completions.add("kings_sword");
+                completions.add("kings_crown");
             }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
+            return null; // Return null to show player names
         }
 
         return completions.stream()

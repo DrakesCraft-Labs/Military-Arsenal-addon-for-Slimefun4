@@ -40,7 +40,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
+import com.Chagui68.weaponsaddon.WeaponsAddon;
+import com.Chagui68.weaponsaddon.utils.TurretUtils;
 import org.bukkit.entity.Monster;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Phantom;
@@ -145,22 +150,22 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
             spawnModel(loc);
         }
 
-        Location centerLoc = loc.clone().add(0.5, 0.5, 0.5);
-        int charge = EnergyManager.getCharge(b.getLocation());
+        int charge = EnergyManager.getCharge(loc);
 
-        LivingEntity target = findTarget(centerLoc);
-        updateModelRotation(b.getLocation(), target);
+        LivingEntity target = findTarget(loc);
+        updateModelRotation(loc, target);
 
         if (target == null || charge < ENERGY_PER_SHOT) {
             return;
         }
 
-        shoot(centerLoc, target);
-        EnergyManager.removeCharge(b.getLocation(), ENERGY_PER_SHOT);
+        shoot(loc.clone().add(0.5, 0.5, 0.5), target);
+        EnergyManager.removeCharge(loc, ENERGY_PER_SHOT);
     }
 
     private LivingEntity findTarget(Location loc) {
-        Collection<Entity> nearby = loc.getWorld().getNearbyEntities(loc, RANGE, RANGE, RANGE);
+        Location center = loc.clone().add(0.5, 0.5, 0.5);
+        Collection<Entity> nearby = loc.getWorld().getNearbyEntities(center, RANGE, RANGE, RANGE);
         LivingEntity closest = null;
         double closestDist = Double.MAX_VALUE;
 
@@ -173,7 +178,7 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
                     && !e.hasMetadata("no_target")
                     && !e.getScoreboardTags().contains("PVZ_HEAD")
                     && !e.getScoreboardTags().contains("PVZ_GUARDIAN")) {
-                double dist = e.getLocation().distanceSquared(loc);
+                double dist = e.getLocation().distanceSquared(center);
                 if (dist < closestDist && dist <= RANGE * RANGE) {
                     if (hasLineOfSight(loc, (LivingEntity) e)) {
                         closestDist = dist;
@@ -186,10 +191,13 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
     }
 
     private boolean hasLineOfSight(Location loc, LivingEntity target) {
-        Location start = loc.clone().add(0, HEAD_OFFSET_Y, 0);
+        // Standardized LOS height: 1.1 (HEAD_OFFSET_Y is 0.8, so +0.3)
+        Location start = loc.clone().add(0.5, 1.1, 0.5);
         Location end = target.getEyeLocation();
         Vector direction = end.toVector().subtract(start.toVector());
-        RayTraceResult result = loc.getWorld().rayTraceBlocks(start, direction.normalize(), direction.length(),
+        double distance = direction.length();
+
+        RayTraceResult result = loc.getWorld().rayTraceBlocks(start, direction.normalize(), distance,
                 FluidCollisionMode.NEVER, true);
         return result == null || result.getHitBlock() == null;
     }
@@ -297,6 +305,37 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
         if (!interaction.getScoreboardTags().contains("MG_HITBOX"))
             return;
 
+        handleDismantle(interaction, e.getDamager());
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onHitboxInteract(PlayerInteractEntityEvent e) {
+        if (!(e.getRightClicked() instanceof Interaction))
+            return;
+        Interaction interaction = (Interaction) e.getRightClicked();
+        if (!interaction.getScoreboardTags().contains("MG_HITBOX"))
+            return;
+
+        handleDismantle(interaction, e.getPlayer());
+        e.setCancelled(true);
+    }
+
+    private void handleDismantle(Interaction interaction, Entity damager) {
+        if (!(damager instanceof Player))
+            return;
+        Player player = (Player) damager;
+
+        // Layer 1: Global Location Lock
+        if (!TurretUtils.beginDismantle(interaction.getLocation())) {
+            return;
+        }
+
+        // Layer 2: Metadata Lock
+        if (interaction.hasMetadata("MA_DISMANTLED") || !interaction.isValid()) {
+            return;
+        }
+
         for (String tag : interaction.getScoreboardTags()) {
             if (tag.startsWith("MG_TURRET_")) {
                 String[] parts = tag.split("_");
@@ -306,12 +345,26 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
                         int y = Integer.parseInt(parts[3]);
                         int z = Integer.parseInt(parts[4]);
                         Location loc = new Location(interaction.getWorld(), x, y, z);
-                        if (e.getDamager() instanceof Player) {
-                            interaction.getWorld().dropItemNaturally(loc, MACHINE_GUN_TURRET.clone());
-                            loc.getBlock().setType(Material.AIR);
+
+                        // Layer 3: Block State Validation
+                        String id = BlockStorage.getLocationInfo(loc, "id");
+                        if (id != null && id.equals("MA_MACHINE_GUN_TURRET")) {
+                            // Atomic DUPLICATION PROTECTION: Set metadata immediately
+                            interaction.setMetadata("MA_DISMANTLED",
+                                    new FixedMetadataValue(WeaponsAddon.getInstance(), true));
+
+                            // Race condition protection: Clear info BEFORE dropping/removing
                             BlockStorage.clearBlockInfo(loc);
+                            loc.getBlock().setType(Material.AIR);
+
+                            interaction.getWorld().playSound(loc, Sound.BLOCK_LANTERN_BREAK, 1f, 1f);
+                            interaction.getWorld().dropItemNaturally(loc, MACHINE_GUN_TURRET.clone());
                             removeModel(loc);
-                            e.setCancelled(true);
+                            interaction.remove();
+                        } else {
+                            // If it's a "ghost" model, just remove the entities
+                            removeModel(loc);
+                            interaction.remove();
                         }
                     } catch (NumberFormatException ignored) {
                     }

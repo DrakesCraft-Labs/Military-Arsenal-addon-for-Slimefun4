@@ -1,35 +1,32 @@
 package com.Chagui68.weaponsaddon.items.machines;
 
+import com.Chagui68.weaponsaddon.WeaponsAddon;
 import com.Chagui68.weaponsaddon.items.CustomRecipeItem;
 import com.Chagui68.weaponsaddon.items.MilitaryRecipeTypes;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import com.Chagui68.weaponsaddon.items.machines.energy.EnergyManager;
+import com.Chagui68.weaponsaddon.utils.TurretUtils;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
-import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Phantom;
-import org.bukkit.entity.Shulker;
-import org.bukkit.entity.Hoglin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
@@ -40,10 +37,6 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-
-import com.Chagui68.weaponsaddon.WeaponsAddon;
-import static org.bukkit.Bukkit.getPluginManager;
-import static org.bukkit.Bukkit.getWorlds;
 
 public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent, Listener {
 
@@ -111,7 +104,7 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
 
         addItemHandler(new BlockTicker() {
             @Override
-            public void tick(Block b, SlimefunItem item, Config data) {
+            public void tick(Block b, SlimefunItem item, me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config data) {
                 MeleeTurret.this.tick(b);
             }
 
@@ -144,10 +137,9 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
             return;
         }
 
-        Location centerLoc = loc.clone().add(0.5, 0.5, 0.5);
         int charge = EnergyManager.getCharge(loc);
 
-        LivingEntity target = findTarget(centerLoc);
+        LivingEntity target = findTarget(loc);
         if (target == null)
             return;
 
@@ -161,7 +153,8 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
     }
 
     private LivingEntity findTarget(Location loc) {
-        Collection<Entity> nearby = loc.getWorld().getNearbyEntities(loc, RANGE, RANGE, RANGE);
+        Location center = loc.clone().add(0.5, 0.5, 0.5);
+        Collection<Entity> nearby = loc.getWorld().getNearbyEntities(center, RANGE, RANGE, RANGE);
         LivingEntity closest = null;
         double closestDist = Double.MAX_VALUE;
 
@@ -174,7 +167,7 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
                     && !e.hasMetadata("no_target")
                     && !e.getScoreboardTags().contains("PVZ_HEAD")
                     && !e.getScoreboardTags().contains("PVZ_GUARDIAN")) {
-                double dist = e.getLocation().distanceSquared(loc);
+                double dist = e.getLocation().distanceSquared(center);
                 if (dist < closestDist && dist <= RANGE * RANGE) {
                     if (hasLineOfSight(loc, (LivingEntity) e)) {
                         closestDist = dist;
@@ -187,7 +180,8 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
     }
 
     private boolean hasLineOfSight(Location loc, LivingEntity target) {
-        Location start = loc.clone().add(0.5, 1.5, 0.5);
+        // Correct Centering: loc is the block location (corner)
+        Location start = loc.clone().add(0.5, 1.1, 0.5);
         Location end = target.getEyeLocation();
         Vector direction = end.toVector().subtract(start.toVector());
         double distance = direction.length();
@@ -304,6 +298,83 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
         }
     }
 
+    @EventHandler
+    public void onHitboxAttack(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Interaction))
+            return;
+        Interaction interaction = (Interaction) e.getEntity();
+        if (!interaction.getScoreboardTags().contains("MELEE_HITBOX"))
+            return;
+
+        handleDismantle(interaction, e.getDamager());
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onHitboxInteract(PlayerInteractEntityEvent e) {
+        if (!(e.getRightClicked() instanceof Interaction))
+            return;
+        Interaction interaction = (Interaction) e.getRightClicked();
+        if (!interaction.getScoreboardTags().contains("MELEE_HITBOX"))
+            return;
+
+        handleDismantle(interaction, e.getPlayer());
+        e.setCancelled(true);
+    }
+
+    private void handleDismantle(Interaction interaction, Entity damager) {
+        if (!(damager instanceof Player))
+            return;
+
+        // Layer 1: Global Location Lock
+        if (!TurretUtils.beginDismantle(interaction.getLocation())) {
+            return;
+        }
+
+        // Layer 2: Metadata Lock
+        if (interaction.hasMetadata("MA_DISMANTLED") || !interaction.isValid()) {
+            return;
+        }
+
+        for (String tag : interaction.getScoreboardTags()) {
+            if (tag.startsWith("MELEE_GUARDIAN_")) {
+                String[] parts = tag.split("_");
+                if (parts.length == 5) {
+                    try {
+                        int x = Integer.parseInt(parts[2]);
+                        int y = Integer.parseInt(parts[3]);
+                        int z = Integer.parseInt(parts[4]);
+                        Location loc = new Location(interaction.getWorld(), x, y, z);
+
+                        // Layer 3: Block State Validation
+                        String id = BlockStorage.getLocationInfo(loc, "id");
+                        if (id != null && id.equals("MA_MELEE_TURRET")) {
+                            // Atomic DUPLICATION PROTECTION: Set metadata immediately
+                            interaction.setMetadata("MA_DISMANTLED",
+                                    new FixedMetadataValue(WeaponsAddon.getInstance(), true));
+
+                            // Race condition protection: Clear info BEFORE dropping/removing
+                            BlockStorage.clearBlockInfo(loc);
+                            loc.getBlock().setType(Material.AIR);
+
+                            interaction.getWorld().playSound(interaction.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1f,
+                                    1f);
+                            interaction.getWorld().dropItemNaturally(loc, MELEE_TURRET.clone());
+                            removeGuardianModel(loc);
+                            interaction.remove();
+                        } else {
+                            // If it's a "ghost" model, just remove the entities
+                            removeGuardianModel(loc);
+                            interaction.remove();
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+                break;
+            }
+        }
+    }
+
     private void animateUppercut(ArmorStand stand, int frame) {
         if (frame < 5) { // Lower
             stand.setRightArmPose(new EulerAngle(Math.toRadians(30), 0, 0));
@@ -385,46 +456,11 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
         interaction.setInteractionWidth(1.2f);
         interaction.setInteractionHeight(2.0f);
         interaction.addScoreboardTag(tag);
-        interaction.addScoreboardTag("PVZ_HITBOX");
-    }
-
-    @EventHandler
-    public void onHitboxAttack(EntityDamageByEntityEvent e) {
-        if (!(e.getEntity() instanceof Interaction))
-            return;
-        Interaction interaction = (Interaction) e.getEntity();
-        if (!interaction.getScoreboardTags().contains("PVZ_HITBOX"))
-            return;
-
-        for (String tag : interaction.getScoreboardTags()) {
-            if (tag.startsWith("MELEE_GUARDIAN_")) {
-                String[] parts = tag.split("_");
-                if (parts.length == 5) {
-                    try {
-                        int x = Integer.parseInt(parts[2]);
-                        int y = Integer.parseInt(parts[3]);
-                        int z = Integer.parseInt(parts[4]);
-                        Location loc = new Location(interaction.getWorld(), x, y, z);
-
-                        if (e.getDamager() instanceof Player) {
-                            interaction.getWorld().playSound(interaction.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1f,
-                                    1f);
-                            interaction.getWorld().dropItemNaturally(loc, MELEE_TURRET.clone());
-                            loc.getBlock().setType(Material.AIR);
-                            BlockStorage.clearBlockInfo(loc);
-                            removeGuardianModel(loc);
-                            e.setCancelled(true);
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-                break;
-            }
-        }
+        interaction.addScoreboardTag("MELEE_HITBOX");
     }
 
     public static void cleanupAllModels() {
-        for (World world : getWorlds()) {
+        for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (entity.getScoreboardTags().stream()
                         .anyMatch(tag -> tag.contains("GUARDIAN") || tag.contains("PVZ_"))) {
@@ -468,7 +504,7 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
         turret.register(addon);
 
         if (addon instanceof Plugin) {
-            getPluginManager().registerEvents(turret, (Plugin) addon);
+            Bukkit.getPluginManager().registerEvents(turret, (Plugin) addon);
         }
     }
 }

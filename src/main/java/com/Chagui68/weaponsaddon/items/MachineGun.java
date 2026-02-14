@@ -7,6 +7,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -33,7 +34,14 @@ public class MachineGun extends CustomRecipeItem {
         ItemMeta meta = MACHINE_GUN.getItemMeta();
         if (meta != null) {
             meta.setUnbreakable(true);
+
+            // Add damage bonus for dynamic calculation
+            meta.getPersistentDataContainer().set(
+                    new NamespacedKey(com.Chagui68.weaponsaddon.WeaponsAddon.getInstance(), "boss_damage_bonus"),
+                    org.bukkit.persistence.PersistentDataType.DOUBLE, 7.0); // 5 (base) + 7 = 12 total
+
             MACHINE_GUN.setItemMeta(meta);
+            com.Chagui68.weaponsaddon.handlers.UpgradeTableHandler.updateWeaponLore(MACHINE_GUN);
         }
     }
 

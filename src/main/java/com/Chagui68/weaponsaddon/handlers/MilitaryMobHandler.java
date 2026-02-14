@@ -24,6 +24,7 @@ import com.Chagui68.weaponsaddon.WeaponsAddon;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,101 +143,10 @@ public class MilitaryMobHandler implements Listener {
 
         EntityEquipment equip = king.getEquipment();
         if (equip != null) {
-            ItemStack casco = new ItemStack(Material.YELLOW_STAINED_GLASS);
-            ItemMeta metaCasco = casco.getItemMeta();
-            if (metaCasco != null) {
-                AttributeModifier helmet_protection = new AttributeModifier(
-                        UUID.randomUUID(),
-                        "protection", 5,
-                        AttributeModifier.Operation.ADD_NUMBER,
-                        EquipmentSlot.HEAD);
-
-                AttributeModifier helmet_toughness = new AttributeModifier(
-                        UUID.randomUUID(),
-                        "Toughness", 4,
-                        AttributeModifier.Operation.ADD_NUMBER,
-                        EquipmentSlot.HEAD);
-
-                metaCasco.addAttributeModifier(Attribute.GENERIC_ARMOR, helmet_protection);
-                metaCasco.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, helmet_toughness);
-
-                metaCasco.setDisplayName(ChatColor.of("#CFCD8A") + "♔ The King's Crown ♔");
-                metaCasco.addEnchant(Enchantment.PROTECTION, 5, true);
-                metaCasco.addEnchant(Enchantment.PROJECTILE_PROTECTION, 5, true);
-                metaCasco.addEnchant(Enchantment.BLAST_PROTECTION, 5, true);
-                metaCasco.addEnchant(Enchantment.FIRE_PROTECTION, 5, true);
-
-                // Add persistent tags for wearability and making it non-stackable
-                metaCasco.getPersistentDataContainer().set(
-                        new NamespacedKey(WeaponsAddon.getInstance(), "is_king_crown"),
-                        PersistentDataType.BYTE, (byte) 1);
-                metaCasco.getPersistentDataContainer().set(
-                        new NamespacedKey(WeaponsAddon.getInstance(), "unique_id"),
-                        PersistentDataType.STRING, UUID.randomUUID().toString());
-
-                casco.setItemMeta(metaCasco);
-            }
-            equip.setHelmet(casco);
+            equip.setHelmet(getKingsCrown());
             equip.setHelmetDropChance(0.01f); // 1%
 
-            ItemStack arma = new ItemStack(Material.GOLDEN_SWORD);
-            ItemMeta metaArma = arma.getItemMeta();
-            if (metaArma != null) {
-                AttributeModifier sword_damage = new AttributeModifier(
-                        UUID.randomUUID(),
-                        "military_damage", 15,
-                        AttributeModifier.Operation.ADD_NUMBER,
-                        EquipmentSlot.HAND);
-
-                AttributeModifier sword_attack_speed = new AttributeModifier(
-                        UUID.randomUUID(), "military_speed", -2.4,
-                        AttributeModifier.Operation.ADD_NUMBER,
-                        EquipmentSlot.HAND);
-
-                // Store boss damage bonus in PDC for UpgradeTableHandler compatibility
-                metaArma.getPersistentDataContainer().set(
-                        new NamespacedKey(WeaponsAddon.getInstance(), "boss_damage_bonus"),
-                        PersistentDataType.DOUBLE, 15.0);
-                // Daño dinamico en base atributos
-
-                // Todos los valores o variables son exclusivos de esta entidad. En otras
-                // palabras son locales
-
-                // 1. Ocultar los atributos azules predeterminados de Minecraft para limpiar la
-                // interfaz
-                metaArma.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-
-                // 2. Definir valores base
-                double Damage_Gold_SWORD = 4.0; // Daño base de una espada de oro
-                double Extra_Damage_Attribute = 15.0; // Daño nuevo base de la espada
-
-                // 3. Calcular el daño en base al encantamiento "Sharpness" (Filo)
-                // Fórmula de Minecraft: 0.5 * nivel + 0.5
-                int Sharpness_Level = 3; // Nivel del encantamiento
-                double Bonus_Sharpness = (0.5 * Sharpness_Level) + 0.5;
-
-                // 4. Calcular el daño TOTAL que el jugador verá y trendrá la espada
-                double Total_Damage = Damage_Gold_SWORD + Extra_Damage_Attribute + Bonus_Sharpness;
-
-                metaArma.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, sword_damage);
-                metaArma.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, sword_attack_speed);
-                metaArma.setDisplayName(ChatColor.of("#CFCD8A") + "♔ The King's Sword ♔");
-                metaArma.addEnchant(Enchantment.SHARPNESS, Sharpness_Level, true);
-                metaArma.addEnchant(Enchantment.LOOTING, 5, true);
-                metaArma.addEnchant(Enchantment.FIRE_ASPECT, 4, true);
-                metaArma.setUnbreakable(true);
-
-                // Lore especial del arma
-                // El lore.add(""); Sirve para dejar un espacio blanco
-                List<String> lore = new ArrayList<>();
-                lore.add("");
-                lore.add(ChatColor.RED + "❣ Weapon damage: " + ChatColor.WHITE + Total_Damage);
-                lore.add(ChatColor.YELLOW + "⚡ Attack speed " + ChatColor.WHITE + 1.6);
-                metaArma.setLore(lore);
-
-                arma.setItemMeta(metaArma);
-            }
-            equip.setItemInMainHand(arma);
+            equip.setItemInMainHand(getKingsSword());
             equip.setItemInMainHandDropChance(0.1f); // 10%
 
             // Resto de la armadura (puedes personalizarlos luego igual que el casco)
@@ -248,6 +158,105 @@ public class MilitaryMobHandler implements Listener {
             equip.setLeggingsDropChance(0.0f);
             equip.setBootsDropChance(0.0f);
         }
+    }
+
+    public static ItemStack getKingsCrown() {
+        ItemStack casco = new ItemStack(Material.YELLOW_STAINED_GLASS);
+        ItemMeta metaCasco = casco.getItemMeta();
+        if (metaCasco != null) {
+            AttributeModifier helmet_protection = new AttributeModifier(
+                    UUID.randomUUID(),
+                    "protection", 5,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlot.HEAD);
+
+            AttributeModifier helmet_toughness = new AttributeModifier(
+                    UUID.randomUUID(),
+                    "Toughness", 4,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlot.HEAD);
+
+            metaCasco.addAttributeModifier(Attribute.GENERIC_ARMOR, helmet_protection);
+            metaCasco.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, helmet_toughness);
+
+            metaCasco.setDisplayName(ChatColor.of("#CFCD8A") + "♔ The King's Crown ♔");
+            metaCasco.addEnchant(Enchantment.PROTECTION, 5, true);
+            metaCasco.addEnchant(Enchantment.PROJECTILE_PROTECTION, 5, true);
+            metaCasco.addEnchant(Enchantment.BLAST_PROTECTION, 5, true);
+            metaCasco.addEnchant(Enchantment.FIRE_PROTECTION, 5, true);
+
+            // Add persistent tags for wearability and making it non-stackable
+            metaCasco.getPersistentDataContainer().set(
+                    new NamespacedKey(WeaponsAddon.getInstance(), "is_king_crown"),
+                    PersistentDataType.BYTE, (byte) 1);
+            metaCasco.getPersistentDataContainer().set(
+                    new NamespacedKey(WeaponsAddon.getInstance(), "unique_id"),
+                    PersistentDataType.STRING, UUID.randomUUID().toString());
+
+            casco.setItemMeta(metaCasco);
+        }
+        return casco;
+    }
+
+    public static ItemStack getKingsSword() {
+        ItemStack arma = new ItemStack(Material.GOLDEN_SWORD);
+        ItemMeta metaArma = arma.getItemMeta();
+        if (metaArma != null) {
+            AttributeModifier sword_damage = new AttributeModifier(
+                    UUID.randomUUID(),
+                    "military_damage", 15,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlot.HAND);
+
+            AttributeModifier sword_attack_speed = new AttributeModifier(
+                    UUID.randomUUID(), "military_speed", -2.4,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlot.HAND);
+
+            // Store boss damage bonus in PDC for UpgradeTableHandler compatibility
+            metaArma.getPersistentDataContainer().set(
+                    new NamespacedKey(WeaponsAddon.getInstance(), "boss_damage_bonus"),
+                    PersistentDataType.DOUBLE, 15.0);
+            // Daño dinamico en base atributos
+
+            // Todos los valores o variables son exclusivos de esta entidad. En otras
+            // palabras son locales
+
+            // 1. Ocultar los atributos azules predeterminados de Minecraft para limpiar la
+            // interfaz
+            metaArma.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+
+            // 2. Definir valores base
+            double Damage_Gold_SWORD = 4.0; // Daño base de una espada de oro
+            double Extra_Damage_Attribute = 15.0; // Daño nuevo base de la espada
+
+            // 3. Calcular el daño en base al encantamiento "Sharpness" (Filo)
+            // Fórmula de Minecraft: 0.5 * nivel + 0.5
+            int Sharpness_Level = 3; // Nivel del encantamiento
+            double Bonus_Sharpness = (0.5 * Sharpness_Level) + 0.5;
+
+            // 4. Calcular el daño TOTAL que el jugador verá y trendrá la espada
+            double Total_Damage = Damage_Gold_SWORD + Extra_Damage_Attribute + Bonus_Sharpness;
+
+            metaArma.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, sword_damage);
+            metaArma.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, sword_attack_speed);
+            metaArma.setDisplayName(ChatColor.of("#CFCD8A") + "♔ The King's Sword ♔");
+            metaArma.addEnchant(Enchantment.SHARPNESS, Sharpness_Level, true);
+            metaArma.addEnchant(Enchantment.LOOTING, 5, true);
+            metaArma.addEnchant(Enchantment.FIRE_ASPECT, 4, true);
+            metaArma.setUnbreakable(true);
+
+            // Lore especial del arma
+            // El lore.add(""); Sirve para dejar un espacio blanco
+            List<String> lore = new ArrayList<>();
+            lore.add("");
+            lore.add(ChatColor.RED + "❣ Weapon damage: " + ChatColor.WHITE + Total_Damage);
+            lore.add(ChatColor.YELLOW + "⚡ Attack speed " + ChatColor.WHITE + 1.6);
+            metaArma.setLore(lore);
+
+            arma.setItemMeta(metaArma);
+        }
+        return arma;
     }
 
     public static void equipWarrior(Zombie warrior) {
@@ -373,6 +382,11 @@ public class MilitaryMobHandler implements Listener {
 
             // [EFECTOS DE POCIÓN]: Lo que añadimos anteriormente
             boss.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 999999, 1));
+
+            // [INACTIVITY TIMER]: Initialize last damage time to prevent infinite idle
+            // spawn
+            boss.setMetadata("last_damage_taken",
+                    new FixedMetadataValue(WeaponsAddon.getInstance(), System.currentTimeMillis()));
         }
     }
 

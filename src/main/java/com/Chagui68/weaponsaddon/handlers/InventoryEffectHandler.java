@@ -39,23 +39,30 @@ public class InventoryEffectHandler extends BukkitRunnable {
         int duration = interval + 40;
 
         for (Player player : getOnlinePlayers()) {
-            if (hasTungstenIngot(player)) {
+            int finalLevel = getTungstenSlownessLevel(player, slownessLevel);
+            if (finalLevel >= 0) {
                 player.addPotionEffect(
-                        new PotionEffect(PotionEffectType.SLOWNESS, duration, slownessLevel, true, false, true));
+                        new PotionEffect(PotionEffectType.SLOWNESS, duration, finalLevel, true, false, true));
             }
         }
     }
 
-    private boolean hasTungstenIngot(Player player) {
+    private int getTungstenSlownessLevel(Player player, int baseLevel) {
+        int maxLevel = -1;
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null)
                 continue;
 
             SlimefunItem sfItem = SlimefunItem.getByItem(item);
-            if (sfItem != null && sfItem.getId().equals("TUNGSTEN_INGOT")) {
-                return true;
+            if (sfItem != null) {
+                String id = sfItem.getId();
+                if (id.equals("MA_TUNGSTEN_INGOT")) {
+                    maxLevel = Math.max(maxLevel, baseLevel);
+                } else if (id.equals("MA_TUNGSTEN_BLADE")) {
+                    maxLevel = Math.max(maxLevel, baseLevel + 1); // +1 higher than the ingot
+                }
             }
         }
-        return false;
+        return maxLevel;
     }
 }

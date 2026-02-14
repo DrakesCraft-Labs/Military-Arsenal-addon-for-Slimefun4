@@ -25,7 +25,6 @@ public class MachineGunHandler implements Listener {
 
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final int BURST_SIZE = 5;
-    private static final double DAMAGE = 12.0;
     private static final long COOLDOWN_TICKS = 40;
 
     @EventHandler
@@ -99,7 +98,11 @@ public class MachineGunHandler implements Listener {
                     for (Entity entity : currentLoc.getWorld().getNearbyEntities(currentLoc, 0.5, 0.5, 0.5)) {
                         if (entity instanceof LivingEntity && entity != player) {
                             LivingEntity target = (LivingEntity) entity;
-                            double finalDamage = WeaponUtils.calculateDamage(item, DAMAGE, target);
+                            // Base damage of Diamond Hoe (5.0) + PDC bonuses + Enchantments
+                            double finalDamage = WeaponUtils.calculateDamage(item, 5.0, target);
+
+                            // Reset invincibility frames for rapid fire application
+                            target.setNoDamageTicks(0);
                             target.damage(finalDamage, player);
                             target.getWorld().spawnParticle(Particle.ENCHANTED_HIT,
                                     target.getLocation().add(0, 1, 0), 20, 0.3, 0.5, 0.3);

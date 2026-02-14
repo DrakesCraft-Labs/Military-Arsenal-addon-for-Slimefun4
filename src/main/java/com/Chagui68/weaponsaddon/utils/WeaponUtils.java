@@ -34,19 +34,32 @@ public class WeaponUtils {
         ItemMeta meta = item.getItemMeta();
 
         // 1. Attribute Modifiers (Upgrades from Upgrade Table)
+        boolean hasMilitaryModifier = false;
         if (meta != null && meta.hasAttributeModifiers()) {
             Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
             if (mods != null) {
                 for (AttributeModifier mod : mods) {
                     if (mod.getOperation() == AttributeModifier.Operation.ADD_NUMBER) {
                         damage += mod.getAmount();
+                        if (mod.getName().startsWith("military_") || mod.getName().equals("protection")) {
+                            hasMilitaryModifier = true;
+                        }
                     }
                 }
             }
         }
 
+        // 1.1 Boss Damage Bonus (from PDC) - Only add if NOT already included in an
+        // attribute modifier
+        if (meta != null && !hasMilitaryModifier) {
+            NamespacedKey bossKey = new NamespacedKey(WeaponsAddon.getInstance(), "boss_damage_bonus");
+            if (meta.getPersistentDataContainer().has(bossKey, PersistentDataType.DOUBLE)) {
+                damage += meta.getPersistentDataContainer().get(bossKey, PersistentDataType.DOUBLE);
+            }
+        }
+
         // 2. Enchantments
-        // Sharpness
+        // Sharpness (Filo)
         if (item.containsEnchantment(Enchantment.SHARPNESS)) {
             int level = item.getEnchantmentLevel(Enchantment.SHARPNESS);
             if (level > 0) {

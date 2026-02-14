@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,6 +77,8 @@ public class UpgradeTableHandler implements Listener {
         BASE_DAMAGE.put(Material.DIAMOND_AXE, 9.0);
         BASE_DAMAGE.put(Material.NETHERITE_AXE, 10.0);
         BASE_DAMAGE.put(Material.TRIDENT, 9.0);
+        BASE_DAMAGE.put(Material.DIAMOND_HOE, 5.0); // Machine Gun
+        BASE_DAMAGE.put(Material.NETHERITE_SWORD, 8.0); // Base Netherite Sword
     }
 
     // Base attack speed values (Minecraft default is 4.0 for hand)
@@ -323,7 +324,7 @@ public class UpgradeTableHandler implements Listener {
                 "&eMax upgrade level: &f5"));
     }
 
-    private int getUpgradeLevel(ItemStack item, String type) {
+    public static int getUpgradeLevel(ItemStack item, String type) {
         if (item == null || !item.hasItemMeta())
             return 0;
         ItemMeta meta = item.getItemMeta();
@@ -443,7 +444,7 @@ public class UpgradeTableHandler implements Listener {
         }
     }
 
-    private void updateWeaponLore(ItemStack item) {
+    public static void updateWeaponLore(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null)
             return;
@@ -532,7 +533,7 @@ public class UpgradeTableHandler implements Listener {
         item.setItemMeta(meta);
     }
 
-    private double calculateTotalSpeed(ItemStack item) {
+    public static double calculateTotalSpeed(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         double speed;
 
@@ -551,7 +552,7 @@ public class UpgradeTableHandler implements Listener {
         return BASE_SPEED.getOrDefault(item.getType(), 4.0);
     }
 
-    private String createProgressBar(int current, int max) {
+    public static String createProgressBar(int current, int max) {
         StringBuilder bar = new StringBuilder("&a");
         for (int i = 0; i < current; i++)
             bar.append("▮");
@@ -561,7 +562,7 @@ public class UpgradeTableHandler implements Listener {
         return bar.toString();
     }
 
-    private double calculateTotalDamage(ItemStack item) {
+    public static double calculateTotalDamage(ItemStack item) {
         return WeaponUtils.calculateDamage(item, BASE_DAMAGE.getOrDefault(item.getType(), 1.0), null);
     }
 

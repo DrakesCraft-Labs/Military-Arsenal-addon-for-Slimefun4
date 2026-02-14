@@ -18,6 +18,7 @@ import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -33,12 +34,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
+import org.bukkit.metadata.FixedMetadataValue;
+import com.Chagui68.weaponsaddon.WeaponsAddon;
+import com.Chagui68.weaponsaddon.utils.TurretUtils;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -258,7 +264,24 @@ public class MountableTurret extends CustomRecipeItem implements EnergyNetCompon
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEntityEvent e) {
+    public void onHitboxInteract(PlayerInteractEntityEvent e) {
+        if (!(e.getRightClicked() instanceof Interaction))
+            return;
+        Interaction interaction = (Interaction) e.getRightClicked();
+        if (!interaction.getScoreboardTags().contains("MOUNT_HITBOX"))
+            return;
+
+        // If it's being dismantled, cancel right-click
+        if (interaction.hasMetadata("MA_DISMANTLED") || !interaction.isValid()) {
+            e.setCancelled(true);
+            return;
+        }
+
+        // Otherwise, allow standard interaction (onPlayerInteract will handle mounting)
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractAtEntityEvent e) {
         if (!(e.getRightClicked() instanceof Interaction))
             return;
         Interaction interaction = (Interaction) e.getRightClicked();
@@ -283,58 +306,105 @@ public class MountableTurret extends CustomRecipeItem implements EnergyNetCompon
 
     @EventHandler
     public void onPlayerShoot(EntityDamageByEntityEvent e) {
-        // Player mounted and left-clicking (attacking the hitbox while mounted)
-        if (!(e.getDamager() instanceof Player))
-            return;
-        Player p = (Player) e.getDamager();
-
         if (!(e.getEntity() instanceof Interaction))
             return;
         Interaction interaction = (Interaction) e.getEntity();
         if (!interaction.getScoreboardTags().contains("MOUNT_HITBOX"))
             return;
 
-        // Check if player is mounted on this turret's seat
-        if (p.getVehicle() instanceof ArmorStand && p.getVehicle().getScoreboardTags().contains("MOUNT_SEAT")) {
-            String tag = interaction.getScoreboardTags().stream()
-                    .filter(t -> t.startsWith("MOUNT_TURRET_")).findFirst().orElse(null);
-            if (p.getVehicle().getScoreboardTags().contains(tag)) {
-                e.setCancelled(true);
+        if (!(e.getDamager() instanceof Player))
+            return;
+        Player player = (Player) e.getDamager();
 
-                // Energy Check
+        // If player is mounting this turret, allow shooting
+        if (isMounting(player, interaction)) {
+            shoot(player, interaction);
+            e.setCancelled(true);
+            return;
+        }
+
+        // If NOT mounting, trigger dismantle with protection
+        handleDismantle(interaction, player);
+        e.setCancelled(true);
+    }
+
+    private void handleDismantle(Interaction interaction, Player player) {
+        // Layer 1: Global Location Lock
+        if (!TurretUtils.beginDismantle(interaction.getLocation())) {
+            return;
+        }
+
+        // Layer 2: Metadata Lock
+        if (interaction.hasMetadata("MA_DISMANTLED") || !interaction.isValid()) {
+            return;
+        }
+
+        for (String tag : interaction.getScoreboardTags()) {
+            if (tag.startsWith("MOUNT_TURRET_")) {
                 String[] parts = tag.split("_");
-                Location loc = new Location(interaction.getWorld(), Integer.parseInt(parts[2]),
-                        Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
-                int charge = EnergyManager.getCharge(loc);
+                if (parts.length == 5) {
+                    try {
+                        int x = Integer.parseInt(parts[2]);
+                        int y = Integer.parseInt(parts[3]);
+                        int z = Integer.parseInt(parts[4]);
+                        Location loc = new Location(interaction.getWorld(), x, y, z);
 
-                if (charge < ENERGY_PER_SHOT) {
-                    p.sendMessage("§cNot enough energy!");
-                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.5f);
-                    return;
+                        // Layer 3: Block State Validation
+                        String id = BlockStorage.getLocationInfo(loc, "id");
+                        if (id != null && id.equals("MA_MOUNTABLE_TURRET")) {
+                            // Atomic DUPLICATION PROTECTION: Set metadata immediately
+                            interaction.setMetadata("MA_DISMANTLED",
+                                    new FixedMetadataValue(WeaponsAddon.getInstance(), true));
+
+                            // Race condition protection: Clear info BEFORE dropping/removing
+                            BlockStorage.clearBlockInfo(loc);
+                            loc.getBlock().setType(Material.AIR);
+
+                            interaction.getWorld().playSound(loc, Sound.BLOCK_LANTERN_BREAK, 1f, 1f);
+                            interaction.getWorld().dropItemNaturally(loc, MOUNTABLE_TURRET.clone());
+                            removeModel(loc);
+                            interaction.remove();
+                        } else {
+                            // If it's a "ghost" model, just remove the entities
+                            removeModel(loc);
+                            interaction.remove();
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
-
-                shoot(interaction.getLocation().add(0, 1.1, 0), p);
-                EnergyManager.removeCharge(loc, ENERGY_PER_SHOT);
-            }
-        } else {
-            // DISMANTLE LOGIC (If not mounted)
-            String tag = interaction.getScoreboardTags().stream()
-                    .filter(t -> t.startsWith("MOUNT_TURRET_")).findFirst().orElse(null);
-            if (tag != null) {
-                String[] parts = tag.split("_");
-                Location blockLoc = new Location(interaction.getWorld(), Integer.parseInt(parts[2]),
-                        Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
-
-                interaction.getWorld().dropItemNaturally(blockLoc, MOUNTABLE_TURRET.clone());
-                blockLoc.getBlock().setType(Material.AIR);
-                BlockStorage.clearBlockInfo(blockLoc);
-                removeModel(blockLoc);
-                e.setCancelled(true);
+                break;
             }
         }
     }
 
-    private void shoot(Location start, Player shooter) {
+    private boolean isMounting(Player player, Interaction interaction) {
+        if (player.getVehicle() instanceof ArmorStand
+                && player.getVehicle().getScoreboardTags().contains("MOUNT_SEAT")) {
+            String turretTag = interaction.getScoreboardTags().stream()
+                    .filter(t -> t.startsWith("MOUNT_TURRET_")).findFirst().orElse(null);
+            return turretTag != null && player.getVehicle().getScoreboardTags().contains(turretTag);
+        }
+        return false;
+    }
+
+    private void shoot(Player shooter, Interaction interaction) {
+        String tag = interaction.getScoreboardTags().stream()
+                .filter(t -> t.startsWith("MOUNT_TURRET_")).findFirst().orElse(null);
+        if (tag == null)
+            return;
+
+        String[] parts = tag.split("_");
+        Location loc = new Location(interaction.getWorld(), Integer.parseInt(parts[2]),
+                Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
+        int charge = EnergyManager.getCharge(loc);
+
+        if (charge < ENERGY_PER_SHOT) {
+            shooter.sendMessage("§cNot enough energy!");
+            shooter.playSound(shooter.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.5f);
+            return;
+        }
+
+        Location start = interaction.getLocation().add(0, 1.1, 0);
         Vector direction = shooter.getEyeLocation().getDirection();
         World world = start.getWorld();
 
@@ -343,22 +413,27 @@ public class MountableTurret extends CustomRecipeItem implements EnergyNetCompon
                 0.2, 0.1);
         world.spawnParticle(Particle.FLASH, start.clone().add(direction.clone().multiply(1.0)), 2);
 
-        // Raytrace to hit entities (including players)
-        RayTraceResult result = world.rayTraceEntities(start, direction, RANGE, 0.5,
+        // Efficient Raytrace: Check for blocks AND entities
+        RayTraceResult blockResult = world.rayTraceBlocks(start, direction, RANGE, FluidCollisionMode.NEVER, true);
+        double maxDist = (blockResult != null && blockResult.getHitBlock() != null)
+                ? blockResult.getHitBlock().getLocation().distance(start)
+                : RANGE;
+
+        RayTraceResult entityResult = world.rayTraceEntities(start, direction, maxDist, 0.5,
                 ent -> ent instanceof LivingEntity && ent != shooter && !(ent instanceof ArmorStand)
                         && !(ent instanceof Interaction));
 
-        if (result != null && result.getHitEntity() instanceof LivingEntity) {
-            LivingEntity target = (LivingEntity) result.getHitEntity();
+        if (entityResult != null && entityResult.getHitEntity() instanceof LivingEntity) {
+            LivingEntity target = (LivingEntity) entityResult.getHitEntity();
             target.damage(DAMAGE, shooter);
             target.getWorld().spawnParticle(Particle.SONIC_BOOM, target.getLocation().add(0, 1, 0), 1);
         }
 
-        // Particle trail
+        // Particle trail (limited by block collision)
         Location bullet = start.clone();
         for (int i = 0; i < 25; i++) {
             bullet.add(direction.clone().multiply(1.4));
-            if (bullet.distanceSquared(start) > RANGE * RANGE)
+            if (bullet.distanceSquared(start) > maxDist * maxDist)
                 break;
             world.spawnParticle(Particle.SOUL, bullet, 1, 0, 0, 0, 0);
         }

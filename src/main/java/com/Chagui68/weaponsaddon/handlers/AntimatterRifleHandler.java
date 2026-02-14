@@ -74,7 +74,8 @@ public class AntimatterRifleHandler implements Listener {
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 2.0f, 0.5f);
             p.getWorld().playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 1.5f);
 
-            target.damage(999999, p);
+            double finalDamage = WeaponUtils.calculateDamage(item, 8.0, target); // 8.0 is Netherite Sword base
+            target.damage(finalDamage, p);
 
             p.sendMessage(ChatColor.DARK_RED + "☢ " + ChatColor.RED + "ANTIMATTER ANNIHILATION!");
             p.sendMessage(ChatColor.GRAY + "Target eliminated at " +
