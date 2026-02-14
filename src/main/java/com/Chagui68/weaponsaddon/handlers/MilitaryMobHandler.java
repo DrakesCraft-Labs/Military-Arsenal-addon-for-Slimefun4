@@ -184,6 +184,7 @@ public class MilitaryMobHandler implements Listener {
             metaCasco.addEnchant(Enchantment.PROJECTILE_PROTECTION, 5, true);
             metaCasco.addEnchant(Enchantment.BLAST_PROTECTION, 5, true);
             metaCasco.addEnchant(Enchantment.FIRE_PROTECTION, 5, true);
+            metaCasco.addEnchant(Enchantment.RESPIRATION,5,true);
 
             // Add persistent tags for wearability and making it non-stackable
             metaCasco.getPersistentDataContainer().set(
@@ -296,9 +297,8 @@ public class MilitaryMobHandler implements Listener {
         EntityEquipment equip = pusher.getEquipment();
         if (equip != null) {
 
-            // Arma en mano principal
-            equip.setItemInMainHand(new ItemStack(Material.STICK));
-            equip.setItemInMainHandDropChance(0.0f); // No dropea
+            equip.setItemInMainHand(getPusherStick());
+            equip.setItemInMainHandDropChance(0.1f); // 10%
 
             equip.setHelmet(new ItemStack(Material.PISTON));
             equip.setChestplate(getColorArmor(Material.LEATHER_CHESTPLATE, Color.YELLOW));
@@ -310,6 +310,33 @@ public class MilitaryMobHandler implements Listener {
             equip.setBootsDropChance(0.0f);
         }
 
+
+    }
+
+    public static ItemStack getPusherStick() {
+        ItemStack piston = new ItemStack(Material.PISTON);
+        ItemMeta metaPiston = piston.getItemMeta();
+        if (metaPiston != null) {
+            AttributeModifier knockback = new AttributeModifier(
+                    UUID.randomUUID(),
+                    "knockback", 5,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlot.HAND);
+
+            metaPiston.addEnchant(Enchantment.KNOCKBACK, 7 ,true);
+            metaPiston.setDisplayName(ChatColor.of("#965151") + "THE PISTON ");
+
+            // Add persistent tags for wearability and making it non-stackable
+            metaPiston.getPersistentDataContainer().set(
+                    new NamespacedKey(WeaponsAddon.getInstance(), "is_pusher_stick"),
+                    PersistentDataType.BYTE, (byte) 1);
+            metaPiston.getPersistentDataContainer().set(
+                    new NamespacedKey(WeaponsAddon.getInstance(), "unique_id"),
+                    PersistentDataType.STRING, UUID.randomUUID().toString());
+
+            piston.setItemMeta(metaPiston);
+        }
+        return piston;
     }
 
     public static void equipEliteKiller(Zombie miniboss) {

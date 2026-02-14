@@ -33,7 +33,7 @@ public class InventoryEffectHandler extends BukkitRunnable {
          */
 
         int slownessLevel = WeaponsAddon.getInstance().getConfig()
-                .getInt("inventory-effects.tungsten-weight.slowness-level", 0);
+                .getInt("inventory-effects.tungsten-weight.slowness-level", 2);
         int interval = WeaponsAddon.getInstance().getConfig()
                 .getInt("inventory-effects.tungsten-weight.check-interval", 60);
         int duration = interval + 40;

@@ -151,6 +151,9 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                 ItemStack itemToGive = null;
 
                 switch (itemType) {
+                    case "pushers_piston":
+                        itemToGive = MilitaryMobHandler.getPusherStick();
+                        break;
                     case "kings_sword":
                         itemToGive = MilitaryMobHandler.getKingsSword();
                         break;
@@ -200,6 +203,7 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
             } else if (args[0].equalsIgnoreCase("give")) {
                 completions.add("kings_sword");
                 completions.add("kings_crown");
+                completions.add("pushers_piston");
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
             return null; // Return null to show player names
