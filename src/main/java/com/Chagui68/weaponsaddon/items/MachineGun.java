@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class MachineGun extends CustomRecipeItem {
 
     public static final SlimefunItemStack MACHINE_GUN = new SlimefunItemStack(
-            "MACHINE_GUN",
+            "MA_MACHINE_GUN",
             Material.DIAMOND_HOE,
             "&4⚔ &cMachine Gun",
             "",

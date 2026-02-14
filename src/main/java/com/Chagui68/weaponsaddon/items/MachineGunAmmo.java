@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 public class MachineGunAmmo {
 
         public static final SlimefunItemStack MACHINE_GUN_AMMO = new SlimefunItemStack(
-                        "MACHINE_GUN_AMMO",
+                        "MA_MACHINE_GUN_AMMO",
                         Material.IRON_NUGGET,
                         "&eMachine Gun Bullets",
                         "",

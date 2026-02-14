@@ -28,7 +28,7 @@ import static org.bukkit.ChatColor.*;
 public class AmmunitionWorkshopHandler implements Listener {
 
     private static final Map<UUID, Location> openWorkshops = new HashMap<>();
-    private static final int[] gridSlots = {10, 11, 12, 19, 20, 21, 28, 29, 30};
+    private static final int[] gridSlots = { 10, 11, 12, 19, 20, 21, 28, 29, 30 };
     private static final int resultSlot = 23;
     private static final int craftButtonSlot = 25;
 
@@ -45,12 +45,14 @@ public class AmmunitionWorkshopHandler implements Listener {
         glassMeta.setDisplayName(" ");
         glass.setItemMeta(glassMeta);
 
-        for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, glass);
+        for (int i = 0; i < inv.getSize(); i++)
+            inv.setItem(i, glass);
 
         for (int i = 0; i < gridSlots.length; i++) {
             inv.setItem(gridSlots[i], null);
             String data = BlockStorage.getLocationInfo(loc, "slot_" + i);
-            if (data != null && !data.isEmpty()) inv.setItem(gridSlots[i], deserializeItemStack(data));
+            if (data != null && !data.isEmpty())
+                inv.setItem(gridSlots[i], deserializeItemStack(data));
         }
 
         String resData = BlockStorage.getLocationInfo(loc, "result_slot");
@@ -68,14 +70,19 @@ public class AmmunitionWorkshopHandler implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) return;
-        if (!e.getView().getTitle().equals(DARK_GRAY + "Ammunition Workshop")) return;
+        if (!(e.getWhoClicked() instanceof Player))
+            return;
+        if (!e.getView().getTitle().equals(DARK_GRAY + "Ammunition Workshop"))
+            return;
 
         int slot = e.getRawSlot();
-        if (slot < 0 || slot >= e.getInventory().getSize()) return;
+        if (slot < 0 || slot >= e.getInventory().getSize())
+            return;
 
         boolean isGrid = false;
-        for (int s : gridSlots) if (s == slot) isGrid = true;
+        for (int s : gridSlots)
+            if (s == slot)
+                isGrid = true;
 
         if (slot == craftButtonSlot) {
             e.setCancelled(true);
@@ -87,12 +94,14 @@ public class AmmunitionWorkshopHandler implements Listener {
 
     private void attemptCraft(Inventory inv) {
         ItemStack[] currentGrid = new ItemStack[9];
-        for (int i = 0; i < gridSlots.length; i++) currentGrid[i] = inv.getItem(gridSlots[i]);
+        for (int i = 0; i < gridSlots.length; i++)
+            currentGrid[i] = inv.getItem(gridSlots[i]);
 
         if (matchesAmmoRecipe(currentGrid)) {
             ItemStack output = inv.getItem(resultSlot);
-            SlimefunItem sfAmmo = SlimefunItem.getById("MACHINE_GUN_AMMO");
-            if (sfAmmo == null) return;
+            SlimefunItem sfAmmo = SlimefunItem.getById("MA_MACHINE_GUN_AMMO");
+            if (sfAmmo == null)
+                return;
 
             ItemStack resultItem = sfAmmo.getItem().clone();
             int amountPerCraft = 8;
@@ -100,7 +109,8 @@ public class AmmunitionWorkshopHandler implements Listener {
             if (output == null || output.getType() == Material.AIR) {
                 resultItem.setAmount(amountPerCraft);
                 inv.setItem(resultSlot, resultItem);
-            } else if (SlimefunItem.getByItem(output) != null && SlimefunItem.getByItem(output).getId().equals("MACHINE_GUN_AMMO")) {
+            } else if (SlimefunItem.getByItem(output) != null
+                    && SlimefunItem.getByItem(output).getId().equals("MA_MACHINE_GUN_AMMO")) {
                 if (output.getAmount() + amountPerCraft <= 64) {
                     output.setAmount(output.getAmount() + amountPerCraft);
                 } else {
@@ -113,8 +123,10 @@ public class AmmunitionWorkshopHandler implements Listener {
             for (int slot : gridSlots) {
                 ItemStack item = inv.getItem(slot);
                 if (item != null) {
-                    if (item.getAmount() > 1) item.setAmount(item.getAmount() - 1);
-                    else inv.setItem(slot, null);
+                    if (item.getAmount() > 1)
+                        item.setAmount(item.getAmount() - 1);
+                    else
+                        inv.setItem(slot, null);
                 }
             }
         }
@@ -134,8 +146,10 @@ public class AmmunitionWorkshopHandler implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if (!(e.getPlayer() instanceof Player)) return;
-        if (!e.getView().getTitle().equals(DARK_GRAY + "Ammunition Workshop")) return;
+        if (!(e.getPlayer() instanceof Player))
+            return;
+        if (!e.getView().getTitle().equals(DARK_GRAY + "Ammunition Workshop"))
+            return;
 
         Player p = (Player) e.getPlayer();
         UUID uuid = p.getUniqueId();
@@ -152,21 +166,23 @@ public class AmmunitionWorkshopHandler implements Listener {
         Block b = e.getBlock();
         Location loc = b.getLocation();
 
-        if (BlockStorage.check(loc, "AMMUNITION_WORKSHOP")) {
+        if (BlockStorage.check(loc, "MA_AMMUNITION_WORKSHOP")) {
             e.setDropItems(false);
 
             for (int i = 0; i < gridSlots.length; i++) {
                 String data = BlockStorage.getLocationInfo(loc, "slot_" + i);
                 if (data != null && !data.isEmpty()) {
                     ItemStack item = deserializeItemStack(data);
-                    if (item != null) loc.getWorld().dropItemNaturally(loc, item);
+                    if (item != null)
+                        loc.getWorld().dropItemNaturally(loc, item);
                 }
             }
 
             String resData = BlockStorage.getLocationInfo(loc, "result_slot");
             if (resData != null && !resData.isEmpty()) {
                 ItemStack item = deserializeItemStack(resData);
-                if (item != null) loc.getWorld().dropItemNaturally(loc, item);
+                if (item != null)
+                    loc.getWorld().dropItemNaturally(loc, item);
             }
 
             BlockStorage.clearBlockInfo(loc);
@@ -181,22 +197,26 @@ public class AmmunitionWorkshopHandler implements Listener {
     }
 
     private static String serializeItemStack(ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return "";
+        if (item == null || item.getType() == Material.AIR)
+            return "";
 
         SlimefunItem sfItem = SlimefunItem.getByItem(item);
-        if (sfItem != null) return "SF:" + sfItem.getId() + ":" + item.getAmount();
+        if (sfItem != null)
+            return "SF:" + sfItem.getId() + ":" + item.getAmount();
 
         return "V:" + item.getType().name() + ":" + item.getAmount();
     }
 
     private static ItemStack deserializeItemStack(String data) {
-        if (data == null || data.isEmpty()) return null;
+        if (data == null || data.isEmpty())
+            return null;
 
         try {
             String[] parts = data.split(":");
             if (parts[0].equals("SF")) {
                 SlimefunItem sf = SlimefunItem.getById(parts[1]);
-                if (sf == null) return null;
+                if (sf == null)
+                    return null;
                 ItemStack is = sf.getItem().clone();
                 is.setAmount(Integer.parseInt(parts[2]));
                 return is;

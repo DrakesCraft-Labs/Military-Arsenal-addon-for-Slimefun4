@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import com.Chagui68.weaponsaddon.utils.WeaponUtils;
 import org.bukkit.util.Vector;
 
 import com.Chagui68.weaponsaddon.WeaponsAddon;
@@ -36,7 +37,7 @@ public class MachineGunHandler implements Listener {
             return;
 
         SlimefunItem sfItem = SlimefunItem.getByItem(item);
-        if (sfItem == null || !sfItem.getId().equals("MACHINE_GUN"))
+        if (sfItem == null || !sfItem.getId().equals("MA_MACHINE_GUN"))
             return;
 
         event.setCancelled(true);
@@ -60,10 +61,10 @@ public class MachineGunHandler implements Listener {
         consumeAmmo(player);
         cooldowns.put(playerId, currentTime);
         player.sendMessage(ChatColor.GREEN + "✓ Magazine loaded (" + BURST_SIZE + " rounds)");
-        fireBurst(player);
+        fireBurst(player, item);
     }
 
-    private void fireBurst(Player player) {
+    private void fireBurst(Player player, ItemStack item) {
         new BukkitRunnable() {
             int shotsFired = 0;
 
@@ -98,11 +99,12 @@ public class MachineGunHandler implements Listener {
                     for (Entity entity : currentLoc.getWorld().getNearbyEntities(currentLoc, 0.5, 0.5, 0.5)) {
                         if (entity instanceof LivingEntity && entity != player) {
                             LivingEntity target = (LivingEntity) entity;
-                            target.damage(DAMAGE, player);
+                            double finalDamage = WeaponUtils.calculateDamage(item, DAMAGE, target);
+                            target.damage(finalDamage, player);
                             target.getWorld().spawnParticle(Particle.ENCHANTED_HIT,
                                     target.getLocation().add(0, 1, 0), 20, 0.3, 0.5, 0.3);
                             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ARROW_HIT, 1.0f, 1.0f);
-                            player.sendMessage(ChatColor.RED + "✕ HIT! -" + DAMAGE + " HP");
+                            player.sendMessage(ChatColor.RED + "✕ HIT! -" + String.format("%.1f", finalDamage) + " HP");
                             return;
                         }
                     }
@@ -115,14 +117,14 @@ public class MachineGunHandler implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(WeaponsAddon.getInstance(), 0L, 2L);
+        }.runTaskTimer(WeaponsAddon.getInstance(), 0L, WeaponUtils.calculateFireInterval(item, 2L));
     }
 
     private boolean hasAmmo(Player player) {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item != null && item.hasItemMeta()) {
                 SlimefunItem sfItem = SlimefunItem.getByItem(item);
-                if (sfItem != null && sfItem.getId().equals("MACHINE_GUN_AMMO")) {
+                if (sfItem != null && sfItem.getId().equals("MA_MACHINE_GUN_AMMO")) {
                     return true;
                 }
             }
@@ -134,7 +136,7 @@ public class MachineGunHandler implements Listener {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item != null && item.hasItemMeta()) {
                 SlimefunItem sfItem = SlimefunItem.getByItem(item);
-                if (sfItem != null && sfItem.getId().equals("MACHINE_GUN_AMMO")) {
+                if (sfItem != null && sfItem.getId().equals("MA_MACHINE_GUN_AMMO")) {
                     item.setAmount(item.getAmount() - 1);
                     return;
                 }

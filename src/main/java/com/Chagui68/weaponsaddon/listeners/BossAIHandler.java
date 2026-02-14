@@ -74,7 +74,7 @@ public class BossAIHandler implements Listener {
             Snowball bullet = (Snowball) e.getDamager();
             if (bullet.getShooter() instanceof Skeleton) {
                 Skeleton shooter = (Skeleton) bullet.getShooter();
-                if (shooter.getScoreboardTags().contains("HeavyGunner")) {
+                if (shooter.getScoreboardTags().contains("MA_HeavyGunner")) {
                     // Base damage + phase bonus
                     double baseDamage = 80.0;
                     double phaseDamage = baseDamage + (currentBossPhase * 3.0);
@@ -84,7 +84,7 @@ public class BossAIHandler implements Listener {
         }
 
         // --- TRACK DAMAGE RECEIVED BY BOSS + DAMAGE CAP ---
-        if (e.getEntity() instanceof Skeleton && e.getEntity().getScoreboardTags().contains("HeavyGunner")) {
+        if (e.getEntity() instanceof Skeleton && e.getEntity().getScoreboardTags().contains("MA_HeavyGunner")) {
             e.getEntity().setMetadata("last_damage_taken", new FixedMetadataValue(plugin, System.currentTimeMillis()));
 
             // CAP DAMAGE TO 1000 (500 hearts) to prevent one-shots
@@ -109,7 +109,7 @@ public class BossAIHandler implements Listener {
         for (World world : getWorlds()) {
             // Escanear SKELETONS (Heavy Gunner)
             for (Skeleton skeleton : world.getEntitiesByClass(Skeleton.class)) {
-                if (skeleton.getScoreboardTags().contains("HeavyGunner") && !skeleton.isDead()) {
+                if (skeleton.getScoreboardTags().contains("MA_HeavyGunner") && !skeleton.isDead()) {
                     // 1. Verificar Inactividad
                     long lastDamage = skeleton.hasMetadata("last_damage_taken")
                             ? skeleton.getMetadata("last_damage_taken").get(0).asLong()
@@ -152,9 +152,9 @@ public class BossAIHandler implements Listener {
                 if (zombie.isDead())
                     continue;
 
-                if (zombie.getScoreboardTags().contains("EliteKiller")) {
+                if (zombie.getScoreboardTags().contains("MA_EliteKiller")) {
                     handleEliteKillerAI(zombie);
-                } else if (zombie.getScoreboardTags().contains("Warrior")) {
+                } else if (zombie.getScoreboardTags().contains("MA_Warrior")) {
                     handleWarriorAI(zombie);
                 }
             }
@@ -164,7 +164,7 @@ public class BossAIHandler implements Listener {
                 if (witch.isDead())
                     continue;
 
-                if (witch.getScoreboardTags().contains("BattleWitch")) {
+                if (witch.getScoreboardTags().contains("MA_BattleWitch")) {
                     handleBattleWitchAI(witch);
                 }
             }
@@ -1251,7 +1251,7 @@ public class BossAIHandler implements Listener {
     public void onBossDeath(EntityDeathEvent e) {
         if (e.getEntity() instanceof Skeleton) {
             Skeleton skeleton = (Skeleton) e.getEntity();
-            if (skeleton.getScoreboardTags().contains("HeavyGunner")) {
+            if (skeleton.getScoreboardTags().contains("MA_HeavyGunner")) {
                 // Destroy arena and restore blocks
                 destroyArena();
 

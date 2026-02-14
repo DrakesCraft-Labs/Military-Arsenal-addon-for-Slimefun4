@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public class MilitaryVouchers {
 
         private static final SlimefunItemStack BOSS_DROP_DISPLAY = new SlimefunItemStack(
-                        "BOSS_DROP_DISPLAY",
+                        "MA_BOSS_DROP_DISPLAY",
                         Material.WITHER_SKELETON_SKULL,
                         "&4☠ &cBoss Drop",
                         "",
@@ -33,7 +33,7 @@ public class MilitaryVouchers {
         // --- Vouchers ---
 
         public static final SlimefunItemStack VOUCHER_WEAPON_UPGRADE = new SlimefunItemStack(
-                        "VOUCHER_WEAPON_UPGRADE",
+                        "MA_VOUCHER_WEAPON_UPGRADE",
                         Material.PAPER,
                         "&c📜 Special Weapon Upgrade",
                         "",
@@ -43,7 +43,7 @@ public class MilitaryVouchers {
                         "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_TANK_PART = new SlimefunItemStack(
-                        "VOUCHER_TANK_PART",
+                        "MA_VOUCHER_TANK_PART",
                         Material.PAPER,
                         "&8⚙ Heavy Tank Part",
                         "",
@@ -53,7 +53,7 @@ public class MilitaryVouchers {
                         "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_BATTERY = new SlimefunItemStack(
-                        "VOUCHER_BATTERY",
+                        "MA_VOUCHER_BATTERY",
                         Material.PAPER,
                         "&e⚡ Experimental Battery",
                         "",
@@ -63,7 +63,7 @@ public class MilitaryVouchers {
                         "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_DOCUMENT = new SlimefunItemStack(
-                        "VOUCHER_DOCUMENT",
+                        "MA_VOUCHER_DOCUMENT",
                         Material.PAPER,
                         "&b📂 Classified Document",
                         "",
@@ -73,7 +73,7 @@ public class MilitaryVouchers {
                         "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_KEY = new SlimefunItemStack(
-                        "VOUCHER_KEY",
+                        "MA_VOUCHER_KEY",
                         Material.PAPER,
                         "&6🔑 Supply Crate Key",
                         "",
@@ -83,7 +83,7 @@ public class MilitaryVouchers {
                         "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_COMMENDATION = new SlimefunItemStack(
-                        "VOUCHER_COMMENDATION",
+                        "MA_VOUCHER_COMMENDATION",
                         Material.PAPER,
                         "&b✉ Official Military Commendation",
                         "",
@@ -93,7 +93,7 @@ public class MilitaryVouchers {
                         "&eAn important part of something more powerful");
 
         public static final SlimefunItemStack VOUCHER_EMBLEM = new SlimefunItemStack(
-                        "VOUCHER_EMBLEM",
+                        "MA_VOUCHER_EMBLEM",
                         Material.PAPER,
                         "&4☠ Heavy Gunner Merciless Emblem",
                         "",

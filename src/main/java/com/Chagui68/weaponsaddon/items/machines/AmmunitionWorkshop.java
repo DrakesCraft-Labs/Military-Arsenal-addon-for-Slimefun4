@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 public class AmmunitionWorkshop extends SlimefunItem {
 
     public static final SlimefunItemStack AMMUNITION_WORKSHOP = new SlimefunItemStack(
-            "AMMUNITION_WORKSHOP",
+            "MA_AMMUNITION_WORKSHOP",
             Material.SMITHING_TABLE,
             "&6⚒ &eAmmunition Workshop",
             "",
@@ -37,7 +37,7 @@ public class AmmunitionWorkshop extends SlimefunItem {
             @Override
             public void onPlayerPlace(BlockPlaceEvent e) {
                 Block b = e.getBlock();
-                BlockStorage.addBlockInfo(b, "id", "AMMUNITION_WORKSHOP");
+                BlockStorage.addBlockInfo(b, "id", "MA_AMMUNITION_WORKSHOP");
             }
         });
 

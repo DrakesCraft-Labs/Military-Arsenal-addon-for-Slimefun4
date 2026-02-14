@@ -13,7 +13,7 @@ public class MilitaryComponents {
 
         // ========== TIER 1: BASIC COMPONENTS (Base para todo) ==========
         public static final SlimefunItemStack BASIC_CIRCUIT = new SlimefunItemStack(
-                        "BASIC_CIRCUIT",
+                        "MA_BASIC_CIRCUIT",
                         Material.REDSTONE_TORCH,
                         "&6⚡ &eBasic Circuit",
                         "",
@@ -23,7 +23,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 1 Component");
 
         public static final SlimefunItemStack STEEL_FRAME = new SlimefunItemStack(
-                        "STEEL_FRAME",
+                        "MA_STEEL_FRAME",
                         Material.IRON_BARS,
                         "&7⬚ &fSteel Frame",
                         "",
@@ -33,7 +33,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 1 Component");
 
         public static final SlimefunItemStack COPPER_COIL = new SlimefunItemStack(
-                        "COPPER_COIL",
+                        "MA_COPPER_COIL",
                         Material.LIGHTNING_ROD,
                         "&6◉ &eCopper Coil",
                         "",
@@ -43,7 +43,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 1 Component");
 
         public static final SlimefunItemStack MECHANICAL_PARTS = new SlimefunItemStack(
-                        "MECHANICAL_PARTS",
+                        "MA_MECHANICAL_PARTS",
                         Material.REPEATER,
                         "&7⚙ &fMechanical Parts",
                         "",
@@ -54,7 +54,7 @@ public class MilitaryComponents {
 
         // ========== TIER 2: INTERMEDIATE COMPONENTS ==========
         public static final SlimefunItemStack ADVANCED_CIRCUIT = new SlimefunItemStack(
-                        "ADVANCED_CIRCUIT",
+                        "MA_ADVANCED_CIRCUIT",
                         Material.COMPARATOR,
                         "&6⚡ &eAdvanced Circuit",
                         "",
@@ -64,7 +64,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 2 Component");
 
         public static final SlimefunItemStack REINFORCED_PLATING = new SlimefunItemStack(
-                        "REINFORCED_PLATING",
+                        "MA_REINFORCED_PLATING",
                         Material.NETHERITE_SCRAP,
                         "&8▩ &7Reinforced Plating",
                         "",
@@ -74,7 +74,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 2 Component");
 
         public static final SlimefunItemStack SERVO_MOTOR = new SlimefunItemStack(
-                        "SERVO_MOTOR",
+                        "MA_SERVO_MOTOR",
                         Material.PISTON,
                         "&b⚙ &3Servo Motor",
                         "",
@@ -84,7 +84,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 2 Component");
 
         public static final SlimefunItemStack POWER_CELL = new SlimefunItemStack(
-                        "POWER_CELL",
+                        "MA_POWER_CELL",
                         Material.CRYING_OBSIDIAN,
                         "&e⚡ &6Power Cell",
                         "",
@@ -95,7 +95,7 @@ public class MilitaryComponents {
 
         // ========== TIER 3: SPECIALIZED WEAPON COMPONENTS ==========
         public static final SlimefunItemStack WEAPON_BARREL = new SlimefunItemStack(
-                        "WEAPON_BARREL",
+                        "MA_WEAPON_BARREL",
                         Material.CHAIN,
                         "&c▬ &4Weapon Barrel",
                         "",
@@ -105,7 +105,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Weapon Part");
 
         public static final SlimefunItemStack TRIGGER_MECHANISM = new SlimefunItemStack(
-                        "TRIGGER_MECHANISM",
+                        "MA_TRIGGER_MECHANISM",
                         Material.TRIPWIRE_HOOK,
                         "&e⚲ &6Trigger Mechanism",
                         "",
@@ -115,7 +115,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Weapon Part");
 
         public static final SlimefunItemStack STABILIZER_UNIT = new SlimefunItemStack(
-                        "STABILIZER_UNIT",
+                        "MA_STABILIZER_UNIT",
                         Material.DIAMOND,
                         "&b◎ &3Stabilizer Unit",
                         "",
@@ -125,7 +125,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Weapon Part");
 
         public static final SlimefunItemStack TARGETING_SYSTEM = new SlimefunItemStack(
-                        "TARGETING_SYSTEM",
+                        "MA_TARGETING_SYSTEM",
                         Material.OBSERVER,
                         "&c◉ &4Targeting System",
                         "",
@@ -135,7 +135,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Weapon Part");
 
         public static final SlimefunItemStack RADAR_MODULE = new SlimefunItemStack(
-                        "RADAR_MODULE",
+                        "MA_RADAR_MODULE",
                         Material.SCULK_SENSOR,
                         "&a⦿ &2Radar Module",
                         "",
@@ -146,7 +146,7 @@ public class MilitaryComponents {
 
         // ========== TIER 3: ADVANCED MACHINERY COMPONENTS ==========
         public static final SlimefunItemStack REINFORCED_FRAME = new SlimefunItemStack(
-                        "REINFORCED_FRAME",
+                        "MA_REINFORCED_FRAME",
                         Material.LODESTONE,
                         "&8▦ &7Reinforced Frame",
                         "",
@@ -156,7 +156,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Machine Part");
 
         public static final SlimefunItemStack POWER_CORE = new SlimefunItemStack(
-                        "POWER_CORE",
+                        "MA_POWER_CORE",
                         Material.BEACON,
                         "&e⬢ &6Power Core",
                         "",
@@ -166,7 +166,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Machine Part");
 
         public static final SlimefunItemStack MILITARY_CIRCUIT = new SlimefunItemStack(
-                        "MILITARY_CIRCUIT",
+                        "MA_MILITARY_CIRCUIT",
                         Material.CALIBRATED_SCULK_SENSOR,
                         "&c⚡ &4Military Circuit",
                         "",
@@ -176,7 +176,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Machine Part");
 
         public static final SlimefunItemStack HYDRAULIC_SYSTEM = new SlimefunItemStack(
-                        "HYDRAULIC_SYSTEM",
+                        "MA_HYDRAULIC_SYSTEM",
                         Material.DISPENSER,
                         "&9⚒ &1Hydraulic System",
                         "",
@@ -186,7 +186,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Machine Part");
 
         public static final SlimefunItemStack COOLANT_SYSTEM = new SlimefunItemStack(
-                        "COOLANT_SYSTEM",
+                        "MA_COOLANT_SYSTEM",
                         Material.CAULDRON,
                         "&b◈ &3Coolant System",
                         "",
@@ -197,7 +197,7 @@ public class MilitaryComponents {
 
         // ========== TIER 4: ULTIMATE COMPONENTS ==========
         public static final SlimefunItemStack QUANTUM_PROCESSOR = new SlimefunItemStack(
-                        "QUANTUM_PROCESSOR",
+                        "MA_QUANTUM_PROCESSOR",
                         Material.END_CRYSTAL,
                         "&d⬡ &5Quantum Processor",
                         "",
@@ -208,7 +208,7 @@ public class MilitaryComponents {
 
         // ========== UPGRADE MODULES ==========
         public static final SlimefunItemStack DAMAGE_MODULE_I = new SlimefunItemStack(
-                        "DAMAGE_MODULE_I",
+                        "MA_DAMAGE_MODULE_I",
                         Material.REDSTONE_LAMP,
                         "&c⚔ &4Damage Upgrade Module I",
                         "",
@@ -218,7 +218,7 @@ public class MilitaryComponents {
                         "&eUsed in Weapon Upgrade Table");
 
         public static final SlimefunItemStack SPEED_MODULE_I = new SlimefunItemStack(
-                        "SPEED_MODULE_I",
+                        "MA_SPEED_MODULE_I",
                         Material.SUGAR,
                         "&b⚡ &3Speed Upgrade Module I",
                         "",
@@ -228,7 +228,7 @@ public class MilitaryComponents {
                         "&eUsed in Weapon Upgrade Table");
 
         public static final SlimefunItemStack ENERGY_MATRIX = new SlimefunItemStack(
-                        "ENERGY_MATRIX",
+                        "MA_ENERGY_MATRIX",
                         Material.CONDUIT,
                         "&e⬢ &6Energy Matrix",
                         "",
@@ -238,7 +238,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 4 Ultimate");
 
         public static final SlimefunItemStack EXPLOSIVE_CORE = new SlimefunItemStack(
-                        "EXPLOSIVE_CORE",
+                        "MA_EXPLOSIVE_CORE",
                         Material.TNT,
                         "&c☢ &4Explosive Core",
                         "",
@@ -249,7 +249,7 @@ public class MilitaryComponents {
 
         // ========== TIER 5: ANTIMATTER COMPONENTS (EXTREMADAMENTE COSTOSOS) ==========
         public static final SlimefunItemStack ANTIMATTER_PARTICLE = new SlimefunItemStack(
-                        "ANTIMATTER_PARTICLE",
+                        "MA_ANTIMATTER_PARTICLE",
                         Material.AMETHYST_SHARD,
                         "&5◆ &dAntimatter Particle",
                         "",
@@ -260,7 +260,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 5 Antimatter");
 
         public static final SlimefunItemStack ANTIMATTER_CRYSTAL = new SlimefunItemStack(
-                        "ANTIMATTER_CRYSTAL",
+                        "MA_ANTIMATTER_CRYSTAL",
                         Material.DRAGON_BREATH,
                         "&5⬢ &dAntimatter Crystal",
                         "",
@@ -271,7 +271,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 5 Antimatter");
 
         public static final SlimefunItemStack CONTAINMENT_FIELD_GENERATOR = new SlimefunItemStack(
-                        "CONTAINMENT_FIELD_GENERATOR",
+                        "MA_CONTAINMENT_FIELD_GENERATOR",
                         Material.RESPAWN_ANCHOR,
                         "&b⬡ &3Containment Field Generator",
                         "",
@@ -282,7 +282,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 5 Antimatter");
 
         public static final SlimefunItemStack DIMENSIONAL_STABILIZER = new SlimefunItemStack(
-                        "DIMENSIONAL_STABILIZER",
+                        "MA_DIMENSIONAL_STABILIZER",
                         Material.LODESTONE,
                         "&d▦ &5Dimensional Stabilizer",
                         "",
@@ -293,7 +293,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 5 Antimatter");
 
         public static final SlimefunItemStack VOID_CORE_MACHINE = new SlimefunItemStack(
-                        "VOID_CORE_MACHINE",
+                        "MA_VOID_CORE_MACHINE",
                         Material.BEACON,
                         "&1∞ &1Void Core Machine",
                         "",
@@ -307,7 +307,7 @@ public class MilitaryComponents {
         );
 
         public static final SlimefunItemStack VOID_ESSENCE = new SlimefunItemStack(
-                        "VOID_ESSENCE",
+                        "MA_VOID_ESSENCE",
                         Material.ECHO_SHARD,
                         "&0◉ &8Void Essence",
                         "",
@@ -318,7 +318,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 5 Antimatter");
 
         public static final SlimefunItemStack FIREARM_BARREL = new SlimefunItemStack(
-                        "FIREARM_BARREL",
+                        "MA_FIREARM_BARREL",
                         Material.FLINT_AND_STEEL,
                         "&c🔥 Firearm Barrel",
                         "&7Reinforced steel barrel",
@@ -327,7 +327,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 4 Ultimate");
 
         public static final SlimefunItemStack TURRET_SHELL = new SlimefunItemStack(
-                        "TURRET_SHELL",
+                        "MA_TURRET_SHELL",
                         Material.SHULKER_SHELL,
                         "&7🛡 &fTurret Shell",
                         "",
@@ -338,7 +338,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Component");
 
         public static final SlimefunItemStack TUNGSTEN_INGOT = new SlimefunItemStack(
-                        "TUNGSTEN_INGOT",
+                        "MA_TUNGSTEN_INGOT",
                         Material.NETHERITE_INGOT,
                         "&x&4&B&5&3&2&0&lTungsten Ingot",
                         "",
@@ -348,7 +348,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Metal");
 
         public static final SlimefunItemStack TUNGSTEN_BLADE = new SlimefunItemStack(
-                        "TUNGSTEN_BLADE",
+                        "MA_TUNGSTEN_BLADE",
                         Material.NETHERITE_SWORD,
                         "&x&4&B&5&3&2&0&l🗡 &x&0&0&F&F&4&1Tungsten Blade",
                         "",
@@ -359,7 +359,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 4 Component");
 
         public static final SlimefunItemStack IMPACT_PISTON = new SlimefunItemStack(
-                        "IMPACT_PISTON",
+                        "MA_IMPACT_PISTON",
                         Material.STICKY_PISTON,
                         "&7⚙ &fImpact Piston",
                         "",
@@ -369,7 +369,7 @@ public class MilitaryComponents {
                         "&8⇨ Tier 3 Component");
 
         public static final SlimefunItemStack KINETIC_STABILIZER = new SlimefunItemStack(
-                        "KINETIC_STABILIZER",
+                        "MA_KINETIC_STABILIZER",
                         Material.ANVIL,
                         "&b◎ &3Kinetic Stabilizer",
                         "",

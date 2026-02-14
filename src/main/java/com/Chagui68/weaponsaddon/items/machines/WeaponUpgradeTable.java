@@ -26,7 +26,7 @@ public class WeaponUpgradeTable extends SlimefunItem implements EnergyNetCompone
     private static final int ENERGY_CAPACITY = 100000;
 
     public static final SlimefunItemStack WEAPON_UPGRADABLE_TABLE = new SlimefunItemStack(
-            "WEAPON_UPGRADE_TABLE",
+            "MA_WEAPON_UPGRADE_TABLE",
             Material.SMITHING_TABLE,
             "&6⚒ &eWeapon Upgrade Table",
             "",
@@ -61,7 +61,7 @@ public class WeaponUpgradeTable extends SlimefunItem implements EnergyNetCompone
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 Block b = e.getBlock();
-                BlockStorage.addBlockInfo(b, "id", "WEAPON_UPGRADE_TABLE");
+                BlockStorage.addBlockInfo(b, "id", "MA_WEAPON_UPGRADE_TABLE");
             }
         });
 

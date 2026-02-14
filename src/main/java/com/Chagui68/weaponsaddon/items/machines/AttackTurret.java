@@ -88,7 +88,7 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
     // -----------------------------------------------------------------
 
     public static final SlimefunItemStack ATTACK_TURRET = new SlimefunItemStack(
-            "ATTACK_TURRET",
+            "MA_ATTACK_TURRET",
             Material.NETHERITE_BLOCK,
             "&1🛡 &9Industrial Attack Turret",
             "",
@@ -125,7 +125,7 @@ public class AttackTurret extends CustomRecipeItem implements EnergyNetComponent
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 // Change the block to LIGHT to act as an anchor
                 e.getBlock().setType(Material.LIGHT);
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "ATTACK_TURRET");
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "MA_ATTACK_TURRET");
                 spawnPvzModel(e.getBlock().getLocation());
             }
         });

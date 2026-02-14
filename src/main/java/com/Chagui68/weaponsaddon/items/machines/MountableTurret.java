@@ -51,7 +51,7 @@ import static org.bukkit.Bukkit.getWorlds;
 public class MountableTurret extends CustomRecipeItem implements EnergyNetComponent, Listener {
 
     private static final int ENERGY_CAPACITY = 50000;
-    private static final int ENERGY_PER_SHOT = 1000;
+    private static final int ENERGY_PER_SHOT = 150;
     private static final double DAMAGE = 10.0;
     private static final double RANGE = 35.0;
 
@@ -62,7 +62,7 @@ public class MountableTurret extends CustomRecipeItem implements EnergyNetCompon
     private static final Material BARREL_MATERIAL = Material.NETHERITE_BLOCK;
 
     public static final SlimefunItemStack MOUNTABLE_TURRET = new SlimefunItemStack(
-            "MOUNTABLE_TURRET",
+            "MA_MOUNTABLE_TURRET",
             Material.OBSERVER,
             "&4💣 &cWraith-Class War Turret",
             "",
@@ -98,7 +98,7 @@ public class MountableTurret extends CustomRecipeItem implements EnergyNetCompon
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 e.getBlock().setType(Material.LIGHT);
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "MOUNTABLE_TURRET");
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "MA_MOUNTABLE_TURRET");
                 spawnModel(e.getBlock().getLocation());
             }
         });

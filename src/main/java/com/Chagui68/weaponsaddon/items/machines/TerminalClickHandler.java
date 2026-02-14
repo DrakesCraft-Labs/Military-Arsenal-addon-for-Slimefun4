@@ -44,10 +44,12 @@ public class TerminalClickHandler implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) return;
+        if (!(e.getWhoClicked() instanceof Player))
+            return;
 
         String title = e.getView().getTitle();
-        if (!title.equals(ChatColor.DARK_RED + "Bombardment Terminal")) return;
+        if (!title.equals(ChatColor.DARK_RED + "Bombardment Terminal"))
+            return;
 
         Player p = (Player) e.getWhoClicked();
         int slot = e.getRawSlot();
@@ -75,7 +77,8 @@ public class TerminalClickHandler implements Listener {
 
             if (currentEnergy < BombardmentTerminal.getEnergyRequired()) {
                 p.sendMessage(ChatColor.RED + "✗ [Terminal] Insufficient energy!");
-                p.sendMessage(ChatColor.GRAY + "You need: " + formatEnergy(BombardmentTerminal.getEnergyRequired() - currentEnergy) + " J more");
+                p.sendMessage(ChatColor.GRAY + "You need: "
+                        + formatEnergy(BombardmentTerminal.getEnergyRequired() - currentEnergy) + " J more");
                 p.sendMessage(ChatColor.YELLOW + "Connect to Slimefun power grid");
                 return;
             }
@@ -105,8 +108,10 @@ public class TerminalClickHandler implements Listener {
             } else {
                 p.sendMessage(ChatColor.RED + "✗ [Terminal] Insufficient resources!");
                 p.sendMessage(ChatColor.GRAY + "You need:");
-                if (tntCount < 10) p.sendMessage(ChatColor.YELLOW + " • " + (10 - tntCount) + " more TNT");
-                if (starCount < 5) p.sendMessage(ChatColor.YELLOW + " • " + (5 - starCount) + " more Nether Stars");
+                if (tntCount < 10)
+                    p.sendMessage(ChatColor.YELLOW + " • " + (10 - tntCount) + " more TNT");
+                if (starCount < 5)
+                    p.sendMessage(ChatColor.YELLOW + " • " + (5 - starCount) + " more Nether Stars");
             }
 
             return;
@@ -119,10 +124,12 @@ public class TerminalClickHandler implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if (!(e.getPlayer() instanceof Player)) return;
+        if (!(e.getPlayer() instanceof Player))
+            return;
 
         String title = e.getView().getTitle();
-        if (!title.equals(ChatColor.DARK_RED + "Bombardment Terminal")) return;
+        if (!title.equals(ChatColor.DARK_RED + "Bombardment Terminal"))
+            return;
 
         Player p = (Player) e.getPlayer();
         Inventory inv = e.getInventory();
@@ -147,7 +154,7 @@ public class TerminalClickHandler implements Listener {
         Block b = e.getBlock();
         Location loc = b.getLocation();
 
-        if (BlockStorage.check(loc, "BOMBARDMENT_TERMINAL")) {
+        if (BlockStorage.check(loc, "MA_BOMBARDMENT_TERMINAL")) {
             BombardmentTerminal.removeSatelliteModel(loc);
         }
     }
@@ -155,7 +162,8 @@ public class TerminalClickHandler implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        if (!awaitingCoordinates.containsKey(p.getUniqueId())) return;
+        if (!awaitingCoordinates.containsKey(p.getUniqueId()))
+            return;
 
         e.setCancelled(true);
         String message = e.getMessage();

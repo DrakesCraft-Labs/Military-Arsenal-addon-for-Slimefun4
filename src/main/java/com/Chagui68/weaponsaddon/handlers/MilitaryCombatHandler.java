@@ -41,16 +41,41 @@ public class MilitaryCombatHandler implements Listener {
     public void onCrownRightClick(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemStack item = e.getItem();
-            if (item == null || item.getType() != Material.YELLOW_STAINED_GLASS)
+            if (item == null || item.getType() != Material.YELLOW_STAINED_GLASS
+                    || e.getHand() != org.bukkit.inventory.EquipmentSlot.HAND)
                 return;
 
             if (isKingCrown(item)) {
                 Player p = e.getPlayer();
                 ItemStack currentHelmet = p.getInventory().getHelmet();
+                ItemStack crownToEquip = item.clone();
+                crownToEquip.setAmount(1);
 
-                // Equip crown and return current helmet or clear hand
-                p.getInventory().setHelmet(item.clone());
-                p.getInventory().setItemInMainHand(currentHelmet);
+                // Equip crown and handle hand item swap
+                p.getInventory().setHelmet(crownToEquip);
+
+                // Handle hand item (decrement stack or swap)
+                ItemStack handItem = item.clone();
+                if (handItem.getAmount() > 1) {
+                    handItem.setAmount(handItem.getAmount() - 1);
+                    // If we have a current helmet, try to put it in inventory or drop it
+                    if (currentHelmet != null && currentHelmet.getType() != Material.AIR) {
+                        if (p.getInventory().firstEmpty() != -1) {
+                            p.getInventory().addItem(currentHelmet);
+                        } else {
+                            p.getWorld().dropItemNaturally(p.getLocation(), currentHelmet);
+                        }
+                    }
+                } else {
+                    handItem = currentHelmet;
+                }
+
+                if (e.getHand() == org.bukkit.inventory.EquipmentSlot.HAND) {
+                    p.getInventory().setItemInMainHand(handItem);
+                } else {
+                    p.getInventory().setItemInOffHand(handItem);
+                }
+
                 p.playSound(p.getLocation(), Sound.ITEM_ARMOR_EQUIP_GOLD, 1.0f, 1.0f);
                 e.setCancelled(true);
             }
@@ -59,20 +84,76 @@ public class MilitaryCombatHandler implements Listener {
 
     @EventHandler
     public void onCrownInventoryClick(InventoryClickEvent e) {
-        if (e.getSlotType() == InventoryType.SlotType.ARMOR && e.getRawSlot() == 5) { // Helmet slot
-            ItemStack cursor = e.getCursor();
-            if (cursor != null && cursor.getType() == Material.YELLOW_STAINED_GLASS) {
-                if (isKingCrown(cursor)) {
-                    // Allow placing glass in helmet slot
-                    ItemStack current = e.getCurrentItem();
-                    e.setCurrentItem(cursor.clone());
-                    e.getWhoClicked().setItemOnCursor(current);
-                    e.setCancelled(true);
-                    if (e.getWhoClicked() instanceof Player) {
-                        ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(),
-                                Sound.ITEM_ARMOR_EQUIP_GOLD, 1.0f, 1.0f);
-                    }
+        if (e.getClickedInventory() == null)
+            return;
+
+        ItemStack item = null;
+        boolean isShiftClick = e.getClick().isShiftClick();
+
+        if (isShiftClick) {
+            item = e.getCurrentItem();
+        } else {
+            item = e.getCursor();
+        }
+
+        if (item == null || item.getType() != Material.YELLOW_STAINED_GLASS || !isKingCrown(item)) {
+            return;
+        }
+
+        Player p = (Player) e.getWhoClicked();
+
+        // Handle Shift-Click
+        if (isShiftClick) {
+            if (p.getInventory().getHelmet() == null || p.getInventory().getHelmet().getType() == Material.AIR) {
+                ItemStack crownToEquip = item.clone();
+                crownToEquip.setAmount(1);
+
+                p.getInventory().setHelmet(crownToEquip);
+
+                if (item.getAmount() > 1) {
+                    item.setAmount(item.getAmount() - 1);
+                    e.setCurrentItem(item);
+                } else {
+                    e.setCurrentItem(null);
                 }
+
+                p.playSound(p.getLocation(), Sound.ITEM_ARMOR_EQUIP_GOLD, 1.0f, 1.0f);
+                e.setCancelled(true);
+            }
+            return;
+        }
+
+        // Handle placing in helmet slot
+        if (e.getSlotType() == InventoryType.SlotType.ARMOR) {
+            // Raw slot 5 is typically the helmet slot in most player inventory views
+            // but we can also check the actual equipment slot if possible or just rely on
+            // SlotType.ARMOR
+            // and the fact that it's a crown (helmet).
+
+            // In a standard player inventory, slot 39 (raw 5) is helmet.
+            if (e.getRawSlot() == 5) {
+                ItemStack currentHelmet = e.getCurrentItem();
+                ItemStack crownToEquip = item.clone();
+                crownToEquip.setAmount(1);
+
+                e.setCurrentItem(crownToEquip);
+
+                if (item.getAmount() > 1) {
+                    item.setAmount(item.getAmount() - 1);
+                    p.setItemOnCursor(item); // Update the cursor with the remaining items
+                    if (currentHelmet != null && currentHelmet.getType() != Material.AIR) {
+                        if (p.getInventory().firstEmpty() != -1) {
+                            p.getInventory().addItem(currentHelmet);
+                        } else {
+                            p.getWorld().dropItemNaturally(p.getLocation(), currentHelmet);
+                        }
+                    }
+                } else {
+                    p.setItemOnCursor(currentHelmet);
+                }
+
+                p.playSound(p.getLocation(), Sound.ITEM_ARMOR_EQUIP_GOLD, 1.0f, 1.0f);
+                e.setCancelled(true);
             }
         }
     }
@@ -92,7 +173,7 @@ public class MilitaryCombatHandler implements Listener {
             Arrow arrow = (Arrow) e.getDamager();
             if (arrow.getShooter() instanceof Skeleton) {
                 Skeleton shooter = (Skeleton) arrow.getShooter();
-                if (shooter.getScoreboardTags().contains("EliteRanger")) {
+                if (shooter.getScoreboardTags().contains("MA_EliteRanger")) {
                     // DAÑO DE RANGO Configurable
                     double damage = 24.0; // Normal
 
@@ -119,7 +200,7 @@ public class MilitaryCombatHandler implements Listener {
     // Logic for The King: Spawn Warriors on hit (25s cooldown)
     @EventHandler
     public void onKingDamage(EntityDamageByEntityEvent e) {
-        if (e.getEntity() instanceof ZombieVillager && e.getEntity().getScoreboardTags().contains("TheKing")) {
+        if (e.getEntity() instanceof ZombieVillager && e.getEntity().getScoreboardTags().contains("MA_TheKing")) {
             ZombieVillager king = (ZombieVillager) e.getEntity();
 
             // Cooldown check
@@ -161,13 +242,13 @@ public class MilitaryCombatHandler implements Listener {
         Entity entity = e.getEntity();
 
         // List of all our military mod tags
-        boolean isMilitaryMob = entity.getScoreboardTags().contains("EliteRanger") ||
-                entity.getScoreboardTags().contains("EliteKiller") ||
-                entity.getScoreboardTags().contains("TheKing") ||
-                entity.getScoreboardTags().contains("Pusher") ||
-                entity.getScoreboardTags().contains("HeavyGunner") ||
-                entity.getScoreboardTags().contains("Warrior") ||
-                entity.getScoreboardTags().contains("BattleWitch");
+        boolean isMilitaryMob = entity.getScoreboardTags().contains("MA_EliteRanger") ||
+                entity.getScoreboardTags().contains("MA_EliteKiller") ||
+                entity.getScoreboardTags().contains("MA_TheKing") ||
+                entity.getScoreboardTags().contains("MA_Pusher") ||
+                entity.getScoreboardTags().contains("MA_HeavyGunner") ||
+                entity.getScoreboardTags().contains("MA_Warrior") ||
+                entity.getScoreboardTags().contains("MA_BattleWitch");
 
         if (isMilitaryMob) {
             // Only allow targeting Players to prevent them from attacking Armor Stands or
@@ -194,7 +275,7 @@ public class MilitaryCombatHandler implements Listener {
         for (World world : getWorlds()) {
             for (Skeleton skeleton : world.getEntitiesByClass(Skeleton.class)) {
                 // Verificar si es nuestro Elite Ranger
-                if (skeleton.getScoreboardTags().contains("EliteRanger") && !skeleton.isDead()) {
+                if (skeleton.getScoreboardTags().contains("MA_EliteRanger") && !skeleton.isDead()) {
                     handleHybridAI(skeleton);
                 }
             }

@@ -125,7 +125,7 @@ public class MilitaryMobHandler implements Listener {
         horse.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).setBaseValue(7.5);
         horse.getAttribute(Attribute.GENERIC_STEP_HEIGHT).setBaseValue(3.0);
         horse.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).setBaseValue(1000.0);
-        horse.addScoreboardTag("Juan");
+        horse.addScoreboardTag("MA_Juan");
     }
 
     public static void equipKing(ZombieVillager king) {
@@ -138,7 +138,7 @@ public class MilitaryMobHandler implements Listener {
         king.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.13); // Lentitud 3
         king.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(1.0); // Inamovible
         king.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.5);
-        king.addScoreboardTag("TheKing");
+        king.addScoreboardTag("MA_TheKing");
 
         EntityEquipment equip = king.getEquipment();
         if (equip != null) {
@@ -166,10 +166,13 @@ public class MilitaryMobHandler implements Listener {
                 metaCasco.addEnchant(Enchantment.BLAST_PROTECTION, 5, true);
                 metaCasco.addEnchant(Enchantment.FIRE_PROTECTION, 5, true);
 
-                // Add persistent tag for wearability logic
+                // Add persistent tags for wearability and making it non-stackable
                 metaCasco.getPersistentDataContainer().set(
                         new NamespacedKey(WeaponsAddon.getInstance(), "is_king_crown"),
                         PersistentDataType.BYTE, (byte) 1);
+                metaCasco.getPersistentDataContainer().set(
+                        new NamespacedKey(WeaponsAddon.getInstance(), "unique_id"),
+                        PersistentDataType.STRING, UUID.randomUUID().toString());
 
                 casco.setItemMeta(metaCasco);
             }
@@ -252,7 +255,7 @@ public class MilitaryMobHandler implements Listener {
         warrior.setCustomNameVisible(true);
         warrior.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40.0);
         warrior.setHealth(40.0);
-        warrior.addScoreboardTag("Warrior");
+        warrior.addScoreboardTag("MA_Warrior");
 
         EntityEquipment equip = warrior.getEquipment();
         if (equip != null) {
@@ -279,7 +282,7 @@ public class MilitaryMobHandler implements Listener {
         pusher.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(0.0);
         pusher.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK).setBaseValue(1.0);
         pusher.setBaby(true);
-        pusher.addScoreboardTag("Pusher");
+        pusher.addScoreboardTag("MA_Pusher");
 
         EntityEquipment equip = pusher.getEquipment();
         if (equip != null) {
@@ -311,7 +314,7 @@ public class MilitaryMobHandler implements Listener {
         miniboss.setHealth(1000.0); // Vida del enemigo 500 corazones
         miniboss.setBaby(false);
 
-        miniboss.addScoreboardTag("EliteKiller");
+        miniboss.addScoreboardTag("MA_EliteKiller");
 
         EntityEquipment equip = miniboss.getEquipment();
         if (equip != null) {
@@ -344,7 +347,7 @@ public class MilitaryMobHandler implements Listener {
         boss.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(18.0); // 9 Corazones de daño melee
 
         // 3. [TAG]: Sirve para que BossAIHandler sepa qué IA usar
-        boss.addScoreboardTag("HeavyGunner");
+        boss.addScoreboardTag("MA_HeavyGunner");
 
         // 4. [EQUIPO]: Armas y Armaduras
         EntityEquipment equip = boss.getEquipment();
@@ -405,7 +408,7 @@ public class MilitaryMobHandler implements Listener {
         miniboss.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(damage);
 
         // Tag para la IA Híbrida
-        miniboss.addScoreboardTag("EliteRanger");
+        miniboss.addScoreboardTag("MA_EliteRanger");
 
         EntityEquipment equip = miniboss.getEquipment();
         if (equip != null) {
@@ -487,7 +490,7 @@ public class MilitaryMobHandler implements Listener {
         witch.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.28); // Slightly faster
 
         // Add tag for identification
-        witch.addScoreboardTag("BattleWitch");
+        witch.addScoreboardTag("MA_BattleWitch");
 
         // Give resistance to make her tankier
         witch.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));

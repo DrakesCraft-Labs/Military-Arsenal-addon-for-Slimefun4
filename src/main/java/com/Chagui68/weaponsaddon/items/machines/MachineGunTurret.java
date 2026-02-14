@@ -68,7 +68,7 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
     private static final float BARREL_SCALE_Z = 0.5f;
 
     public static final SlimefunItemStack MACHINE_GUN_TURRET = new SlimefunItemStack(
-            "MACHINE_GUN_TURRET",
+            "MA_MACHINE_GUN_TURRET",
             Material.IRON_BLOCK,
             "&4🔫 &cMachine Gun Turret",
             "",
@@ -104,7 +104,7 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 e.getBlock().setType(Material.LIGHT);
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "MACHINE_GUN_TURRET");
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "MA_MACHINE_GUN_TURRET");
                 spawnModel(e.getBlock().getLocation());
             }
         });
@@ -257,6 +257,7 @@ public class MachineGunTurret extends CustomRecipeItem implements EnergyNetCompo
                 new Quaternionf()));
         head.addScoreboardTag(tag);
         head.addScoreboardTag("MG_HEAD");
+        head.addScoreboardTag("MG_SENSOR");
 
         // 4. 4 BLACK BARRELS (Faithful to Image 1 vertical spacing)
         // Two on left, two on right, with vertical gap

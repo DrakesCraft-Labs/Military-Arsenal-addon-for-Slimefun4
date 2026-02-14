@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 public class MilitaryMachineFabricator extends SlimefunItem {
 
     public static final SlimefunItemStack MILITARY_MACHINE_FABRICATOR = new SlimefunItemStack(
-            "MILITARY_MACHINE_FABRICATOR",
+            "MA_MILITARY_MACHINE_FABRICATOR",
             Material.RESPAWN_ANCHOR,
             "&4⚙ &cMilitary Machine Fabricator",
             "",
@@ -42,7 +42,7 @@ public class MilitaryMachineFabricator extends SlimefunItem {
             @Override
             public void onPlayerPlace(BlockPlaceEvent e) {
                 Block b = e.getBlock();
-                BlockStorage.addBlockInfo(b, "id", "MILITARY_MACHINE_FABRICATOR");
+                BlockStorage.addBlockInfo(b, "id", "MA_MILITARY_MACHINE_FABRICATOR");
             }
         });
 
@@ -67,8 +67,10 @@ public class MilitaryMachineFabricator extends SlimefunItem {
                 MilitaryComponents.MILITARY_CIRCUIT, MilitaryComponents.REINFORCED_PLATING
         };
 
-        new MilitaryMachineFabricator(category, MILITARY_MACHINE_FABRICATOR,
-                RecipeType.ENHANCED_CRAFTING_TABLE, recipe)
-                .register(addon);
+        if (addon != null) {
+            new MilitaryMachineFabricator(category, MILITARY_MACHINE_FABRICATOR,
+                    RecipeType.ENHANCED_CRAFTING_TABLE, recipe)
+                    .register(addon);
+        }
     }
 }

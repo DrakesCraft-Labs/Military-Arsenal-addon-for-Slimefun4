@@ -73,6 +73,8 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                             Horse horse = (Horse) world
                                 .spawnEntity(loc, EntityType.HORSE);
                                 MilitaryMobHandler.equipHorseJuan(horse);
+                            sender.sendMessage(ChatColor.GREEN + "✓ Summoned Juan!");
+                                break;
                         case "king":
                             ZombieVillager king = (ZombieVillager) world
                                     .spawnEntity(loc, EntityType.ZOMBIE_VILLAGER);

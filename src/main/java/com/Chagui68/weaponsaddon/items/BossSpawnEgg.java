@@ -24,7 +24,7 @@ import static org.bukkit.Bukkit.getPluginManager;
 public class BossSpawnEgg extends SlimefunItem {
 
     public static final SlimefunItemStack HEAVY_GUNNER_EGG = new SlimefunItemStack(
-            "HEAVY_GUNNER_EGG",
+            "MA_HEAVY_GUNNER_EGG",
             Material.WITHER_SKELETON_SPAWN_EGG,
             "&4☠ &cSummon: Heavy Gunner",
             "",

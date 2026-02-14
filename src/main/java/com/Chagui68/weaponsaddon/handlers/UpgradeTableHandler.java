@@ -3,9 +3,9 @@ package com.Chagui68.weaponsaddon.handlers;
 import com.Chagui68.weaponsaddon.WeaponsAddon;
 import com.Chagui68.weaponsaddon.items.components.MilitaryComponents;
 import com.Chagui68.weaponsaddon.items.machines.energy.EnergyManager;
+import com.Chagui68.weaponsaddon.utils.WeaponUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +13,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,12 +24,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -537,13 +536,10 @@ public class UpgradeTableHandler implements Listener {
         ItemMeta meta = item.getItemMeta();
         double speed;
 
-        // If the item has explicit modifiers, Minecraft starts from 4.0 (the player's
-        // hand)
-        // rather than the material's default pre-calculated speed.
         if (meta != null && meta.hasAttributeModifiers()) {
             Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_SPEED);
             if (mods != null && !mods.isEmpty()) {
-                speed = 4.0; // Starting base for player hand
+                speed = 4.0;
                 for (AttributeModifier mod : mods) {
                     if (mod.getOperation() == AttributeModifier.Operation.ADD_NUMBER) {
                         speed += mod.getAmount();
@@ -552,8 +548,6 @@ public class UpgradeTableHandler implements Listener {
                 return speed;
             }
         }
-
-        // If no modifiers, use our pre-calculated material table
         return BASE_SPEED.getOrDefault(item.getType(), 4.0);
     }
 
@@ -568,32 +562,7 @@ public class UpgradeTableHandler implements Listener {
     }
 
     private double calculateTotalDamage(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        double damage;
-
-        // If the item has explicit modifiers, start from 1.0 (the player's hand base)
-        if (meta != null && meta.hasAttributeModifiers()) {
-            Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
-            if (mods != null && !mods.isEmpty()) {
-                damage = 1.0; // Starting base for player hand
-                for (AttributeModifier mod : mods) {
-                    if (mod.getOperation() == AttributeModifier.Operation.ADD_NUMBER) {
-                        damage += mod.getAmount();
-                    }
-                }
-            } else {
-                damage = BASE_DAMAGE.getOrDefault(item.getType(), 1.0);
-            }
-        } else {
-            damage = BASE_DAMAGE.getOrDefault(item.getType(), 1.0);
-        }
-
-        if (item.containsEnchantment(Enchantment.SHARPNESS)) {
-            int level = item.getEnchantmentLevel(Enchantment.SHARPNESS);
-            damage += 0.5 + (0.5 * level);
-        }
-
-        return damage;
+        return WeaponUtils.calculateDamage(item, BASE_DAMAGE.getOrDefault(item.getType(), 1.0), null);
     }
 
     private boolean isValidUpgradeItem(ItemStack item) {

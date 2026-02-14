@@ -55,7 +55,7 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
     private static final Random RANDOM = new Random();
 
     public static final SlimefunItemStack MELEE_TURRET = new SlimefunItemStack(
-            "MELEE_TURRET",
+            "MA_MELEE_TURRET",
             Material.WHITE_BANNER,
             "&e⚔ &6Guardian Melee Turret",
             "",
@@ -92,7 +92,7 @@ public class MeleeTurret extends CustomRecipeItem implements EnergyNetComponent,
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 e.getBlock().setType(Material.LIGHT);
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "MELEE_TURRET");
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "MA_MELEE_TURRET");
                 spawnGuardianModel(e.getBlock().getLocation());
             }
         });

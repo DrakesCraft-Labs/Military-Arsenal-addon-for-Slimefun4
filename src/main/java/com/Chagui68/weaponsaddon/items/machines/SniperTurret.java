@@ -79,7 +79,7 @@ public class SniperTurret extends CustomRecipeItem implements EnergyNetComponent
     // -----------------------------------------------------------------
 
     public static final SlimefunItemStack SNIPER_TURRET = new SlimefunItemStack(
-            "SNIPER_TURRET",
+            "MA_SNIPER_TURRET",
             Material.RED_STAINED_GLASS,
             "&1🎯 &9Long-Range Sniper Turret",
             "",
@@ -116,7 +116,7 @@ public class SniperTurret extends CustomRecipeItem implements EnergyNetComponent
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 e.getBlock().setType(Material.LIGHT);
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "SNIPER_TURRET");
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "MA_SNIPER_TURRET");
                 spawnPvzModel(e.getBlock().getLocation());
             }
         });

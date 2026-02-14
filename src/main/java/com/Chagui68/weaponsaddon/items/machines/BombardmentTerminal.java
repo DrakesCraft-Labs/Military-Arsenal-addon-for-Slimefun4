@@ -45,7 +45,7 @@ public class BombardmentTerminal extends CustomRecipeItem implements EnergyNetCo
     private static final int ENERGY_PER_USE = 2000000;
 
     public static final SlimefunItemStack BOMBARDMENT_TERMINAL = new SlimefunItemStack(
-            "BOMBARDMENT_TERMINAL",
+            "MA_BOMBARDMENT_TERMINAL",
             Material.CYAN_STAINED_GLASS,
             "&4💣 &cBombardment Terminal",
             "",
@@ -90,7 +90,7 @@ public class BombardmentTerminal extends CustomRecipeItem implements EnergyNetCo
         addItemHandler(new BlockPlaceHandler(false) {
             @Override
             public void onPlayerPlace(BlockPlaceEvent e) {
-                BlockStorage.addBlockInfo(e.getBlock(), "id", "BOMBARDMENT_TERMINAL");
+                BlockStorage.addBlockInfo(e.getBlock(), "id", "MA_BOMBARDMENT_TERMINAL");
                 spawnSatelliteModel(e.getBlock().getLocation());
             }
         });
