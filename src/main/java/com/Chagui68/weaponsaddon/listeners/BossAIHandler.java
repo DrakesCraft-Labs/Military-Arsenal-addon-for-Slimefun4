@@ -662,23 +662,23 @@ public class BossAIHandler implements Listener {
             // PHASE 6: LAST RESISTANCE (15-5% HP)
             burstShots = 20;
             burstInterval = 1L;
-            boss.getWorld().spawnParticle(org.bukkit.Particle.SOUL_FIRE_FLAME, boss.getLocation().add(0, 1, 0), 30, 0.6,
+            boss.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, boss.getLocation().add(0, 1, 0), 30, 0.6,
                     0.6, 0.6, 0.15);
             boss.addPotionEffect(
-                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE, 100, 3));
+                    new PotionEffect(PotionEffectType.RESISTANCE, 100, 3));
             boss.addPotionEffect(
-                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, 100, 3));
-            boss.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SPEED, 100, 1));
+                    new PotionEffect(PotionEffectType.STRENGTH, 100, 3));
+            boss.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100, 1));
         } else if (currentPhase == 5) {
             // PHASE 5: DESPERATION (30-15% HP)
             burstShots = 16;
             burstInterval = 2L;
-            boss.getWorld().spawnParticle(org.bukkit.Particle.DRAGON_BREATH, boss.getLocation().add(0, 1, 0), 25, 0.5,
+            boss.getWorld().spawnParticle(Particle.DRAGON_BREATH, boss.getLocation().add(0, 1, 0), 25, 0.5,
                     0.5, 0.5, 0.1);
             boss.addPotionEffect(
-                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE, 100, 2));
+                    new PotionEffect(PotionEffectType.RESISTANCE, 100, 2));
             boss.addPotionEffect(
-                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, 100, 2));
+                    new PotionEffect(PotionEffectType.STRENGTH, 100, 2));
             // Spawn reinforcements every 20s
             long lastReinforce = boss.hasMetadata("reinforce_cd") ? boss.getMetadata("reinforce_cd").get(0).asLong()
                     : 0;
@@ -690,32 +690,32 @@ public class BossAIHandler implements Listener {
             // PHASE 4: BERSERK (50-30% HP)
             burstShots = 12;
             burstInterval = 2L;
-            boss.getWorld().spawnParticle(org.bukkit.Particle.FLAME, boss.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5,
+            boss.getWorld().spawnParticle(Particle.FLAME, boss.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5,
                     0.1);
             boss.addPotionEffect(
-                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE, 100, 1));
+                    new PotionEffect(PotionEffectType.RESISTANCE, 100, 1));
             boss.addPotionEffect(
-                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, 100, 1));
+                    new PotionEffect(PotionEffectType.STRENGTH, 100, 1));
         } else if (currentPhase == 3) {
             // PHASE 3: OVERDRIVE (70-50% HP)
             burstShots = 10;
             burstInterval = 3L;
-            boss.getWorld().spawnParticle(org.bukkit.Particle.DUST, boss.getLocation().add(0, 1, 0), 15, 0.4, 0.4, 0.4,
+            boss.getWorld().spawnParticle(Particle.DUST, boss.getLocation().add(0, 1, 0), 15, 0.4, 0.4, 0.4,
                     0,
-                    new org.bukkit.Particle.DustOptions(org.bukkit.Color.ORANGE, 1));
+                    new Particle.DustOptions(Color.ORANGE, 1));
         } else if (currentPhase == 2) {
             // PHASE 2: AGGRESSIVE (85-70% HP)
             burstShots = 7;
             burstInterval = 3L;
-            boss.getWorld().spawnParticle(org.bukkit.Particle.DUST, boss.getLocation().add(0, 1, 0), 10, 0.3, 0.3, 0.3,
+            boss.getWorld().spawnParticle(Particle.DUST, boss.getLocation().add(0, 1, 0), 10, 0.3, 0.3, 0.3,
                     0,
-                    new org.bukkit.Particle.DustOptions(org.bukkit.Color.YELLOW, 1));
+                    new Particle.DustOptions(Color.YELLOW, 1));
         }
 
         // Freeze boss while shooting
         long freezeTicks = (burstShots * burstInterval) + 10;
         boss.addPotionEffect(
-                new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOWNESS, (int) freezeTicks,
+                new PotionEffect(PotionEffectType.SLOWNESS, (int) freezeTicks,
                         255));
 
         fireBurst(boss, target, burstShots, burstInterval);
@@ -746,17 +746,17 @@ public class BossAIHandler implements Listener {
 
         // Freeze all players and the boss for 10 seconds
         int freezeDuration = 200; // 10 seconds = 200 ticks
-        boss.addPotionEffect(new org.bukkit.potion.PotionEffect(
-                org.bukkit.potion.PotionEffectType.SLOWNESS, freezeDuration, 255));
-        boss.addPotionEffect(new org.bukkit.potion.PotionEffect(
-                org.bukkit.potion.PotionEffectType.JUMP_BOOST, freezeDuration, 250)); // Prevent jumping
+        boss.addPotionEffect(new PotionEffect(
+                PotionEffectType.SLOWNESS, freezeDuration, 255));
+        boss.addPotionEffect(new PotionEffect(
+                PotionEffectType.JUMP_BOOST, freezeDuration, 250)); // Prevent jumping
 
         for (Player p : world.getPlayers()) {
             if (p.getLocation().distance(bossLoc) < ARENA_RADIUS + 10) {
-                p.addPotionEffect(new org.bukkit.potion.PotionEffect(
-                        org.bukkit.potion.PotionEffectType.SLOWNESS, freezeDuration, 255));
-                p.addPotionEffect(new org.bukkit.potion.PotionEffect(
-                        org.bukkit.potion.PotionEffectType.JUMP_BOOST, freezeDuration, 250));
+                p.addPotionEffect(new PotionEffect(
+                        PotionEffectType.SLOWNESS, freezeDuration, 255));
+                p.addPotionEffect(new PotionEffect(
+                        PotionEffectType.JUMP_BOOST, freezeDuration, 250));
             }
         }
 
@@ -1123,7 +1123,7 @@ public class BossAIHandler implements Listener {
             activeBossBar.removeAll();
         }
 
-        activeBossBar = Bukkit.createBossBar(
+        activeBossBar = createBossBar(
                 ChatColor.DARK_RED + "☠ Heavy Gunner ☠",
                 BarColor.GREEN,
                 BarStyle.SEGMENTED_10);

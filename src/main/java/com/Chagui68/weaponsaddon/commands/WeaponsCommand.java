@@ -3,6 +3,7 @@ package com.Chagui68.weaponsaddon.commands;
 import org.bukkit.ChatColor;
 import com.Chagui68.weaponsaddon.handlers.MilitaryMobHandler;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -65,7 +66,7 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                 Player p = (Player) sender;
                 String mobType = args[1].toLowerCase();
                 Location loc = p.getLocation();
-                org.bukkit.World world = loc.getWorld();
+                World world = loc.getWorld();
 
                 try {
                     switch (mobType) {

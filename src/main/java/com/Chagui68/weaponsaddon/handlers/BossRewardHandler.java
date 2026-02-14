@@ -9,6 +9,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -59,8 +60,8 @@ public class BossRewardHandler {
 
                 // Effects
                 player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
-                player.spawnParticle(org.bukkit.Particle.FLASH, player.getLocation(), 10);
-                player.spawnParticle(org.bukkit.Particle.END_ROD, player.getLocation().add(0, 1, 0), 15, 0.5, 0.5, 0.5,
+                player.spawnParticle(Particle.FLASH, player.getLocation(), 10);
+                player.spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 15, 0.5, 0.5, 0.5,
                                 0.05);
         }
 

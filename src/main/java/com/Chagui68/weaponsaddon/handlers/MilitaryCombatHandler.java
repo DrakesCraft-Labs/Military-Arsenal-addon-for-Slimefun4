@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 import com.Chagui68.weaponsaddon.WeaponsAddon;
 import org.bukkit.inventory.EntityEquipment;
@@ -42,7 +43,7 @@ public class MilitaryCombatHandler implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemStack item = e.getItem();
             if (item == null || item.getType() != Material.YELLOW_STAINED_GLASS
-                    || e.getHand() != org.bukkit.inventory.EquipmentSlot.HAND)
+                    || e.getHand() != EquipmentSlot.HAND)
                 return;
 
             if (isKingCrown(item)) {
@@ -70,7 +71,7 @@ public class MilitaryCombatHandler implements Listener {
                     handItem = currentHelmet;
                 }
 
-                if (e.getHand() == org.bukkit.inventory.EquipmentSlot.HAND) {
+                if (e.getHand() == EquipmentSlot.HAND) {
                     p.getInventory().setItemInMainHand(handItem);
                 } else {
                     p.getInventory().setItemInOffHand(handItem);

@@ -12,6 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import static org.bukkit.Bukkit.getPluginManager;
+import static org.bukkit.Bukkit.getScheduler;
+
 public class SlimefunGuideListener implements Listener {
 
     // Known Slimefun Guide titles (check multiple languages/versions)
@@ -56,8 +59,8 @@ public class SlimefunGuideListener implements Listener {
             p.closeInventory();
 
             // Open custom recipe viewer after a tick
-            Bukkit.getScheduler().runTaskLater(
-                    Bukkit.getPluginManager().getPlugin("WeaponsAddon"),
+            getScheduler().runTaskLater(
+                    getPluginManager().getPlugin("WeaponsAddon"),
                     () -> {
                         try {
                             if (customItem.getGridSize() == CustomRecipeItem.RecipeGridSize.GRID_4x4) {
