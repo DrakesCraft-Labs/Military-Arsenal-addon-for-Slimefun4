@@ -14,8 +14,9 @@ import org.bukkit.inventory.ItemStack;
 public class MilitaryComponents {
 
         /*
-          Aqui se agregan los diferentes items con su lore , nombre y respectivo uso de
-          item el orden que manejes aqui no importa, más adelante se explica lo del orden
+         * Aqui se agregan los diferentes items con su lore , nombre y respectivo uso de
+         * item el orden que manejes aqui no importa, más adelante se explica lo del
+         * orden
          */
         public static final SlimefunItemStack BASIC_CIRCUIT = new SlimefunItemStack(
                         "MA_BASIC_CIRCUIT",
@@ -425,13 +426,13 @@ public class MilitaryComponents {
         public static void register(SlimefunAddon addon, ItemGroup category, ItemGroup upgradesCategory) {
 
                 /*
-                  Aca es donde van las recetas de los item su orden en como se colocan importa
-                  por ejemplo si creas un item y le colocas que es de tier 1 debes colocarlo
-                  junto a los otros items de tier 1 en las recetas para poder ver ese orden o
-                  en otras palabras digamos que tenes una receta de una espada nueva y una azada
-                  si quieres priorizar la receta de la azada en el siguiente apartado donde
-                  estan las recetas debes colocar primero la receta de la azada y luego la
-                  de la espada
+                 * Aca es donde van las recetas de los item su orden en como se colocan importa
+                 * por ejemplo si creas un item y le colocas que es de tier 1 debes colocarlo
+                 * junto a los otros items de tier 1 en las recetas para poder ver ese orden o
+                 * en otras palabras digamos que tenes una receta de una espada nueva y una azada
+                 * si quieres priorizar la receta de la azada en el siguiente apartado donde
+                 * estan las recetas debes colocar primero la receta de la azada y luego la
+                 * de la espada
                  */
 
                 // Aca inician los items de tier 1
@@ -457,6 +458,12 @@ public class MilitaryComponents {
                                 new ItemStack(Material.IRON_NUGGET), SlimefunItems.STEEL_INGOT, new ItemStack(Material.IRON_NUGGET),
                                 SlimefunItems.STEEL_INGOT, new ItemStack(Material.CLOCK), SlimefunItems.STEEL_INGOT,
                                 new ItemStack(Material.IRON_NUGGET), SlimefunItems.STEEL_INGOT, new ItemStack(Material.IRON_NUGGET)
+                }).register(addon);
+
+                new SlimefunItem(category, SUGAR_OF_DUBIOUS_ORIGIN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                                new ItemStack(Material.RED_MUSHROOM), new ItemStack(Material.WARPED_FUNGUS), new ItemStack(Material.CRIMSON_FUNGUS),
+                                new ItemStack(Material.BROWN_MUSHROOM), new ItemStack(Material.SUGAR), new ItemStack(Material.BROWN_MUSHROOM),
+                                new ItemStack(Material.CRIMSON_FUNGUS), new ItemStack(Material.WARPED_FUNGUS), new ItemStack(Material.RED_MUSHROOM)
                 }).register(addon);
 
                 // Aca inician los items de tier 2
@@ -611,7 +618,7 @@ public class MilitaryComponents {
                                 MOVEMENT_CIRCUIT, SlimefunItems.URANIUM, MOVEMENT_CIRCUIT,
                                 SlimefunItems.URANIUM, new ItemStack(Material.NETHER_STAR), SlimefunItems.URANIUM,
                                 MOVEMENT_CIRCUIT, SlimefunItems.URANIUM, MOVEMENT_CIRCUIT
-                                }).register(addon);
+                }).register(addon);
 
                 // Aca inician los items de tier 5
                 new SlimefunItem(category, ANTIMATTER_PARTICLE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
