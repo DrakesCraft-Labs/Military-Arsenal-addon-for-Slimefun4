@@ -24,7 +24,7 @@ public class RecipeViewerGUI implements Listener {
     private static final Map<UUID, String> openViewers = new HashMap<>();
 
     public static void open4x4Recipe(Player p, String itemName, ItemStack result, ItemStack[] recipe) {
-        Inventory inv = createInventory(null, 54, ChatColor.DARK_RED + itemName);
+        Inventory inv = createInventory(null, 54, ChatColor.DARK_RED + "⚒ Recipe: " + itemName);
 
         // Fondo negro
         ItemStack background = new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ");
@@ -46,7 +46,8 @@ public class RecipeViewerGUI implements Listener {
 
         // Bordes naranjas
         ItemStack border = new CustomItemStack(Material.ORANGE_STAINED_GLASS_PANE, ChatColor.GOLD + "▓");
-        int[] borderSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 27, 36, 45, 46, 47, 48, 49, 50, 51, 52, 53, 17, 26, 35, 44};
+        int[] borderSlots = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 27, 36, 45, 46, 47, 48, 49, 50, 51, 52, 53, 17, 26, 35,
+                44 };
         for (int slot : borderSlots) {
             inv.setItem(slot, border);
         }
@@ -65,23 +66,21 @@ public class RecipeViewerGUI implements Listener {
                 ChatColor.GOLD + "ℹ Military Crafting Table",
                 "",
                 ChatColor.YELLOW + "4×4 Advanced Crafting",
-                ChatColor.GRAY + "Place items exactly as shown"
-        ));
+                ChatColor.GRAY + "Place items exactly as shown"));
 
         // Botón de cierre
         inv.setItem(49, new CustomItemStack(
                 Material.BARRIER,
                 ChatColor.RED + "✖ Close",
                 "",
-                ChatColor.GRAY + "Click to return to guide"
-        ));
+                ChatColor.GRAY + "Click to return to guide"));
 
         p.openInventory(inv);
         openViewers.put(p.getUniqueId(), itemName);
     }
 
     public static void open6x6Recipe(Player p, String itemName, ItemStack result, ItemStack[] recipe) {
-        Inventory inv = createInventory(null, 54, ChatColor.DARK_RED + itemName);
+        Inventory inv = createInventory(null, 54, ChatColor.DARK_RED + "⚙ Recipe: " + itemName);
 
         // Fondo negro
         ItemStack background = new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ");
@@ -105,7 +104,7 @@ public class RecipeViewerGUI implements Listener {
 
         // Bordes rojos
         ItemStack border = new CustomItemStack(Material.RED_STAINED_GLASS_PANE, ChatColor.DARK_RED + "▓");
-        int[] borderSlots = {0, 7, 8, 9, 16, 17, 18, 25, 26, 27, 34, 35, 36, 43, 44, 45, 52, 53};
+        int[] borderSlots = { 0, 7, 8, 9, 16, 17, 18, 25, 26, 27, 34, 35, 36, 43, 44, 45, 52, 53 };
         for (int slot : borderSlots) {
             inv.setItem(slot, border);
         }
@@ -124,16 +123,14 @@ public class RecipeViewerGUI implements Listener {
                 ChatColor.DARK_RED + "ℹ Machine Fabricator",
                 "",
                 ChatColor.RED + "6×6 Ultimate Crafting",
-                ChatColor.GRAY + "Place items exactly as shown"
-        ));
+                ChatColor.GRAY + "Place items exactly as shown"));
 
         // Botón de cierre
         inv.setItem(53, new CustomItemStack(
                 Material.BARRIER,
                 ChatColor.RED + "✖ Close",
                 "",
-                ChatColor.GRAY + "Click to return to guide"
-        ));
+                ChatColor.GRAY + "Click to return to guide"));
 
         p.openInventory(inv);
         openViewers.put(p.getUniqueId(), itemName);
@@ -141,11 +138,13 @@ public class RecipeViewerGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) return;
+        if (!(e.getWhoClicked() instanceof Player))
+            return;
 
         String title = e.getView().getTitle();
         if (!title.startsWith(ChatColor.DARK_RED + "⚒ Recipe:") &&
-                !title.startsWith(ChatColor.DARK_RED + "⚙ Recipe:")) return;
+                !title.startsWith(ChatColor.DARK_RED + "⚙ Recipe:"))
+            return;
 
         e.setCancelled(true);
 
@@ -162,7 +161,8 @@ public class RecipeViewerGUI implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if (!(e.getPlayer() instanceof Player)) return;
+        if (!(e.getPlayer() instanceof Player))
+            return;
 
         String title = e.getView().getTitle();
         if (title.startsWith(ChatColor.DARK_RED + "⚒ Recipe:") ||
@@ -173,7 +173,8 @@ public class RecipeViewerGUI implements Listener {
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) return;
+        if (!(e.getWhoClicked() instanceof Player))
+            return;
 
         String title = e.getView().getTitle();
         if (title.startsWith(ChatColor.DARK_RED + "⚒ Recipe:") ||
