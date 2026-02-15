@@ -27,6 +27,7 @@ import com.Chagui68.weaponsaddon.items.machines.MachineGunTurret;
 import com.Chagui68.weaponsaddon.items.machines.MountableTurret;
 import com.Chagui68.weaponsaddon.items.machines.WeaponUpgradeTable;
 import com.Chagui68.weaponsaddon.commands.WeaponsCommand;
+import com.Chagui68.weaponsaddon.commands.ResetArenaCommand;
 import com.Chagui68.weaponsaddon.handlers.MilitaryCombatHandler;
 import com.Chagui68.weaponsaddon.handlers.MilitaryMobHandler;
 import com.Chagui68.weaponsaddon.items.vouchers.MilitaryVouchers;
@@ -300,6 +301,9 @@ public class WeaponsAddon extends JavaPlugin implements SlimefunAddon {
                 WeaponsCommand weaponsCommand = new WeaponsCommand();
                 getCommand("weapons").setExecutor(weaponsCommand);
                 getCommand("weapons").setTabCompleter(weaponsCommand);
+
+                ResetArenaCommand resetArenaCommand = new ResetArenaCommand();
+                getCommand("resetarena").setExecutor(resetArenaCommand);
 
                 getLogger().info("Military Arsenal addon enabled successfully!");
         }
