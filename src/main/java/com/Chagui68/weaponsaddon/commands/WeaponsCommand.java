@@ -84,7 +84,7 @@ public class WeaponsCommand implements CommandExecutor, TabCompleter {
                             Enderman enderman = (Enderman) world
                                     .spawnEntity(loc, EntityType.ENDERMAN);
                             MilitaryMobHandler.equipEnderman(enderman);
-                            sender.sendMessage(ChatColor.GREEN + "✓ Summoned Rusty Purple Guy!");
+                            sender.sendMessage(ChatColor.GREEN + "✓ Summoned Purple Guy!");
                             break;
 
                         case "crab":

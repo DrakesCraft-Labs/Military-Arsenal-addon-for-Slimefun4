@@ -2,6 +2,7 @@ package com.Chagui68.weaponsaddon.listeners;
 
 import com.Chagui68.weaponsaddon.handlers.MilitaryMobHandler;
 import com.Chagui68.weaponsaddon.handlers.BossRewardHandler;
+import com.Chagui68.weaponsaddon.utils.CinematicUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -39,6 +40,8 @@ public class BossAIHandler implements Listener {
     private static final long IDLE_DESPAWN_TIME = 60000;
     private static final int ARENA_HEIGHT = 19;
     private static final double ARENA_MARGIN = 0.5;
+    private static final double PURPLE_GUY_CINEMATIC_CHANCE =0.2; // 20% chance
+    private static final int PURPLE_GUY_CINEMATIC_COOLDOWN_TICKS = 1200; // 60 seconds (20 ticks * 60)
 
     /*
      * La altura y tamaño se define aquí en las lineas 33 para la altura y 31 para
@@ -1415,4 +1418,34 @@ public class BossAIHandler implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent e) {
+        // Cinematic Attack for Purple Guy
+        if (e.getDamager() instanceof Enderman && e.getEntity() instanceof Player) {
+            Enderman enderman = (Enderman) e.getDamager();
+            Player player = (Player) e.getEntity();
+
+            if (enderman.getScoreboardTags().contains("MA_Purple_Guy")) {
+                // Configurable chance to trigger cinematic
+                if (Math.random() < PURPLE_GUY_CINEMATIC_CHANCE) {
+                    // Cooldown check
+                    if (!player.hasMetadata("cinematic_cd")) {
+                        CinematicUtils.startPurpleGuyCinematic(plugin, player, enderman);
+                        player.setMetadata("cinematic_cd", new FixedMetadataValue(plugin, true));
+                        e.setCancelled(true); // Cancel original damage to make it smoother
+
+                        // Remove cooldown after the configured time
+                        new org.bukkit.scheduler.BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (player.isOnline()) {
+                                    player.removeMetadata("cinematic_cd", plugin);
+                                }
+                            }
+                        }.runTaskLater(plugin, (long) PURPLE_GUY_CINEMATIC_COOLDOWN_TICKS);
+                    }
+                }
+            }
+        }
+    }
 }

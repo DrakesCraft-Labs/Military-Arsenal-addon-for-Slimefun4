@@ -27,7 +27,7 @@ public class NetworksIntegration {
 
     /**
      * Registra la integración con Networks si está disponible.
-     * Este método debe llamarse después de que todos los items del addon
+     * Este metodo debe llamarse después de que todos los items del addon
      * hayan sido registrados en Slimefun.
      */
     public static void register() {
