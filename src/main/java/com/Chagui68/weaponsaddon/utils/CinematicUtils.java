@@ -29,7 +29,7 @@ public class CinematicUtils {
     /**
      * Inicia la cinemática de "The Shadow Realm Trap" para el Purple Guy.
      */
-    public static void startPurpleGuyCinematic(Plugin plugin, Player player, LivingEntity purpleGuy) {
+    public static void startPurpleGuyCinematic(Plugin plugin, Player player, LivingEntity purpleGuy, double damage) {
         UUID uuid = player.getUniqueId();
         if (activeNpcs.containsKey(uuid))
             return;
@@ -150,8 +150,22 @@ public class CinematicUtils {
                     player.getWorld().spawnParticle(Particle.BLOCK, floatingLoc.clone().add(0, 1, 0), 50,
                             Material.REDSTONE_BLOCK.createBlockData());
 
-                    player.damage(60.0, purpleGuy);
                     cleanup(player);
+
+                    // Delay damage by 2 ticks and clear effects to ensure configured damage
+                    // registers
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        if (player.isOnline()) {
+                            // Clear all effects to bypass Resistance/mitigations
+                            player.getActivePotionEffects()
+                                    .forEach(effect -> player.removePotionEffect(effect.getType()));
+
+                            player.setInvulnerable(false);
+                            player.setNoDamageTicks(0);
+                            player.damage(damage, purpleGuy);
+                        }
+                    }, 2L);
+
                     this.cancel();
                 }
             }

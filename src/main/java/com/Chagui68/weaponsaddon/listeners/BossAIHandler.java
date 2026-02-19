@@ -40,8 +40,9 @@ public class BossAIHandler implements Listener {
     private static final long IDLE_DESPAWN_TIME = 60000;
     private static final int ARENA_HEIGHT = 19;
     private static final double ARENA_MARGIN = 0.5;
-    private static final double PURPLE_GUY_CINEMATIC_CHANCE =0.2; // 20% chance
+    private static final double PURPLE_GUY_CINEMATIC_CHANCE = 0.4; // 40% chance
     private static final int PURPLE_GUY_CINEMATIC_COOLDOWN_TICKS = 1200; // 60 seconds (20 ticks * 60)
+    private static final double PURPLE_GUY_CINEMATIC_DAMAGE = 100000.0;
 
     /*
      * La altura y tamaño se define aquí en las lineas 33 para la altura y 31 para
@@ -1430,7 +1431,7 @@ public class BossAIHandler implements Listener {
                 if (Math.random() < PURPLE_GUY_CINEMATIC_CHANCE) {
                     // Cooldown check
                     if (!player.hasMetadata("cinematic_cd")) {
-                        CinematicUtils.startPurpleGuyCinematic(plugin, player, enderman);
+                        CinematicUtils.startPurpleGuyCinematic(plugin, player, enderman, PURPLE_GUY_CINEMATIC_DAMAGE);
                         player.setMetadata("cinematic_cd", new FixedMetadataValue(plugin, true));
                         e.setCancelled(true); // Cancel original damage to make it smoother
 

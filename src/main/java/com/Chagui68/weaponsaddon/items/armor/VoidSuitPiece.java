@@ -103,7 +103,7 @@ public class VoidSuitPiece extends SlimefunItem implements VoidProtection, Custo
             // Efectos beneficiosos del traje completo
             player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 300, 1, true, false, true));
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 300, 2, true, false, true));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 300, 3, true, false, true));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 300, 2, true, false, true));
             player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,300,2,true,false,true));
             player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION,300,1,true,false,true));
         }

@@ -139,7 +139,7 @@ public class MilitaryMobHandler implements Listener {
         enderman.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(2.0);
         enderman.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(150.0);
         enderman.setHealth(150.0);
-        enderman.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(30.0);
+        enderman.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(10.0);
         enderman.addScoreboardTag("MA_Purple_Guy");
     }
 
