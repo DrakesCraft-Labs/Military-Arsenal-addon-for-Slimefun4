@@ -34,7 +34,7 @@ public class MilitaryCombatHandler implements Listener {
 
     // --- PUSHER CONFIGURATION ---
     private static final double PUSHER_KNOCKBACK_MULTIPLIER = 5.0; // Fuerza horizontal
-    private static final double PUSHER_KNOCKBACK_VERTICAL = 0.5; // Fuerza hacia arriba (Y)
+    private static final double PUSHER_KNOCKBACK_VERTICAL = 1.0; // Fuerza hacia arriba (Y)
 
     public MilitaryCombatHandler(Plugin plugin) {
         this.plugin = plugin;
