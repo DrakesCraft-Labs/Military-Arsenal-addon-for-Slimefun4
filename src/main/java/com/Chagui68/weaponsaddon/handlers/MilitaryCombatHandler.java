@@ -169,6 +169,19 @@ public class MilitaryCombatHandler implements Listener {
     // --- DAMAGE HANDLER ---
     @EventHandler
     public void onCombatDamage(EntityDamageByEntityEvent e) {
+        // Zero damage and manual knockback for Pushers (they only push)
+        Entity damager = e.getDamager();
+        if (damager instanceof LivingEntity && damager.getScoreboardTags().contains("MA_Pusher")) {
+            e.setDamage(0.0);
+
+            // Manual knockback for 1.20.1 compatibility when damage is 0
+            if (e.getEntity() instanceof Player) {
+                Player player = (Player) e.getEntity();
+                Vector dir = player.getLocation().toVector().subtract(damager.getLocation().toVector()).normalize();
+                player.setVelocity(dir.multiply(1.2).setY(0.35));
+            }
+        }
+
         // Daño de Arco para Elite Ranger
         if (e.getDamager() instanceof Arrow) {
             Arrow arrow = (Arrow) e.getDamager();
