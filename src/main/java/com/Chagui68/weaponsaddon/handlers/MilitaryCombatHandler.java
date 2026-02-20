@@ -7,6 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -42,7 +43,7 @@ public class MilitaryCombatHandler implements Listener {
 
     // --- EQUIPMENT WEARABILITY HANDLER (FOR KING'S CROWN) ---
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGH)
     public void onCrownRightClick(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemStack item = e.getItem();
@@ -87,7 +88,7 @@ public class MilitaryCombatHandler implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onCrownInventoryClick(InventoryClickEvent e) {
         if (e.getClickedInventory() == null)
             return;
@@ -171,7 +172,7 @@ public class MilitaryCombatHandler implements Listener {
     }
 
     // --- DAMAGE HANDLER ---
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onCombatDamage(EntityDamageByEntityEvent e) {
         // Zero damage and manual knockback for Pushers (they only push)
         Entity damager = e.getDamager();
@@ -216,7 +217,7 @@ public class MilitaryCombatHandler implements Listener {
     }
 
     // Logic for The King: Spawn Warriors on hit (25s cooldown)
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onKingDamage(EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof ZombieVillager && e.getEntity().getScoreboardTags().contains("MA_TheKing")) {
             ZombieVillager king = (ZombieVillager) e.getEntity();
@@ -255,7 +256,7 @@ public class MilitaryCombatHandler implements Listener {
     }
 
     // --- TARGET HANDLER ---
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityTarget(EntityTargetLivingEntityEvent e) {
         Entity entity = e.getEntity();
 

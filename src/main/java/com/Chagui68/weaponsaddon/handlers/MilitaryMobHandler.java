@@ -7,6 +7,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -47,7 +48,7 @@ public class MilitaryMobHandler implements Listener {
     public MilitaryMobHandler(Plugin plugin) {
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onSpawn(CreatureSpawnEvent e) {
         // [SPAWN NATURAL]
 

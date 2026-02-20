@@ -12,6 +12,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.*;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -73,7 +74,7 @@ public class BossAIHandler implements Listener {
         startAITask();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onProjectileHit(EntityDamageByEntityEvent e) {
         // --- BULLET DAMAGE (Progressive by phase) ---
         if (e.getDamager() instanceof Snowball) {
@@ -1318,7 +1319,7 @@ public class BossAIHandler implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent e) {
         // Protect arena blocks
         if (arenaBlocks.contains(e.getBlock().getLocation())) {
@@ -1342,7 +1343,7 @@ public class BossAIHandler implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBossDeath(EntityDeathEvent e) {
         if (e.getEntity() instanceof Skeleton) {
             Skeleton skeleton = (Skeleton) e.getEntity();
@@ -1426,7 +1427,7 @@ public class BossAIHandler implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(EntityDamageByEntityEvent e) {
         // Cinematic Attack for Purple Guy
         if (e.getDamager() instanceof Enderman && e.getEntity() instanceof Player) {
