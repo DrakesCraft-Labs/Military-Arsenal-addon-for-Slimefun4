@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import com.Chagui68.weaponsaddon.utils.VersionSafe;
 
 public class VoidComponents extends SlimefunItem implements CustomEffectEmitter {
 
@@ -30,13 +31,13 @@ public class VoidComponents extends SlimefunItem implements CustomEffectEmitter 
             return;
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 160, 3));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 160, 5));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 160, 5));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 160, 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 160, 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 160, 3));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 160, 5));
+        player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("NAUSEA"), 160, 3));
+        player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("HUNGER"), 160, 5));
+        player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("SLOWNESS"), 160, 5));
+        player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("WEAKNESS"), 160, 2));
+        player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("BLINDNESS"), 160, 2));
+        player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("DARKNESS"), 160, 3));
+        player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("POISON"), 160, 5));
     }
 
     private boolean hasFullProtection(Player player) {

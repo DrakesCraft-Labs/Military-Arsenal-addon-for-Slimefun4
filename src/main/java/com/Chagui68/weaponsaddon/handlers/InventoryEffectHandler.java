@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import com.Chagui68.weaponsaddon.utils.VersionSafe;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static org.bukkit.Bukkit.getOnlinePlayers;
@@ -31,7 +32,7 @@ public class InventoryEffectHandler extends BukkitRunnable {
                 int finalLevel = getTungstenSlownessLevel(player, slownessLevel);
                 if (finalLevel >= 0) {
                     player.addPotionEffect(
-                            new PotionEffect(PotionEffectType.SLOWNESS, duration, finalLevel, true, false, true));
+                            new PotionEffect(VersionSafe.getPotionEffectType("SLOWNESS"), duration, finalLevel, true, false, true));
                 }
             }
 

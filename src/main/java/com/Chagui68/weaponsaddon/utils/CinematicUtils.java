@@ -213,7 +213,7 @@ public class CinematicUtils {
         if (gm != null)
             player.setGameMode(gm);
 
-        player.removePotionEffect(org.bukkit.potion.PotionEffectType.BLINDNESS);
+        player.removePotionEffect(VersionSafe.getPotionEffectType("BLINDNESS"));
     }
 
     private static ItemStack getSpringtrapHead() {

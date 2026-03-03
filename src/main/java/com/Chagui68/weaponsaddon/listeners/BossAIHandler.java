@@ -200,12 +200,6 @@ public class BossAIHandler implements Listener {
                 }
             }
 
-            /*
-             * Entidad neutral convertida en completamente agresiva
-             * cuando el Rusty Crab lee que hay un jugador dentro de un
-             * radio de 15 bloques lo ataca aunque esta entidad sea neutral
-             *
-             */
             for (PigZombie pigman : world.getEntitiesByClass(PigZombie.class)) {
                 if (pigman.isDead())
                     continue;
@@ -216,6 +210,7 @@ public class BossAIHandler implements Listener {
             }
         }
     }
+
 
     private void handlePurpleGuy(Enderman enderman) {
         if (enderman.getTarget() != null && !enderman.getTarget().isDead()
@@ -244,18 +239,47 @@ public class BossAIHandler implements Listener {
     }
 
     private void handleRustyCrabAI(PigZombie crab) {
-        // If already has a target, we don't need to force it unless the target is
-        // invalid
+        // --- ABDUCTION ABILITY ---
+        double abilityRadius = WeaponsAddon.getInstance().getConfig().getDouble("mobs.rusty_crab.ability_radius", 7.0);
+        long cooldownMs = WeaponsAddon.getInstance().getConfig().getLong("mobs.rusty_crab.ability_cooldown_ms", 120000);
+
+        for (Player p : crab.getWorld().getPlayers()) {
+            if (p.isDead() || p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR)
+                continue;
+
+            if (p.hasMetadata("crab_abduction_cd")) {
+                long cd = p.getMetadata("crab_abduction_cd").get(0).asLong();
+                if (System.currentTimeMillis() < cd) continue;
+            }
+
+            double dist = p.getLocation().distance(crab.getLocation());
+            if (dist <= abilityRadius) {
+                p.teleport(crab.getLocation());
+                
+                int slownessAmp = WeaponsAddon.getInstance().getConfig().getInt("mobs.rusty_crab.slowness_amplifier", 1);
+                int blindnessAmp = WeaponsAddon.getInstance().getConfig().getInt("mobs.rusty_crab.blindness_amplifier", 1);
+                int duration = WeaponsAddon.getInstance().getConfig().getInt("mobs.rusty_crab.effect_duration", 100);
+
+                p.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("SLOWNESS"), duration, slownessAmp));
+                p.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("BLINDNESS"), duration, blindnessAmp));
+
+                p.setMetadata("crab_abduction_cd", new FixedMetadataValue(plugin, System.currentTimeMillis() + cooldownMs));
+
+                crab.getWorld().playSound(crab.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.5f);
+                crab.getWorld().playSound(crab.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 0.5f);
+                crab.getWorld().spawnParticle(Particle.DRAGON_BREATH, crab.getLocation().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.1);
+
+                p.sendMessage(ChatColor.RED + "You have been abducted by the Rusty Crab!");
+                break;
+            }
+        }
+
         if (crab.getTarget() != null && !crab.getTarget().isDead()
                 && crab.getTarget().getWorld() == crab.getWorld()
                 && crab.getTarget().getLocation().distance(crab.getLocation()) < 20) {
             return;
         }
 
-        /*
-         * Identifica al jugador más cercano y lo ataca
-         *
-         */
         Player nearestPlayer = null;
         double nearestDist = Double.MAX_VALUE;
 
@@ -264,7 +288,7 @@ public class BossAIHandler implements Listener {
                 continue;
 
             double dist = p.getLocation().distance(crab.getLocation());
-            if (dist < nearestDist && dist < 15) { // Distancia del radio de 15 bloques
+            if (dist < nearestDist && dist < 15) {
                 if (crab.hasLineOfSight(p)) {
                     nearestDist = dist;
                     nearestPlayer = p;
@@ -274,9 +298,12 @@ public class BossAIHandler implements Listener {
 
         if (nearestPlayer != null) {
             crab.setTarget(nearestPlayer);
-            crab.setAnger(600); // 30 segundos de ira despues de que el jugador se aleja de su radio
+            crab.setAnger(600);
         }
     }
+
+
+
 
     private void handleWarriorAI(Zombie warrior) {
         LivingEntity target = warrior.getTarget();
@@ -297,7 +324,7 @@ public class BossAIHandler implements Listener {
         // --- PHASE 1: CHARGING (1s) ---
         // Freeze warrior (Slowness 255)
         warrior.addPotionEffect(
-                new PotionEffect(PotionEffectType.SLOWNESS, 25, 255));
+                new PotionEffect(VersionSafe.getPotionEffectType("SLOWNESS"), 25, 255));
         warrior.getWorld().playSound(warrior.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 1.0f, 0.5f);
         warrior.getWorld().spawnParticle(Particle.CRIT, warrior.getLocation().add(0, 1, 0), 10, 0.3, 0.3,
                 0.3,
@@ -329,27 +356,30 @@ public class BossAIHandler implements Listener {
             return;
 
         double distance = killer.getLocation().distance(target.getLocation());
+        if (distance > 20) return;
 
-        // 1. Verificar RANGO (Radio de 20 bloques)
-        if (distance > 20)
-            return;
+        if (target instanceof Player) {
+            Player p = (Player) target;
+            long cooldownMs = WeaponsAddon.getInstance().getConfig().getLong("mobs.elite_killer.ability_cooldown_ms", 60000);
 
-        // 2. Verificar COOLDOWN (30 segundos)
-        if (killer.hasMetadata("killer_cooldown")) {
-            long cooldownTime = killer.getMetadata("killer_cooldown").get(0).asLong();
-            if (System.currentTimeMillis() < cooldownTime) {
-                return; // Todavía en tiempo de espera
+            if (p.hasMetadata("killer_abduction_cd")) {
+                long cd = p.getMetadata("killer_abduction_cd").get(0).asLong();
+                if (System.currentTimeMillis() < cd) return;
             }
-        }
 
-        // Habilidad: Aparecer 3 "Pushers" detrás del jugador
-        for (int i = 0; i < 3; i++) {
-            spawnPusherBehind(target);
-        }
+            for (int i = 0; i < 3; i++) {
+                spawnPusherBehind(target);
+            }
 
-        // Establecer nuevo cooldown (30 segundos)
-        killer.setMetadata("killer_cooldown", new FixedMetadataValue(plugin, System.currentTimeMillis() + 60000));
+            p.setMetadata("killer_abduction_cd", new FixedMetadataValue(plugin, System.currentTimeMillis() + cooldownMs));
+            killer.setMetadata("killer_cooldown", new FixedMetadataValue(plugin, System.currentTimeMillis() + 60000));
+        }
     }
+
+
+
+
+
 
     private void spawnPusherBehind(LivingEntity target) {
         Location targetLoc = target.getLocation();
@@ -514,42 +544,42 @@ public class BossAIHandler implements Listener {
         switch (diceRoll) {
             case 1: // Hunger V + Nausea II (10 seconds)
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.HUNGER, 200, 4), true);
+                        VersionSafe.getPotionEffectType("HUNGER"), 200, 4), true);
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.NAUSEA, 200, 1), true);
+                        VersionSafe.getPotionEffectType("NAUSEA"), 200, 1), true);
                 potionMeta.setDisplayName(ChatColor.DARK_GREEN + "Starvation Brew");
                 break;
             case 2: // Poison III + Wither I (20 seconds)
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.POISON, 400, 2), true);
+                        VersionSafe.getPotionEffectType("POISON"), 400, 2), true);
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.WITHER, 400, 0), true);
+                        VersionSafe.getPotionEffectType("WITHER"), 400, 0), true);
                 potionMeta.setDisplayName(ChatColor.DARK_PURPLE + "Decay Elixir");
                 break;
             case 3: // Blindness I + Weakness I (15 seconds)
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.BLINDNESS, 300, 0), true);
+                        VersionSafe.getPotionEffectType("BLINDNESS"), 300, 0), true);
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.WEAKNESS, 300, 0), true);
+                        VersionSafe.getPotionEffectType("WEAKNESS"), 300, 0), true);
                 potionMeta.setDisplayName(ChatColor.GRAY + "Shadow Curse");
                 break;
             case 4: // Fire + Slowness III (12 seconds) - NEW
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.SLOWNESS, 240, 2), true);
+                        VersionSafe.getPotionEffectType("SLOWNESS"), 240, 2), true);
                 potionMeta.setDisplayName(ChatColor.RED + "Inferno Draught");
                 break;
             case 5: // Mining Fatigue III + Slowness II (15 seconds) - NEW
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.MINING_FATIGUE, 300, 2), true);
+                        VersionSafe.getPotionEffectType("MINING_FATIGUE"), 300, 2), true);
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.SLOWNESS, 300, 1), true);
+                        VersionSafe.getPotionEffectType("SLOWNESS"), 300, 1), true);
                 potionMeta.setDisplayName(ChatColor.AQUA + "Frost Bane");
                 break;
             case 6: // Instant Damage II + Levitation I (5 seconds) - NEW
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.INSTANT_DAMAGE, 1, 1), true);
+                        VersionSafe.getPotionEffectType("INSTANT_DAMAGE"), 1, 1), true);
                 potionMeta.addCustomEffect(new PotionEffect(
-                        PotionEffectType.LEVITATION, 100, 0), true);
+                        VersionSafe.getPotionEffectType("LEVITATION"), 100, 0), true);
                 potionMeta.setDisplayName(ChatColor.DARK_RED + "Soul Drain");
                 break;
         }
@@ -757,10 +787,10 @@ public class BossAIHandler implements Listener {
             boss.getWorld().spawnParticle(Particle.END_ROD, boss.getLocation().add(0, 1, 0), 40, 0.7, 0.7,
                     0.7, 0.2);
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.RESISTANCE, 100, 4));
+                    new PotionEffect(VersionSafe.getPotionEffectType("RESISTANCE"), 100, 4));
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.STRENGTH, 100, 4));
-            boss.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100, 2));
+                    new PotionEffect(VersionSafe.getPotionEffectType("STRENGTH"), 100, 4));
+            boss.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("SPEED"), 100, 2));
             // Slow regeneration
             if (boss.getHealth() < maxHealth * 0.10) {
                 boss.setHealth(Math.min(boss.getHealth() + 10, maxHealth * 0.10));
@@ -772,10 +802,10 @@ public class BossAIHandler implements Listener {
             boss.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, boss.getLocation().add(0, 1, 0), 30, 0.6,
                     0.6, 0.6, 0.15);
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.RESISTANCE, 100, 3));
+                    new PotionEffect(VersionSafe.getPotionEffectType("RESISTANCE"), 100, 3));
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.STRENGTH, 100, 3));
-            boss.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100, 1));
+                    new PotionEffect(VersionSafe.getPotionEffectType("STRENGTH"), 100, 3));
+            boss.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("SPEED"), 100, 1));
         } else if (currentPhase == 5) {
             // PHASE 5: DESPERATION (30-15% HP)
             burstShots = 16;
@@ -783,9 +813,9 @@ public class BossAIHandler implements Listener {
             boss.getWorld().spawnParticle(Particle.DRAGON_BREATH, boss.getLocation().add(0, 1, 0), 25, 0.5,
                     0.5, 0.5, 0.1);
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.RESISTANCE, 100, 2));
+                    new PotionEffect(VersionSafe.getPotionEffectType("RESISTANCE"), 100, 2));
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.STRENGTH, 100, 2));
+                    new PotionEffect(VersionSafe.getPotionEffectType("STRENGTH"), 100, 2));
             // Spawn reinforcements every 20s
             long lastReinforce = boss.hasMetadata("reinforce_cd") ? boss.getMetadata("reinforce_cd").get(0).asLong()
                     : 0;
@@ -800,9 +830,9 @@ public class BossAIHandler implements Listener {
             boss.getWorld().spawnParticle(Particle.FLAME, boss.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5,
                     0.1);
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.RESISTANCE, 100, 1));
+                    new PotionEffect(VersionSafe.getPotionEffectType("RESISTANCE"), 100, 1));
             boss.addPotionEffect(
-                    new PotionEffect(PotionEffectType.STRENGTH, 100, 1));
+                    new PotionEffect(VersionSafe.getPotionEffectType("STRENGTH"), 100, 1));
         } else if (currentPhase == 3) {
             // PHASE 3: OVERDRIVE (70-50% HP)
             burstShots = 10;
@@ -824,7 +854,7 @@ public class BossAIHandler implements Listener {
         // Freeze boss while shooting
         long freezeTicks = (burstShots * burstInterval) + 10;
         boss.addPotionEffect(
-                new PotionEffect(PotionEffectType.SLOWNESS, (int) freezeTicks,
+                new PotionEffect(VersionSafe.getPotionEffectType("SLOWNESS"), (int) freezeTicks,
                         255));
 
         fireBurst(boss, target, burstShots, burstInterval);
@@ -856,16 +886,16 @@ public class BossAIHandler implements Listener {
         // Freeze all players and the boss for 10 seconds
         int freezeDuration = 200; // 10 seconds = 200 ticks
         boss.addPotionEffect(new PotionEffect(
-                PotionEffectType.SLOWNESS, freezeDuration, 255));
+                VersionSafe.getPotionEffectType("SLOWNESS"), freezeDuration, 255));
         boss.addPotionEffect(new PotionEffect(
-                PotionEffectType.JUMP_BOOST, freezeDuration, 250)); // Prevent jumping
+                VersionSafe.getPotionEffectType("JUMP_BOOST"), freezeDuration, 250)); // Prevent jumping
 
         for (Player p : world.getPlayers()) {
             if (p.getLocation().distance(bossLoc) < ARENA_RADIUS + 10) {
                 p.addPotionEffect(new PotionEffect(
-                        PotionEffectType.SLOWNESS, freezeDuration, 255));
+                        VersionSafe.getPotionEffectType("SLOWNESS"), freezeDuration, 255));
                 p.addPotionEffect(new PotionEffect(
-                        PotionEffectType.JUMP_BOOST, freezeDuration, 250));
+                        VersionSafe.getPotionEffectType("JUMP_BOOST"), freezeDuration, 250));
             }
         }
 
@@ -1012,10 +1042,10 @@ public class BossAIHandler implements Listener {
             if (nearby instanceof Player) {
                 Player p = (Player) nearby;
                 p.addPotionEffect(
-                        new PotionEffect(PotionEffectType.BLINDNESS,
+                        new PotionEffect(VersionSafe.getPotionEffectType("BLINDNESS"),
                                 getFlashbangDuration(), 1));
                 p.addPotionEffect(
-                        new PotionEffect(PotionEffectType.SLOWNESS,
+                        new PotionEffect(VersionSafe.getPotionEffectType("SLOWNESS"),
                                 getFlashbangDuration(), 2));
                 p.sendMessage(ChatColor.RED + "BLINDED BY TACTICAL GRENADE!");
             }

@@ -6,6 +6,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.potion.PotionEffectType;
 
 public class VersionSafe {
 
@@ -168,4 +169,85 @@ public class VersionSafe {
             return null;
         }
     }
+
+    /**
+     * Safely gets a PotionEffectType by name.
+     * Handles 1.20.5+ renames (SLOWNESS -> SLOW, etc.)
+     */
+    @SuppressWarnings("deprecation")
+    public static PotionEffectType getPotionEffectType(String name) {
+        try {
+            // Try modern name first (1.20.5+)
+            PotionEffectType type = PotionEffectType.getByName(name);
+            if (type != null) return type;
+
+            // Fallbacks for legacy versions
+            if (name.equalsIgnoreCase("SLOWNESS")) {
+                return PotionEffectType.getByName("SLOW");
+            }
+            if (name.equalsIgnoreCase("MINING_FATIGUE")) {
+                return PotionEffectType.getByName("SLOW_DIGGING");
+            }
+            if (name.equalsIgnoreCase("HASTE")) {
+                return PotionEffectType.getByName("FAST_DIGGING");
+            }
+            if (name.equalsIgnoreCase("STRENGTH")) {
+                return PotionEffectType.getByName("INCREASE_DAMAGE");
+            }
+            if (name.equalsIgnoreCase("INSTANT_HEALTH")) {
+                return PotionEffectType.getByName("HEAL");
+            }
+            if (name.equalsIgnoreCase("INSTANT_DAMAGE")) {
+                return PotionEffectType.getByName("HARM");
+            }
+            if (name.equalsIgnoreCase("NAUSEA")) {
+                return PotionEffectType.getByName("CONFUSION");
+            }
+            if (name.equalsIgnoreCase("RESISTANCE")) {
+                return PotionEffectType.getByName("DAMAGE_RESISTANCE");
+            }
+            if (name.equalsIgnoreCase("SPEED")) {
+                return PotionEffectType.getByName("SPEED"); // Stable, but safe to check
+            }
+            if (name.equalsIgnoreCase("FIRE_RESISTANCE")) {
+                return PotionEffectType.getByName("FIRE_RESISTANCE");
+            }
+            if (name.equalsIgnoreCase("JUMP_BOOST")) {
+                return PotionEffectType.getByName("JUMP");
+            }
+            if (name.equalsIgnoreCase("NIGHT_VISION")) {
+                return PotionEffectType.getByName("NIGHT_VISION");
+            }
+            if (name.equalsIgnoreCase("ABSORPTION")) {
+                return PotionEffectType.getByName("ABSORPTION");
+            }
+            if (name.equalsIgnoreCase("SATURATION")) {
+                return PotionEffectType.getByName("SATURATION");
+            }
+            if (name.equalsIgnoreCase("LEVITATION")) {
+                return PotionEffectType.getByName("LEVITATION");
+            }
+            if (name.equalsIgnoreCase("GLOWING")) {
+                return PotionEffectType.getByName("GLOWING");
+            }
+            if (name.equalsIgnoreCase("WITHER")) {
+                return PotionEffectType.getByName("WITHER");
+            }
+            if (name.equalsIgnoreCase("HUNGER")) {
+                return PotionEffectType.getByName("HUNGER");
+            }
+            if (name.equalsIgnoreCase("WEAKNESS")) {
+                return PotionEffectType.getByName("WEAKNESS");
+            }
+            if (name.equalsIgnoreCase("DARKNESS")) {
+                return PotionEffectType.getByName("DARKNESS");
+            }
+
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
+
+

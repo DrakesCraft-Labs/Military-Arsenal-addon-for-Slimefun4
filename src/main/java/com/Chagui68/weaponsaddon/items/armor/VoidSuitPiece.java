@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import com.Chagui68.weaponsaddon.utils.VersionSafe;
 
 public class VoidSuitPiece extends SlimefunItem implements VoidProtection, CustomEffectEmitter {
 
@@ -101,11 +102,11 @@ public class VoidSuitPiece extends SlimefunItem implements VoidProtection, Custo
 
         if (hasFullSet(player)) {
             // Efectos beneficiosos del traje completo
-            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 300, 1, true, false, true));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 300, 2, true, false, true));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 300, 2, true, false, true));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,300,2,true,false,true));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION,300,1,true,false,true));
+            player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("NIGHT_VISION"), 300, 1, true, false, true));
+            player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("REGENERATION"), 300, 2, true, false, true));
+            player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("RESISTANCE"), 300, 2, true, false, true));
+            player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("ABSORPTION"), 300, 2, true, false, true));
+            player.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("SATURATION"), 300, 1, true, false, true));
         }
     }
 

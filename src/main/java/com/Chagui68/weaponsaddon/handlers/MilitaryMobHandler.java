@@ -500,7 +500,7 @@ public class MilitaryMobHandler implements Listener {
             equip.setBootsDropChance(0.0f);
 
             // [EFECTOS DE POCIÓN]: Lo que añadimos anteriormente
-            boss.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 999999, 1));
+            boss.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("FIRE_RESISTANCE"), 999999, 1));
 
             // [INACTIVITY TIMER]: Initialize last damage time to prevent infinite idle
             // spawn
@@ -629,6 +629,6 @@ public class MilitaryMobHandler implements Listener {
         witch.addScoreboardTag("MA_BattleWitch");
 
         // Give resistance to make her tankier
-        witch.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
+        witch.addPotionEffect(new PotionEffect(VersionSafe.getPotionEffectType("FIRE_RESISTANCE"), Integer.MAX_VALUE, 0));
     }
 }
